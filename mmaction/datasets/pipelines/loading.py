@@ -1682,7 +1682,7 @@ class LoadTexts:
         texts = []
         texts_locations = []
 
-        for i in range(sampled_sentences_inds):
+        for i in list(sampled_sentences_inds):
             p = i*3+1
             assert int(lines[p].rstrip()) == i
             sentence = lines[p+1].rstrip()
