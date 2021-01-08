@@ -1676,6 +1676,7 @@ class LoadTexts:
         fin.close()
 
         num_sentences = int(lines[0].rstrip())
+        print(f'num_sentences: {num_sentences}, len(lines): {len(lines)}')
         assert num_sentences*3+1 <= len(lines)
         sampled_sentences_inds = np.random.choice(num_sentences, int(num_sentences * self.sample_ratio), replace = False)
 
