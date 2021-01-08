@@ -40,7 +40,7 @@ cfg = dict(
         dict(type='Normalize', **img_norm_cfg),
         dict(type='FormatShape', input_format='NCHW'),
         dict(type='LoadTexts', sample_ratio=0.2),
-        dict(type='Collect', keys=['imgs', 'texts','texts_locations'], meta_keys=['']),
+        dict(type='Collect', keys=['imgs', 'texts','texts_locations'], meta_keys=[]),
         dict(type='ToTensor', keys=['imgs'])
     ]
 )
