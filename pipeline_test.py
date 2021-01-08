@@ -24,8 +24,8 @@ mc_cfg = dict(
 
 cfg = dict(
     type = 'VideoTextDataset',
-    ann_file = '',
-    data_prefix = '',
+    ann_file = 'test_dataset/annotation',
+    data_prefix = 'test_dataset',
     pipeline=[
         dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
         dict(
@@ -45,7 +45,7 @@ cfg = dict(
         dict(type='Fuse'),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='FormatShape', input_format='NCHW'),
-        dict(type='LoadTexts', sample_ratio=0.15),
+        dict(type='LoadTexts', sample_ratio=0.2),
         dict(type='Collect', keys=['imgs', 'texts','texts_locations'], meta_keys=['']),
         dict(type='ToTensor', keys=['imgs'])
     ]
