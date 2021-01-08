@@ -112,7 +112,7 @@ class VideoTextDataset(BaseDataset):
                 # idx for text annotation path
                 video_info['text_path'] = line_split[idx]
                 idx += 1
-                video_info['video_length'] = line_split[idx]
+                video_info['video_length'] = float(line_split[idx])
                 video_infos.append(video_info)
 
         return video_infos
