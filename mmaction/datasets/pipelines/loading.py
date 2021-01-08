@@ -1690,6 +1690,8 @@ class LoadTexts:
             st_frame = int(st * fps)
             ed_frame = int(ed * fps)
             texts.append(sentence)
-            texts_locations.append(np.array[st_frame,ed_frame])
+            texts_locations.append(np.array([st_frame,ed_frame]))
 
+        results["texts"]=texts
+        results["texts_locations"]=texts_locations
         return results
