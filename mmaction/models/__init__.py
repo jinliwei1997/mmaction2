@@ -14,7 +14,8 @@ from .losses import (BCELossWithLogits, BinaryLogisticRegressionLoss, BMNLoss,
 from .necks import TPN
 from .recognizers import (AudioRecognizer, BaseRecognizer, recognizer2d,
                           recognizer3d)
-from .registry import BACKBONES, HEADS, LOCALIZERS, LOSSES, RECOGNIZERS
+from .matchers import ()
+from .registry import BACKBONES, HEADS, LOCALIZERS, LOSSES, RECOGNIZERS, MATCHERS
 from .roi_extractors import SingleRoIExtractor3D
 
 __all__ = [

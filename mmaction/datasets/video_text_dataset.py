@@ -9,52 +9,25 @@ from .registry import DATASETS
 
 
 @DATASETS.register_module()
-class RawframeDataset(BaseDataset):
-    """Rawframe dataset for action recognition.
+class VideoTextDataset(BaseDataset):
+    """VideoText dataset for matcher.
 
     The dataset loads raw frames and apply specified transforms to return a
     dict containing the frame tensors and other information.
 
     The ann_file is a text file with multiple lines, and each line indicates
     the directory to frames of a video, total frames of the video and
-    the label of a video, which are split with a whitespace.
+    the path of the corresponding text annotation, which are split with a whitespace.
     Example of a annotation file:
 
     .. code-block:: txt
 
-        some/directory-1 163 1
-        some/directory-2 122 1
-        some/directory-3 258 2
-        some/directory-4 234 2
-        some/directory-5 295 3
-        some/directory-6 121 3
-
-    Example of a multi-class annotation file:
-
-
-    .. code-block:: txt
-
-        some/directory-1 163 1 3 5
-        some/directory-2 122 1 2
-        some/directory-3 258 2
-        some/directory-4 234 2 4 6 8
-        some/directory-5 295 3
-        some/directory-6 121 3
-
-    Example of a with_offset annotation file (clips from long videos), each
-    line indicates the directory to frames of a video, the index of the start
-    frame, total frames of the video clip and the label of a video clip, which
-    are split with a whitespace.
-
-
-    .. code-block:: txt
-
-        some/directory-1 12 163 3
-        some/directory-2 213 122 4
-        some/directory-3 100 258 5
-        some/directory-4 98 234 2
-        some/directory-5 0 295 3
-        some/directory-6 50 121 3
+        some/directory-1 163 some/text1
+        some/directory-2 122 some/text2
+        some/directory-3 258 some/text3
+        some/directory-4 234 some/text4
+        some/directory-5 295 some/text5
+        some/directory-6 121 some/text6
 
 
     Args:
@@ -112,7 +85,7 @@ class RawframeDataset(BaseDataset):
             power=power)
 
     def load_annotations(self):
-        """Load annotation file to get video information."""
+        """Load annotation file to get video and text information."""
         if self.ann_file.endswith('.json'):
             return self.load_json_annotations()
         video_infos = []
@@ -136,15 +109,10 @@ class RawframeDataset(BaseDataset):
                     # idx for total_frames
                     video_info['total_frames'] = int(line_split[idx])
                     idx += 1
-                # idx for label[s]
-                label = [int(x) for x in line_split[idx:]]
-                assert label, f'missing label in line: {line}'
-                if self.multi_class:
-                    assert self.num_classes is not None
-                    video_info['label'] = label
-                else:
-                    assert len(label) == 1
-                    video_info['label'] = label[0]
+                # idx for text annotation path
+                video_info['text_path'] = line_split[idx]
+                idx += 1
+                video_info['video_length'] = line_split[idx]
                 video_infos.append(video_info)
 
         return video_infos
@@ -160,6 +128,7 @@ class RawframeDataset(BaseDataset):
         results['filename_tmpl'] = self.filename_tmpl
         results['modality'] = self.modality
         results['start_index'] = self.start_index
+
 
         # prepare tensor in getitem
         if self.multi_class:

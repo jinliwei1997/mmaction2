@@ -1645,3 +1645,51 @@ class LoadProposals:
                     f'proposal_ext={self.proposal_ext}, '
                     f'feature_ext={self.feature_ext})')
         return repr_str
+
+@PIPELINES.register_module()
+class LoadTexts:
+    """Loading proposals with given proposal results.
+
+    Required keys are "text_path", "total_frames", "video_length", added or modified keys are 'texts', 'texts_locations'.
+
+    Args:
+        sample_ratio (double): The percentage of sentences sampled in the whole sentence set(corresponding to the sampled video).
+    """
+
+    def __init__(self,
+                 sample_ratio = 0.15):
+        self.sample_ratio = sample_ratio
+
+    def __call__(self, results):
+        """Perform the text loading.
+
+        Args:
+            results (dict): The resulting dict to be modified and passed
+                to the next transform in pipeline.
+        """
+        total_frames = results["total_frames"]
+        video_length = results["video_length"]
+        fps = total_frames/video_length
+
+        fin = open(results["text_path"],'r')
+        lines = fin.readlines()
+        fin.close()
+
+        num_sentences = int(lines[0].rstrip())
+        assert num_sentences*3+1 <= len(lines)
+        sampled_sentences_inds = np.random.choice(num_sentences, int(num_sentences * self.sample_ratio), replace = False)
+
+        texts = []
+        texts_locations = []
+
+        for i in range(sampled_sentences_inds):
+            p = i*3+1
+            assert int(lines[p].rstrip()) == i
+            sentence = lines[p+1].rstrip()
+            st,ed = map(float,lines[p+2].rstrip().split())
+            st_frame = int(st * fps)
+            ed_frame = int(ed * fps)
+            texts.append(sentence)
+            texts_locations.append(np.array[st_frame,ed_frame])
+
+        return results
