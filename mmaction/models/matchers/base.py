@@ -12,12 +12,13 @@ from .. import builder
 class BaseMatcher(nn.Module, metaclass=ABCMeta):
 
 
-    def __init__(self, backbone, cls_head, neck=None, train_cfg=None, test_cfg=None):
+    def __init__(self, backbone1, backbone2, head, neck=None, train_cfg=None, test_cfg=None):
         super().__init__()
-        self.backbone = builder.build_backbone(backbone)
+        self.backbone1 = builder.build_backbone(backbone1)
+        self.backbone2 = builder.build_backbone(backbone2)
         if neck is not None:
             self.neck = builder.build_neck(neck)
-        self.cls_head = builder.build_head(cls_head)
+        self.head = builder.build_head(head)
 
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
@@ -35,8 +36,9 @@ class BaseMatcher(nn.Module, metaclass=ABCMeta):
 
     def init_weights(self):
         """Initialize the model network weights."""
-        self.backbone.init_weights()
-        self.cls_head.init_weights()
+        self.backbone1.init_weights()
+        self.backbone2.init_weights()
+        self.head.init_weights()
         if hasattr(self, 'neck'):
             self.neck.init_weights()
 
