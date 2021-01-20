@@ -17,7 +17,8 @@ class VideoTextMatcher(BaseMatcher):
         """Defines the computation performed at every call when training."""
         x = self.backbone1(imgs)
         y = self.backbone2(texts)
-        x,y = self.neck(x,y)
+        if self.neck is not None:
+            x,y = self.neck(x,y)
         loss = self.head.loss(x,y)
 
         return loss
@@ -26,7 +27,8 @@ class VideoTextMatcher(BaseMatcher):
         """Defines the computation performed at every call when training."""
         x = self.backbone1(imgs)
         y = self.backbone2(texts)
-        x, y = self.neck(x, y)
+        if self.neck is not None:
+            x,y = self.neck(x, y)
         loss = self.head.loss(x, y)
 
         return loss
