@@ -13,6 +13,7 @@ from torch.nn.modules.utils import _pair
 from ...utils import get_random_string, get_shm_dir, get_thread_id
 from ..registry import PIPELINES
 
+from transformers import BertTokenizer
 
 @PIPELINES.register_module()
 class LoadHVULabel:
@@ -1648,17 +1649,23 @@ class LoadProposals:
 
 @PIPELINES.register_module()
 class LoadTexts:
-    """Loading proposals with given proposal results.
+    """Loading Texts
 
     Required keys are "text_path", "total_frames", "video_length", added or modified keys are 'texts', 'texts_locations'.
 
     Args:
+        sample_mode (str): 'number' or 'ratio'.
         sample_ratio (double): The percentage of sentences sampled in the whole sentence set(corresponding to the sampled video).
+        sample_number (int): The number of sentences sampled in the whole sentence set(corresponding to the sampled video).
     """
 
     def __init__(self,
-                 sample_ratio = 0.15):
+                 sample_mode = None,
+                 sample_ratio = None,
+                 sample_number = None):
+        self.sample_mode = sample_mode
         self.sample_ratio = sample_ratio
+        self.sample_number = sample_number
 
     def __call__(self, results):
         """Perform the text loading.
@@ -1667,23 +1674,35 @@ class LoadTexts:
             results (dict): The resulting dict to be modified and passed
                 to the next transform in pipeline.
         """
+
         total_frames = results["total_frames"]
         video_length = results["video_length"]
-        fps = total_frames/video_length
+        fps = total_frames / video_length
 
         fin = open(results["text_path"],'r')
         lines = fin.readlines()
         fin.close()
 
         num_sentences = int(lines[0].rstrip())
-        assert num_sentences*3+1 <= len(lines)
-        sampled_sentences_inds = np.random.choice(num_sentences, int(num_sentences * self.sample_ratio), replace = False)
+        assert num_sentences * 3 + 1 <= len(lines)
+
+        if self.sample_mode == 'number':
+            sample_number = self.sample_number
+        elif self.sample_mode == 'ratio':
+            sample_number = int(num_sentences * self.sample_ratio)
+        else:
+            raise ValueError('Illegal sample_mode option.')
+
+        if sample_number > num_sentences:
+            sampled_sentences_inds = np.array([i%num_sentences for i in range(sample_number)])
+        else:
+            sampled_sentences_inds = np.random.choice(num_sentences, sample_number, replace = False)
 
         texts = []
         texts_locations = []
 
         for i in list(sampled_sentences_inds):
-            p = i*3+1
+            p = i * 3 + 1
             assert int(lines[p].rstrip()) == i
             sentence = lines[p+1].rstrip()
             st,ed = map(float,lines[p+2].rstrip().split())
@@ -1692,6 +1711,32 @@ class LoadTexts:
             texts.append(sentence)
             texts_locations.append(np.array([st_frame,ed_frame]))
 
-        results["texts"]=texts
-        results["texts_locations"]=texts_locations
+        results["texts"] = texts
+        results["texts_locations"] = texts_locations
+        return results
+
+
+@PIPELINES.register_module()
+class TextTokenize:
+    """Tokenize Texts.
+
+    Required keys are "texts", added or modified keys are 'input_ids', 'token_type_ids', 'attention_mask'.
+
+    Args:
+        tokenizer_dir
+    """
+
+    def __init__(self,tokenizer_dir):
+        self.tokenizer = BertTokenizer.from_pretrained(tokenizer_dir)
+
+
+    def __call__(self, results):
+        """Perform the text tokenizing.
+
+        Args:
+            results (dict): The resulting dict to be modified and passed
+                to the next transform in pipeline.
+        """
+        texts_item = self.tokenizer(results['texts'], truncation=True, padding='max_length', return_tensors="pt")
+        results['texts_item'] = texts_item
         return results

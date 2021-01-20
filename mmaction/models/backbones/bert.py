@@ -8,11 +8,12 @@ from ..registry import BACKBONES
 
 
 @BACKBONES.register_module()
-class BERT():
+class BERT(nn.Module):
     """BERT backbone.
     """
     def __init__(self,
                  pretrained=None):
+        super.__init__()
         self.pretrained = pretrained
 
     def init_weights(self):

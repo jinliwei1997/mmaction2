@@ -39,8 +39,9 @@ cfg = dict(
         dict(type='Fuse'),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='FormatShape', input_format='NCHW'),
-        dict(type='LoadTexts', sample_ratio=0.2),
-        dict(type='Collect', keys=['imgs', 'texts','texts_locations'], meta_keys=[]),
+        dict(type='LoadTexts', sample_mode='number', sample_number=2),
+        dict(type='TextTokenize'),
+        dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
         dict(type='ToTensor', keys=['imgs'])
     ]
 )

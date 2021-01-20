@@ -63,7 +63,7 @@ class VideoTextMatcher(BaseMatcher):
                 averaging the logs.
         """
         imgs = data_batch['imgs']
-        texts = data_batch['texts']
+        texts = data_batch['texts_item']
 
         losses = self(imgs, texts)
 
@@ -84,7 +84,7 @@ class VideoTextMatcher(BaseMatcher):
         not implemented with this method, but an evaluation hook.
         """
         imgs = data_batch['imgs']
-        texts = data_batch['texts']
+        texts = data_batch['texts_item']
 
         losses = self(imgs, texts)
 
