@@ -3,7 +3,7 @@ import warnings
 import torch.nn as nn
 from mmcv.utils import Registry, build_from_cfg
 
-from .registry import BACKBONES, HEADS, LOCALIZERS, LOSSES, NECKS, RECOGNIZERS
+from .registry import BACKBONES, HEADS, LOCALIZERS, LOSSES, NECKS, RECOGNIZERS, MATCHERS
 
 try:
     from mmdet.models.builder import DETECTORS, build_detector
@@ -65,6 +65,9 @@ def build_localizer(cfg):
     """Build localizer."""
     return build(cfg, LOCALIZERS)
 
+def build_matcher(cfg):
+    """Build localizer."""
+    return build(cfg, MATCHERS)
 
 def build_model(cfg, train_cfg=None, test_cfg=None):
     """Build model."""
@@ -76,8 +79,10 @@ def build_model(cfg, train_cfg=None, test_cfg=None):
         return build_recognizer(cfg, train_cfg, test_cfg)
     if obj_type in DETECTORS:
         return build_detector(cfg, train_cfg, test_cfg)
+    if obj_type in MATCHERS:
+        return build_detector(cfg, train_cfg, test_cfg)
     raise ValueError(f'{obj_type} is not registered in '
-                     'LOCALIZERS, RECOGNIZERS or DETECTORS')
+                     'LOCALIZERS, RECOGNIZERS, DETECTORS or MATCHERS')
 
 
 def build_neck(cfg):
