@@ -1666,6 +1666,7 @@ class LoadTexts:
         self.sample_mode = sample_mode
         self.sample_ratio = sample_ratio
         self.sample_number = sample_number
+        assert sample_mode in ['number','ratio']
 
     def __call__(self, results):
         """Perform the text loading.
@@ -1690,11 +1691,9 @@ class LoadTexts:
             sample_number = self.sample_number
         elif self.sample_mode == 'ratio':
             sample_number = int(num_sentences * self.sample_ratio)
-        else:
-            raise ValueError('Illegal sample_mode option.')
 
         if sample_number > num_sentences:
-            sampled_sentences_inds = np.array([i%num_sentences for i in range(sample_number)])
+            sampled_sentences_inds = np.random.shuffle(np.array([i%num_sentences for i in range(sample_number)]))
         else:
             sampled_sentences_inds = np.random.choice(num_sentences, sample_number, replace = False)
 

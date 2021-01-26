@@ -40,7 +40,7 @@ cfg = dict(
         dict(type='Normalize', **img_norm_cfg),
         dict(type='FormatShape', input_format='NCHW'),
         dict(type='LoadTexts', sample_mode='number', sample_number=2),
-        dict(type='TextTokenize'),
+        dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
         dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
         dict(type='ToTensor', keys=['imgs'])
     ]
