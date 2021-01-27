@@ -15,35 +15,31 @@ class VideoTextMatcher(BaseMatcher):
 
     def forward_train(self, imgs, texts):
         """Defines the computation performed at every call when training."""
-        batches = imgs.shape[0]
+        N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
-        num_segs = imgs.shape[0] // batches
-
         x = self.backbone1(imgs)
-        print('x shape:', x.shape)
-        print('num_segs', num_segs)
         for key in texts:
             texts[key] = texts[key].reshape((-1,) + texts[key].shape[2:])
-        print(texts)
         y = self.backbone2(texts)
-        print('y:', y)
-        print('y shape:', y.shape)
         if self.neck is not None:
-            x,y = self.neck(x,y)
+            x, y = self.neck(x, y)
 
-        loss = self.head.loss(x,y)
+        loss = self.head(x, y, N)
 
         return loss
 
     def forward_test(self, imgs, texts):
         """Defines the computation performed at every call when training."""
+        N = imgs.shape[0]
+        imgs = imgs.reshape((-1,) + imgs.shape[2:])
         x = self.backbone1(imgs)
+        for key in texts:
+            texts[key] = texts[key].reshape((-1,) + texts[key].shape[2:])
         y = self.backbone2(texts)
         if self.neck is not None:
-            x,y = self.neck(x, y)
-        loss = self.head.loss(x, y)
+            x, y = self.neck(x, y)
 
-        return loss
+        loss = self.head(x, y, N)
 
     def forward_gradcam(self, audios):
         raise NotImplementedError

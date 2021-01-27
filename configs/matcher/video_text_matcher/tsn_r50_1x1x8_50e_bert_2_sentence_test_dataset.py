@@ -10,12 +10,11 @@ model = dict(
         pretrained='/mnt/lustre/jinliwei/bert_model'
     ),
     head=dict(
-        type='TSNHead',
-        num_classes=51,
-        in_channels=2048,
-        spatial_type='avg',
-        consensus=dict(type='AvgConsensus', dim=1),
-        dropout_ratio=0.4,
+        type='ContrastiveHead',
+        in_channels_imgs=2048,
+        in_channels_texts=768,
+        hidden_state_channels=2048,
+        temperature=0.1,
         init_std=0.01))
 train_cfg = None
 test_cfg = None
@@ -98,7 +97,7 @@ test_pipeline = [
 ]
 data = dict(
     videos_per_gpu=1,
-    workers_per_gpu=4,
+    workers_per_gpu=0,
     train=dict(
         type=dataset_type,
         ann_file=ann_file_train,
@@ -125,7 +124,7 @@ log_config = dict(
     interval=1,
     hooks=[
         dict(type='TextLoggerHook'),
-        #    dict(type='TensorboardLoggerHook')
+        # dict(type='TensorboardLoggerHook')
     ])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
