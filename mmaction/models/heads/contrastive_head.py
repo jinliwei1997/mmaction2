@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 from mmcv.cnn import normal_init
 
 from ..registry import HEADS
