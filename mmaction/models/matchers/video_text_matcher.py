@@ -22,7 +22,9 @@ class VideoTextMatcher(BaseMatcher):
         x = self.backbone1(imgs)
         print('x shape:', x.shape)
         print('num_segs', num_segs)
-
+        for key in texts:
+            texts[key] = texts[key].reshape((-1,) + texts[key].shape[2:])
+        print(texts)
         y = self.backbone2(texts)
         print('y shape:', y.shape)
         if self.neck is not None:
@@ -73,7 +75,6 @@ class VideoTextMatcher(BaseMatcher):
         """
         imgs = data_batch['imgs']
         texts = data_batch['texts_item']
-        print(imgs,texts)
         losses = self(imgs, texts)
 
         loss, log_vars = self._parse_losses(losses)
