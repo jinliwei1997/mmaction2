@@ -31,6 +31,5 @@ class BERT(nn.Module):
         for name, param in self.model.named_parameters():
             if param.requires_grad:
                 print(name)
-            break
         # print('pooler_output: ',self.model(**x).pooler_output)
         return self.model(**x).pooler_output
