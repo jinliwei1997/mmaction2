@@ -91,6 +91,8 @@ class ContrastiveHead(nn.Module):
         denominator = torch.cat((s, s.permute(1, 0, 2)), dim=1).view(s.shape[0], -1)
         denominator = torch.logsumexp(denominator, dim=1)
 
+        print(self.img_fc.parameters())
         losses = dict()
         losses['loss'] = torch.mean(denominator - nominator)
+
         return losses
