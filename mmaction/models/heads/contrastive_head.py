@@ -76,11 +76,7 @@ class ContrastiveHead(nn.Module):
         x = x.view(x.size(0), -1)
         x_hidden = self.img_fc(x)
 
-        print('x_hidden_shape: ', x_hidden.shape)
-
         y_hidden = self.text_fc(y)
-
-        print('y_hidden_shape: ', y_hidden.shape)
 
         # Similarity Matrix
         x_hidden = x_hidden / (torch.norm(x_hidden, p=2, dim=1, keepdim=True) + 1e-10)
