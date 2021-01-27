@@ -66,7 +66,7 @@ class VideoTextMatcher(BaseMatcher):
         """
         imgs = data_batch['imgs']
         texts = data_batch['texts_item']
-
+        print(imgs,texts)
         losses = self(imgs, texts)
 
         loss, log_vars = self._parse_losses(losses)
