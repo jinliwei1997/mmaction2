@@ -65,8 +65,8 @@ def build_localizer(cfg):
     """Build localizer."""
     return build(cfg, LOCALIZERS)
 
-def build_matcher(cfg, train_cfg=None, test_cfg=None):
-    """Build localizer."""
+def build_matcher(cfg):
+    """Build matcher."""
     return build(cfg, MATCHERS)
 
 def build_model(cfg, train_cfg=None, test_cfg=None):
@@ -80,7 +80,7 @@ def build_model(cfg, train_cfg=None, test_cfg=None):
     if obj_type in DETECTORS:
         return build_detector(cfg, train_cfg, test_cfg)
     if obj_type in MATCHERS:
-        return build_matcher(cfg, train_cfg, test_cfg)
+        return build_matcher(cfg)
     raise ValueError(f'{obj_type} is not registered in '
                      'LOCALIZERS, RECOGNIZERS, DETECTORS or MATCHERS')
 
