@@ -13,7 +13,7 @@ class BERT(nn.Module):
     """
     def __init__(self,
                  pretrained=None):
-        super.__init__()
+        super(BERT, self).__init__()
         self.pretrained = pretrained
 
     def init_weights(self):
