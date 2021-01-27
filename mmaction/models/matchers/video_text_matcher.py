@@ -24,10 +24,10 @@ class VideoTextMatcher(BaseMatcher):
         print('num_segs', num_segs)
 
         y = self.backbone2(texts)
+        print('y shape:', y.shape)
         if self.neck is not None:
             x,y = self.neck(x,y)
-        print('x shape:', x.shape)
-        print('y shape:', y.shape)
+
         loss = self.head.loss(x,y)
 
         return loss
