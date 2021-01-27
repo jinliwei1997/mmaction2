@@ -41,7 +41,6 @@ class ContrastiveHead(nn.Module):
         self.text_fc = nn.Linear(self.text_in_channels, self.hidden_state_channels)
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-        self.criterion = nn.CrossEntropyLoss()
 
 
     def init_weights(self):
@@ -49,17 +48,24 @@ class ContrastiveHead(nn.Module):
         normal_init(self.img_fc, std=self.init_std)
         normal_init(self.text_fc, std=self.init_std)
 
+    def _create_buffer(N, T):
+
+        pos_ind = (torch.arange(N, dtype=torch.long).unsqueeze(1).repeat(1, T).view(-1, 1).squeeze().cuda(),
+                  torch.arange(N * T).cuda())
+        neg_mask = torch.ones((N, N * T), dtype=torch.uint8).cuda()
+        neg_mask[pos_ind] = 0
+        return pos_ind, neg_mask
+
     def forward(self, x, y, N):
         """Forward head.
 
         Args:
             x (Tensor): [N * num_segs, img_in_channels, 7, 7]
-            y (Tensor): [N * num_per_video, text_in_channels]
+            y (Tensor): [N * text_num_per_video(T), text_in_channels]
             N : batch_size
         Returns:
             dict[str, Tensor]: A dictionary of loss components.
         """
-
         if self.avg_pool is not None:
             x = self.avg_pool(x)
         x = x.reshape((N, -1) + x.shape[1:])
@@ -68,15 +74,26 @@ class ContrastiveHead(nn.Module):
         # dropout
         x = x.view(x.size(0), -1)
         x_hidden = self.img_fc(x)
+
         print('x_hidden_shape: ', x_hidden.shape)
+
         y_hidden = self.text_fc(y)
+
         print('y_hidden_shape: ', y_hidden.shape)
 
-        # N = pos.size(0)
-        # logits = torch.cat((pos, neg), dim=1)
-        # logits /= self.temperature
-        # labels = torch.zeros((N, ), dtype=torch.long).cuda()
-        #
-        # losses = dict()
-        # losses['loss'] = self.criterion(logits, labels)
-        return x
+        # Similarity Matrix
+        x_hidden = x_hidden / (torch.norm(x_hidden, p=2, dim=1, keepdim=True) + 1e-10)
+        y_hidden = y_hidden / (torch.norm(y_hidden, p=2, dim=1, keepdim=True) + 1e-10)
+        s = torch.matmul(x_hidden, y_hidden.permute(1, 0)) # (N) * (N * T)
+        s = s.view(N, N, -1) # N * N * T
+
+        # MIL-NCE loss
+        nominator = s * torch.eye(s.shape[0])[:, :, None].cuda()
+        nominator = nominator.sum(dim=1)
+        nominator = torch.logsumexp(nominator, dim=1)
+        denominator = torch.cat((s, s.permute(1, 0, 2)), dim=1).view(s.shape[0], -1)
+        denominator = torch.logsumexp(denominator, dim=1)
+
+        losses = dict()
+        losses['loss'] = torch.mean(denominator - nominator)
+        return losses

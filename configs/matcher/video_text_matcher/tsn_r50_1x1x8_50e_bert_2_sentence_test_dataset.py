@@ -11,8 +11,8 @@ model = dict(
     ),
     head=dict(
         type='ContrastiveHead',
-        in_channels_imgs=2048,
-        in_channels_texts=768,
+        img_in_channels=2048,
+        text_in_channels=768,
         hidden_state_channels=2048,
         temperature=0.1,
         init_std=0.01))
