@@ -30,7 +30,7 @@ class BERT(nn.Module):
     def forward(self, x):
         for name, param in self.model.named_parameters():
             if param.requires_grad:
-                print(name, param.data)
+                print(name)
             break
-        print('pooler_output: ',self.model(**x).pooler_output)
+        # print('pooler_output: ',self.model(**x).pooler_output)
         return self.model(**x).pooler_output
