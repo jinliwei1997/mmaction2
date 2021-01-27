@@ -18,6 +18,8 @@ class BaseMatcher(nn.Module, metaclass=ABCMeta):
         self.backbone2 = builder.build_backbone(backbone2)
         if neck is not None:
             self.neck = builder.build_neck(neck)
+        else:
+            self.neck = None
         self.head = builder.build_head(head)
 
         self.train_cfg = train_cfg

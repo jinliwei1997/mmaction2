@@ -27,6 +27,7 @@ class VideoTextMatcher(BaseMatcher):
         print(texts)
         y = self.backbone2(texts)
         print('y:', y)
+        print('y shape:', y.shape)
         if self.neck is not None:
             x,y = self.neck(x,y)
 

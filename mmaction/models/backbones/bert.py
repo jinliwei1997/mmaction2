@@ -28,4 +28,4 @@ class BERT(nn.Module):
             raise TypeError('pretrained must be a str')
 
     def forward(self, x):
-        return self.model(**x)
+        return self.model(**x).pooler_output
