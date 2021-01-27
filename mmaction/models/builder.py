@@ -65,7 +65,7 @@ def build_localizer(cfg):
     """Build localizer."""
     return build(cfg, LOCALIZERS)
 
-def build_matcher(cfg):
+def build_matcher(cfg, train_cfg=None, test_cfg=None):
     """Build localizer."""
     return build(cfg, MATCHERS)
 
