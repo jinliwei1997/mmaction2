@@ -9,7 +9,7 @@ model = dict(
         type='BERT',
         pretrained='/mnt/lustre/jinliwei/bert_model'
     ),
-    cls_head=dict(
+    head=dict(
         type='TSNHead',
         num_classes=51,
         in_channels=2048,
