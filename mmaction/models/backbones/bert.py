@@ -28,4 +28,9 @@ class BERT(nn.Module):
             raise TypeError('pretrained must be a str')
 
     def forward(self, x):
+        for name, param in self.model.named_parameters():
+            if param.requires_grad:
+                print(name, param.data)
+            break
+        print('pooler_output: ',self.model(**x).pooler_output)
         return self.model(**x).pooler_output

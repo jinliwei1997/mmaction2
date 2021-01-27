@@ -14,6 +14,7 @@ class VideoTextMatcher(BaseMatcher):
         return self.forward_test(imgs, texts_item)
 
     def forward_train(self, imgs, texts_item):
+
         """Defines the computation performed at every call when training."""
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
