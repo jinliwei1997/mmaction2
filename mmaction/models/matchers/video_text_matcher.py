@@ -41,6 +41,8 @@ class VideoTextMatcher(BaseMatcher):
 
         loss = self.head(x, y, N)
 
+        return loss
+
     def forward_gradcam(self, audios):
         raise NotImplementedError
 
