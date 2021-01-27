@@ -41,7 +41,7 @@ class BaseMatcher(nn.Module, metaclass=ABCMeta):
         self.backbone1.init_weights()
         self.backbone2.init_weights()
         self.head.init_weights()
-        if hasattr(self, 'neck'):
+        if self.neck is not None:
             self.neck.init_weights()
 
     @auto_fp16()
