@@ -6,21 +6,21 @@ from .base import BaseMatcher
 class VideoTextMatcher(BaseMatcher):
     """Audio recognizer model framework."""
 
-    def forward(self, imgs, texts, return_loss=True):
+    def forward(self, imgs, texts_item, return_loss=True):
         """Define the computation performed at every call."""
         if return_loss:
-            return self.forward_train(imgs, texts)
+            return self.forward_train(imgs, texts_item)
 
-        return self.forward_test(imgs, texts)
+        return self.forward_test(imgs, texts_item)
 
-    def forward_train(self, imgs, texts):
+    def forward_train(self, imgs, texts_item):
         """Defines the computation performed at every call when training."""
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
         x = self.backbone1(imgs)
-        for key in texts:
-            texts[key] = texts[key].reshape((-1,) + texts[key].shape[2:])
-        y = self.backbone2(texts)
+        for key in texts_item:
+            texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
+        y = self.backbone2(texts_item)
         if self.neck is not None:
             x, y = self.neck(x, y)
 
@@ -28,14 +28,14 @@ class VideoTextMatcher(BaseMatcher):
 
         return loss
 
-    def forward_test(self, imgs, texts):
+    def forward_test(self, imgs, texts_item):
         """Defines the computation performed at every call when training."""
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
         x = self.backbone1(imgs)
-        for key in texts:
-            texts[key] = texts[key].reshape((-1,) + texts[key].shape[2:])
-        y = self.backbone2(texts)
+        for key in texts_item:
+            texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
+        y = self.backbone2(texts_item)
         if self.neck is not None:
             x, y = self.neck(x, y)
 
@@ -71,8 +71,8 @@ class VideoTextMatcher(BaseMatcher):
                 averaging the logs.
         """
         imgs = data_batch['imgs']
-        texts = data_batch['texts_item']
-        losses = self(imgs, texts)
+        texts_item = data_batch['texts_item']
+        losses = self(imgs, texts_item)
 
         loss, log_vars = self._parse_losses(losses)
 
@@ -91,9 +91,9 @@ class VideoTextMatcher(BaseMatcher):
         not implemented with this method, but an evaluation hook.
         """
         imgs = data_batch['imgs']
-        texts = data_batch['texts_item']
+        texts_item = data_batch['texts_item']
 
-        losses = self(imgs, texts)
+        losses = self(imgs, texts_item)
 
         loss, log_vars = self._parse_losses(losses)
 
