@@ -44,7 +44,7 @@ train_pipeline = [
     dict(type='Fuse'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
-    dict(type='LoadTexts', sample_mode='number', sample_number=2),
+    dict(type='LoadTexts', sample_mode='number', sample_number=4),
     dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
     dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs'])
@@ -96,7 +96,7 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 data = dict(
-    videos_per_gpu=1,
+    videos_per_gpu=2,
     workers_per_gpu=0,
     train=dict(
         type=dataset_type,
