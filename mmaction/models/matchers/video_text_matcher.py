@@ -15,7 +15,14 @@ class VideoTextMatcher(BaseMatcher):
 
     def forward_train(self, imgs, texts):
         """Defines the computation performed at every call when training."""
+        batches = imgs.shape[0]
+        imgs = imgs.reshape((-1,) + imgs.shape[2:])
+        num_segs = imgs.shape[0] // batches
+
         x = self.backbone1(imgs)
+        print('x shape:', x.shape)
+        print('num_segs', num_segs)
+
         y = self.backbone2(texts)
         if self.neck is not None:
             x,y = self.neck(x,y)

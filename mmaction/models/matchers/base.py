@@ -47,11 +47,11 @@ class BaseMatcher(nn.Module, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def forward_train(self, imgs, labels, **kwargs):
+    def forward_train(self, imgs, texts, **kwargs):
         """Defines the computation performed at every call when training."""
 
     @abstractmethod
-    def forward_test(self, imgs):
+    def forward_test(self, imgs, texts,  **kwargs):
         """Defines the computation performed at every call when evaluation and
         testing."""
 
@@ -91,7 +91,7 @@ class BaseMatcher(nn.Module, metaclass=ABCMeta):
 
         return loss, log_vars
 
-    def forward(self, imgs, label=None, return_loss=True, **kwargs):
+    def forward(self, imgs, texts, return_loss=True, **kwargs):
         pass
 
     def train_step(self, data_batch, optimizer, **kwargs):
