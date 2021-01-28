@@ -12,7 +12,7 @@ from .. import builder
 class BaseMatcher(nn.Module, metaclass=ABCMeta):
 
 
-    def __init__(self, backbone1, backbone2, head, neck=None, train_cfg=None, test_cfg=None):
+    def __init__(self, backbone1, backbone2, head, neck=None, train_cfg=None, test_cfg=None, fp16_enabled=False):
         super().__init__()
         self.backbone1 = builder.build_backbone(backbone1)
         self.backbone2 = builder.build_backbone(backbone2)
@@ -33,8 +33,14 @@ class BaseMatcher(nn.Module, metaclass=ABCMeta):
             self.aux_info = train_cfg['aux_info']
 
         self.init_weights()
+        self.fp16_enabled = fp16_enabled
+        if fp16_enabled is True:
+            self.backbone1 = self.backbone1.half()
+            self.backbone2 = self.backbone2.half()
+            if neck is not None:
+                self.neck = self.neck.half()
+            self.head = self.head.half()
 
-        self.fp16_enabled = True
 
     def init_weights(self):
         """Initialize the model network weights."""

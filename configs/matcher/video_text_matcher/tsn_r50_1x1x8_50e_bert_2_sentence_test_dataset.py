@@ -15,7 +15,9 @@ model = dict(
         text_in_channels=768,
         hidden_state_channels=768,
         temperature=0.1,
-        init_std=0.01))
+        init_std=0.01),
+    fp16_enabled=False
+)
 train_cfg = None
 test_cfg = None
 dataset_type = 'VideoTextDataset'
@@ -27,7 +29,7 @@ ann_file_test = 'test_dataset/annotation'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 train_pipeline = [
-    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=4),
+    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
     dict(
         type='RawFrameDecode'
     ),
@@ -44,7 +46,7 @@ train_pipeline = [
     dict(type='Fuse'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
-    dict(type='LoadTexts', sample_mode='number', sample_number=4),
+    dict(type='LoadTexts', sample_mode='number', sample_number=2),
     dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
     dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs'])
@@ -67,7 +69,7 @@ val_pipeline = [
     dict(type='Fuse'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
-    dict(type='LoadTexts', sample_mode='number', sample_number=5),
+    dict(type='LoadTexts', sample_mode='number', sample_number=2),
     dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
     dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs'])
@@ -96,8 +98,8 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 data = dict(
-    videos_per_gpu=4,
-    workers_per_gpu=0,
+    videos_per_gpu=2,
+    workers_per_gpu=5,
     train=dict(
         type=dataset_type,
         ann_file=ann_file_train,

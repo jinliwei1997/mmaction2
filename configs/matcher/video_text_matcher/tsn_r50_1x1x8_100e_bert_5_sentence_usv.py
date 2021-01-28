@@ -15,7 +15,9 @@ model = dict(
         text_in_channels=768,
         hidden_state_channels=768,
         temperature=0.1,
-        init_std=0.01))
+        init_std=0.01),
+    fp16_enabled=False
+)
 train_cfg = None
 test_cfg = None
 dataset_type = 'VideoTextDataset'
