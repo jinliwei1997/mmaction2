@@ -1,6 +1,6 @@
 from ..registry import MATCHERS
 from .base import BaseMatcher
-
+from mmcv.runner import auto_fp16
 
 @MATCHERS.register_module()
 class VideoTextMatcher(BaseMatcher):
@@ -13,16 +13,17 @@ class VideoTextMatcher(BaseMatcher):
 
         return self.forward_test(imgs, texts_item)
 
+    @auto_fp16()
     def forward_train(self, imgs, texts_item):
-        # for name, parameters in self.backbone1.named_parameters():
-        #     print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
-        #           ' -->grad_value:', parameters.grad)
-        # for name, parameters in self.backbone2.named_parameters():
-        #     print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
-        #           ' -->grad_value:', parameters.grad)
-        # for name, parameters in self.head.named_parameters():
-        #     print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
-        #           ' -->grad_value:', parameters.grad)
+        for name, parameters in self.backbone1.named_parameters():
+            print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
+                  ' -->grad_value:', parameters.grad)
+        for name, parameters in self.backbone2.named_parameters():
+            print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
+                  ' -->grad_value:', parameters.grad)
+        for name, parameters in self.head.named_parameters():
+            print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
+                  ' -->grad_value:', parameters.grad)
         """Defines the computation performed at every call when training."""
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
@@ -37,6 +38,7 @@ class VideoTextMatcher(BaseMatcher):
 
         return loss
 
+    @auto_fp16()
     def forward_test(self, imgs, texts_item):
         """Defines the computation performed at every call when training."""
         N = imgs.shape[0]

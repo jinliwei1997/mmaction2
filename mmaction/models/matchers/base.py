@@ -34,7 +34,7 @@ class BaseMatcher(nn.Module, metaclass=ABCMeta):
 
         self.init_weights()
 
-        self.fp16_enabled = False
+        self.fp16_enabled = True
 
     def init_weights(self):
         """Initialize the model network weights."""
