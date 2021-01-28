@@ -22,7 +22,7 @@ dataset_type = 'VideoTextDataset'
 data_root = '/mnt/lustre/jinliwei/usv_ocr'
 data_root_val = '/mnt/lustre/jinliwei/usv_ocr'
 ann_file_train = '/mnt/lustre/jinliwei/annotation/usv_train_list_frame_text'
-ann_file_val = '/mnt/lustre/jinliwei/annotation/usv_val_list_frame_textn'
+ann_file_val = '/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text'
 ann_file_test = '/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
