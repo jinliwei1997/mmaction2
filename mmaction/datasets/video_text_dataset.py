@@ -22,12 +22,12 @@ class VideoTextDataset(BaseDataset):
 
     .. code-block:: txt
 
-        some/directory-1 163 some/text1 3.4
-        some/directory-2 122 some/text2 555.1
-        some/directory-3 258 some/text3 642.0
-        some/directory-4 234 some/text4 147
-        some/directory-5 295 some/text5 1.2
-        some/directory-6 121 some/text6 3.4
+        some/directory-1 163 some/text1
+        some/directory-2 122 some/text2
+        some/directory-3 258 some/text3
+        some/directory-4 234 some/text4
+        some/directory-5 295 some/text5
+        some/directory-6 121 some/text6
 
 
     Args:
@@ -112,7 +112,6 @@ class VideoTextDataset(BaseDataset):
                 # idx for text annotation path
                 video_info['text_path'] = line_split[idx]
                 idx += 1
-                video_info['video_length'] = float(line_split[idx])
                 video_infos.append(video_info)
 
         return video_infos

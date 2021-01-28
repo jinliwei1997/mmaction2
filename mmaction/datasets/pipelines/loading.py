@@ -1651,7 +1651,7 @@ class LoadProposals:
 class LoadTexts:
     """Loading Texts
 
-    Required keys are "text_path", "total_frames", "video_length", added or modified keys are 'texts', 'texts_locations'.
+    Required keys are "text_path", "total_frames", added or modified keys are 'texts', 'texts_locations'.
 
     Args:
         sample_mode (str): 'number' or 'ratio'.
@@ -1677,8 +1677,6 @@ class LoadTexts:
         """
 
         total_frames = results["total_frames"]
-        video_length = results["video_length"]
-        fps = total_frames / video_length
 
         fin = open(results["text_path"],'r')
         lines = fin.readlines()
@@ -1704,11 +1702,9 @@ class LoadTexts:
             p = i * 3 + 1
             assert int(lines[p].rstrip()) == i
             sentence = lines[p+1].rstrip()
-            st,ed = map(float,lines[p+2].rstrip().split())
-            st_frame = int(st * fps)
-            ed_frame = int(ed * fps)
+            st,ed = map(int,lines[p+2].rstrip().split())
             texts.append(sentence)
-            texts_locations.append(np.array([st_frame,ed_frame]))
+            texts_locations.append(np.array([st,ed]))
 
         results["texts"] = texts
         results["texts_locations"] = texts_locations
@@ -1719,7 +1715,7 @@ class LoadTexts:
 class TextTokenize:
     """Tokenize Texts.
 
-    Required keys are "texts", added or modified keys are 'input_ids', 'token_type_ids', 'attention_mask'.
+    Required keys are "texts", added or modified keys are 'texts_item': {'input_ids': xxx, 'token_type_ids': xxx, 'attention_mask': xxx}.
 
     Args:
         tokenizer_dir
