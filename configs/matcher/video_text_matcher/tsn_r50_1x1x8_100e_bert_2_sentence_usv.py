@@ -126,11 +126,11 @@ log_config = dict(
     interval=1,
     hooks=[
         dict(type='TextLoggerHook'),
-        # dict(type='TensorboardLoggerHook')
+        dict(type='TensorboardLoggerHook')
     ])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = './work_dirs/usv_matcher/'
 load_from = None
-resume_from = None
+resume_from = '/mnt/lustre/jinliwei/mmaction2/work_dirs/usv_matcher/epoch_20.pth'
 workflow = [('train', 1)]
