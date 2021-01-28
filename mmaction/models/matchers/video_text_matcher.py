@@ -14,7 +14,12 @@ class VideoTextMatcher(BaseMatcher):
         return self.forward_test(imgs, texts_item)
 
     def forward_train(self, imgs, texts_item):
-
+        for name, parameters in self.backbone1.named_parameters():
+            print(name, ':', parameters.size())
+        for name, parameters in self.backbone2.named_parameters():
+            print(name, ':', parameters.size())
+        for name, parameters in self.head.named_parameters():
+            print(name, ':', parameters.size())
         """Defines the computation performed at every call when training."""
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
