@@ -2,6 +2,7 @@ from transformers import BertTokenizer
 from transformers import AutoModel
 from transformers import pipeline
 import torch.nn as nn
+import torch
 
 from ...utils import get_root_logger
 from ..registry import BACKBONES
