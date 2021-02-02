@@ -15,15 +15,15 @@ class VideoTextMatcher(BaseMatcher):
 
     @auto_fp16()
     def forward_train(self, imgs, texts_item):
-        # for name, parameters in self.backbone1.named_parameters():
-        #     print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
-        #           ' -->grad_value:', parameters.grad)
-        # for name, parameters in self.backbone2.named_parameters():
-        #     print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
-        #           ' -->grad_value:', parameters.grad)
-        # for name, parameters in self.head.named_parameters():
-        #     print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
-        #           ' -->grad_value:', parameters.grad)
+        for name, parameters in self.backbone1.named_parameters():
+            print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
+                  ' -->grad_value:', parameters.grad)
+        for name, parameters in self.backbone2.named_parameters():
+            print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
+                  ' -->grad_value:', parameters.grad)
+        for name, parameters in self.head.named_parameters():
+            print('-->name:', name, '-->grad_requirs:', parameters.requires_grad, \
+                  ' -->grad_value:', parameters.grad)
         """Defines the computation performed at every call when training."""
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
