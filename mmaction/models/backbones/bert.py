@@ -29,7 +29,7 @@ class BERT(nn.Module):
         else:
             raise TypeError('pretrained must be a str')
 
-    def forward(self, x, freeze):
+    def forward(self, x):
 
         if self.freeze:
             with torch.no_grad():
