@@ -47,7 +47,9 @@ class ContrastiveHead(nn.Module):
     def init_weights(self):
         """Initiate the parameters from scratch."""
         normal_init(self.img_fc, std=self.init_std)
-        normal_init(self.text_emb, std=self.init_std)
+        for layer in self.text_emb:
+            if isinstance(layer, nn.Linear):
+            normal_init(layer, std=self.init_std)
 
     def _create_buffer(N, T):
 
