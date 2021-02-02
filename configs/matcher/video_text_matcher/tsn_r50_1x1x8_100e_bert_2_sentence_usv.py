@@ -17,7 +17,6 @@ model = dict(
         temperature=0.1,
         init_std=0.01),
     fp16_enabled=True,
-    find_unused_parameters=True
 )
 train_cfg = None
 test_cfg = None
@@ -135,3 +134,4 @@ work_dir = './work_dirs/usv_matcher_2021_2_2/'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
+find_unused_parameters=True
