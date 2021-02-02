@@ -115,7 +115,8 @@ data = dict(
         ann_file=ann_file_val,
         data_prefix=data_root_val,
         pipeline=test_pipeline))
-optimizer = dict(type='SGD', lr=0.03, weight_decay=0.0001, momentum=0.9)
+optimizer = dict(type='SGD', lr=0.03, momentum=0.9, weight_decay=0.0001)
+optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 lr_config = dict(policy='CosineAnnealing', min_lr=0.)
 total_epochs = 200
 checkpoint_config = dict(interval=5)
