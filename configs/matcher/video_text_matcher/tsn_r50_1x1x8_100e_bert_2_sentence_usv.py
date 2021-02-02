@@ -13,7 +13,7 @@ model = dict(
         type='ContrastiveHead',
         img_in_channels=2048,
         text_in_channels=768,
-        hidden_state_channels=768,
+        hidden_state_channels=256,
         temperature=0.1,
         init_std=0.01),
     fp16_enabled=False
@@ -115,10 +115,9 @@ data = dict(
         ann_file=ann_file_val,
         data_prefix=data_root_val,
         pipeline=test_pipeline))
-optimizer = dict(type='SGD', lr=0.025, momentum=0.9, weight_decay=0.0001)
-optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
-lr_config = dict(policy='step', step=[40, 80])
-total_epochs = 100
+optimizer = dict(type='SGD', lr=0.03, weight_decay=0.0001, momentum=0.9)
+lr_config = dict(policy='CosineAnnealing', min_lr=0.)
+total_epochs = 200
 checkpoint_config = dict(interval=5)
 evaluation = dict(
     interval=1, metrics=['top_k_accuracy', 'mean_class_accuracy'], topk=(1, 5))
@@ -130,7 +129,7 @@ log_config = dict(
     ])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/usv_matcher/'
+work_dir = './work_dirs/usv_matcher_2021_2_2/'
 load_from = None
-resume_from = '/mnt/lustre/jinliwei/mmaction2/work_dirs/usv_matcher/epoch_20.pth'
+resume_from = None
 workflow = [('train', 1)]

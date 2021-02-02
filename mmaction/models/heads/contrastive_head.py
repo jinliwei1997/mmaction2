@@ -39,7 +39,7 @@ class ContrastiveHead(nn.Module):
         self.temperature = temperature
 
         self.img_fc =  nn.Linear(self.img_in_channels, self.hidden_state_channels)
-        self.text_fc = nn.Linear(self.text_in_channels, self.hidden_state_channels)
+        self.text_emb = nn.Sequential(nn.Linear(text_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
 
@@ -47,7 +47,7 @@ class ContrastiveHead(nn.Module):
     def init_weights(self):
         """Initiate the parameters from scratch."""
         normal_init(self.img_fc, std=self.init_std)
-        normal_init(self.text_fc, std=self.init_std)
+        normal_init(self.text_emb, std=self.init_std)
 
     def _create_buffer(N, T):
 
@@ -76,14 +76,14 @@ class ContrastiveHead(nn.Module):
         x = x.view(x.size(0), -1)
         x_hidden = self.img_fc(x)
 
-        y_hidden = self.text_fc(y)
+        y_hidden = self.text_emb(y)
 
         # Similarity Matrix
         x_hidden = x_hidden / (torch.norm(x_hidden, p=2, dim=1, keepdim=True) + 1e-10)
         y_hidden = y_hidden / (torch.norm(y_hidden, p=2, dim=1, keepdim=True) + 1e-10)
         s = torch.matmul(x_hidden, y_hidden.permute(1, 0)) # (N) * (N * T)
         s = s.view(N, N, -1) # N * N * T
-
+        print(N)
         # MIL-NCE loss
         nominator = s * torch.eye(s.shape[0])[:, :, None].cuda()
         nominator = nominator.sum(dim=1)
