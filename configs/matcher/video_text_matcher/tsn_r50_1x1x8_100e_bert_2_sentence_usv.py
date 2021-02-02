@@ -16,7 +16,7 @@ model = dict(
         hidden_state_channels=256,
         temperature=0.1,
         init_std=0.01),
-    fp16_enabled=True,
+    fp16_enabled=False,
 )
 train_cfg = None
 test_cfg = None
