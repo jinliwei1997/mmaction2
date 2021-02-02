@@ -12,9 +12,11 @@ class BERT(nn.Module):
     """BERT backbone.
     """
     def __init__(self,
-                 pretrained=None):
+                 pretrained = None,
+                 freeze = True):
         super(BERT, self).__init__()
         self.pretrained = pretrained
+        self.freeze = freeze
 
     def init_weights(self):
         """Initiate the parameters either from existing checkpoint or from
@@ -27,5 +29,11 @@ class BERT(nn.Module):
         else:
             raise TypeError('pretrained must be a str')
 
-    def forward(self, x):
-        return self.model(**x).pooler_output
+    def forward(self, x, freeze):
+
+        if self.freeze:
+            with torch.no_grad():
+                text_out = self.model(**x).pooler_output
+        else :
+            text_out = self.model(**x).pooler_output
+        return text_out

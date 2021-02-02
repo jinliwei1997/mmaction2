@@ -85,7 +85,7 @@ class ContrastiveHead(nn.Module):
         y_hidden = y_hidden / (torch.norm(y_hidden, p=2, dim=1, keepdim=True) + 1e-10)
         s = torch.matmul(x_hidden, y_hidden.permute(1, 0)) # (N) * (N * T)
         s = s.view(N, N, -1) # N * N * T
-        print(N)
+
         # MIL-NCE loss
         nominator = s * torch.eye(s.shape[0])[:, :, None].cuda()
         nominator = nominator.sum(dim=1)
