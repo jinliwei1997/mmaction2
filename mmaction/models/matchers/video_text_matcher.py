@@ -1,10 +1,78 @@
 from ..registry import MATCHERS
 from .base import BaseMatcher
-from mmcv.runner import auto_fp16
+import torch.nn as nn
+from .. import builder
+from mmcv.cnn import normal_init
 
 @MATCHERS.register_module()
 class VideoTextMatcher(BaseMatcher):
-    """Audio recognizer model framework."""
+    """VideoTextMatcher model framework."""
+    def __init__(self,
+        backbone1,
+        backbone2,
+        head,
+        neck=None,
+        train_cfg=None,
+        test_cfg=None,
+        fp16_enabled=False,
+        img_in_channels = 2048,
+        text_in_channels = 768,
+        hidden_state_channels = 256,
+        init_std = 0.01,
+        temperature = 0.1):
+        super(VideoTextMatcher, self).__init__()
+        self.backbone1 = builder.build_backbone(backbone1)
+        self.backbone2 = builder.build_backbone(backbone2)
+        if neck is not None:
+            self.neck = builder.build_neck(neck)
+        else:
+            self.neck = None
+        self.head = builder.build_head(head)
+
+        self.train_cfg = train_cfg
+        self.test_cfg = test_cfg
+
+        # aux_info is the list of tensor names beyond 'imgs' and 'label' which
+        # will be used in train_step and val_step, data_batch should contain
+        # these tensors
+        self.aux_info = []
+        if train_cfg is not None and 'aux_info' in train_cfg:
+            self.aux_info = train_cfg['aux_info']
+
+        self.init_weights()
+        self.fp16_enabled = fp16_enabled
+        if fp16_enabled is True:
+            self.backbone1 = self.backbone1.half()
+            self.backbone2 = self.backbone2.half()
+            if neck is not None:
+                self.neck = self.neck.half()
+            self.head = self.head.half()
+        self.img_in_channels = img_in_channels
+        self.text_in_channels = text_in_channels
+        self.hidden_state_channels = hidden_state_channels
+        self.init_std = init_std
+
+        self.temperature = temperature
+
+        self.img_mlp = nn.Sequential(nn.Linear(img_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
+        self.text_mlp = nn.Sequential(nn.Linear(text_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
+
+        self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
+
+
+    def init_weights(self):
+        """Initialize the model network weights."""
+        self.backbone1.init_weights()
+        self.backbone2.init_weights()
+        self.head.init_weights()
+        if self.neck is not None:
+            self.neck.init_weights()
+        for layer in self.img_mlp:
+            if isinstance(layer, nn.Linear):
+                normal_init(layer, std=self.init_std)
+        for layer in self.text_mlp:
+            if isinstance(layer, nn.Linear):
+                normal_init(layer, std=self.init_std)
 
     def forward(self, imgs, texts_item, return_loss=True):
         """Define the computation performed at every call."""
@@ -13,41 +81,52 @@ class VideoTextMatcher(BaseMatcher):
 
         return self.forward_test(imgs, texts_item)
 
-    @auto_fp16()
+    def extract_v_feat(self, imgs, N):
+        x = self.backbone1(imgs)
+        if self.avg_pool is not None:
+            x = self.avg_pool(x)
+        x = x.reshape((N, -1) + x.shape[1:])
+        x = self.consensus(x)
+        x = x.squeeze(1)
+        # dropout
+        x = x.view(x.size(0), -1)
+        x = self.img_mlp(x)
+        return x
+
+    def extract_t_feat(self, texts, N):
+        x = self.backbone2(texts)
+        x = self.text_mlp(texts)
+        return x
+
     def forward_train(self, imgs, texts_item):
-        # for name, parameters in self.backbone1.named_parameters():
-        #     print('-->name:', name, '-->grad_requirs:', parameters.requires_grad)
-        # for name, parameters in self.backbone2.named_parameters():
-        #     print('-->name:', name, '-->grad_requirs:', parameters.requires_grad)
-        # for name, parameters in self.head.named_parameters():
-        #     print('-->name:', name, '-->grad_requirs:', parameters.requires_grad)
-        """Defines the computation performed at every call when training."""
+
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
-        x = self.backbone1(imgs)
+        vis_feat = self.extract_v_feat(imgs,N)
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
-        y = self.backbone2(texts_item)
-        if self.neck is not None:
-            x, y = self.neck(x, y)
+        text_feat = self.extract_t_feat(texts_item)
 
-        loss = self.head(x, y, N)
+        if self.neck is not None:
+            vis_feat, text_feat = self.neck(vis_feat, text_feat)
+
+        loss = self.head(vis_feat,text_feat, N)
 
         return loss
 
-    @auto_fp16()
     def forward_test(self, imgs, texts_item):
         """Defines the computation performed at every call when training."""
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
-        x = self.backbone1(imgs)
+        vis_feat = self.extract_v_feat(imgs, N)
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
-        y = self.backbone2(texts_item)
-        if self.neck is not None:
-            x, y = self.neck(x, y)
+        text_feat = self.extract_t_feat(texts_item)
 
-        loss = self.head(x, y, N)
+        if self.neck is not None:
+            vis_feat, text_feat = self.neck(vis_feat, text_feat)
+
+        loss = self.head(vis_feat, text_feat, N)
 
         return loss
 

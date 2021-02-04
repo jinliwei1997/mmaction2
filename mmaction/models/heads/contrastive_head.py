@@ -1,9 +1,8 @@
 import torch.nn as nn
 import torch
-from mmcv.cnn import normal_init
+import torch.distributed as dist
 
 from ..registry import HEADS
-from .base import AvgConsensus, BaseHead
 
 @HEADS.register_module
 class ContrastiveHead(nn.Module):
@@ -16,75 +15,32 @@ class ContrastiveHead(nn.Module):
     """
 
     def __init__(self,
-        img_in_channels,
-        text_in_channels,
-        hidden_state_channels,
-        init_std,
-        consensus=dict(type='AvgConsensus', dim=1),
         temperature=0.1):
         super(ContrastiveHead, self).__init__()
-        self.img_in_channels = img_in_channels
-        self.text_in_channels = text_in_channels
-        self.hidden_state_channels = hidden_state_channels
-        self.init_std = init_std
-
-        consensus_ = consensus.copy()
-
-        consensus_type = consensus_.pop('type')
-        if consensus_type == 'AvgConsensus':
-            self.consensus = AvgConsensus(**consensus_)
-        else:
-            self.consensus = None
-
         self.temperature = temperature
-
-        self.img_fc =  nn.Linear(self.img_in_channels, self.hidden_state_channels)
-        self.text_emb = nn.Sequential(nn.Linear(text_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
-
-        self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
 
 
     def init_weights(self):
         """Initiate the parameters from scratch."""
-        normal_init(self.img_fc, std=self.init_std)
-        for layer in self.text_emb:
-            if isinstance(layer, nn.Linear):
-                normal_init(layer, std=self.init_std)
+        pass
 
-    def _create_buffer(N, T):
 
-        pos_ind = (torch.arange(N, dtype=torch.long).unsqueeze(1).repeat(1, T).view(-1, 1).squeeze().cuda(),
-                  torch.arange(N * T).cuda())
-        neg_mask = torch.ones((N, N * T), dtype=torch.uint8).cuda()
-        neg_mask[pos_ind] = 0
-        return pos_ind, neg_mask
-
-    def forward(self, x, y, N):
+    def forward(self, x, y):
         """Forward head.
 
         Args:
-            x (Tensor): [N * num_segs, img_in_channels, 7, 7]
-            y (Tensor): [N * text_num_per_video(T), text_in_channels]
+            x (Tensor): [N * 256]
+            y (Tensor): [N * text_num_per_video(T), 256]
             N : batch_size
         Returns:
             dict[str, Tensor]: A dictionary of loss components.
         """
-        if self.avg_pool is not None:
-            x = self.avg_pool(x)
-        x = x.reshape((N, -1) + x.shape[1:])
-        x = self.consensus(x)
-        x = x.squeeze(1)
-        # dropout
-        x = x.view(x.size(0), -1)
-        x_hidden = self.img_fc(x)
-
-        y_hidden = self.text_emb(y)
 
         # Similarity Matrix
-        x_hidden = x_hidden / (torch.norm(x_hidden, p=2, dim=1, keepdim=True) + 1e-10)
-        y_hidden = y_hidden / (torch.norm(y_hidden, p=2, dim=1, keepdim=True) + 1e-10)
-        s = torch.matmul(x_hidden, y_hidden.permute(1, 0)) # (N) * (N * T)
-        s = s.view(N, N, -1) # N * N * T
+        x = concat_all_gather(x)
+        y = concat_all_gather(y)
+        s = torch.matmul(x, y.permute(1, 0)) # (N) * (N * T)
+        s = s.view(x.shape[0], x.shape[0], -1) # N * N * T
 
         # MIL-NCE loss
         nominator = s * torch.eye(s.shape[0])[:, :, None].cuda()
@@ -97,3 +53,16 @@ class ContrastiveHead(nn.Module):
         losses['loss'] = torch.mean(denominator - nominator)
 
         return losses
+
+@torch.no_grad()
+def concat_all_gather(tensor):
+    """
+    Performs all_gather operation on the provided tensors.
+    *** Warning ***: dist.all_gather has no gradient.
+    """
+    tensors_gather = [torch.ones_like(tensor)
+                      for _ in range(torch.distributed.get_world_size())]
+    dist.all_gather(tensors_gather, tensor, async_op=False)
+
+    output = torch.cat(tensors_gather, dim=0)
+    return output
