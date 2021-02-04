@@ -30,15 +30,10 @@ class VideoTextMatcher(BaseMatcher):
         self.text_mlp = nn.Sequential(nn.Linear(text_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-        self.init_weights()
+        self.init_mlp_weights()
 
-    def init_weights(self):
+    def init_mlp_weights(self):
         """Initialize the model network weights."""
-        self.backbone1.init_weights()
-        self.backbone2.init_weights()
-        self.head.init_weights()
-        if self.neck is not None:
-            self.neck.init_weights()
         for layer in self.img_mlp:
             if isinstance(layer, nn.Linear):
                 normal_init(layer, std=self.init_std)
