@@ -60,7 +60,7 @@ class VideoTextMatcher(BaseMatcher):
         x = self.img_mlp(x)
         return x
 
-    def extract_t_feat(self, texts, N):
+    def extract_t_feat(self, texts):
         x = self.backbone2(texts)
         x = self.text_mlp(texts)
         return x
