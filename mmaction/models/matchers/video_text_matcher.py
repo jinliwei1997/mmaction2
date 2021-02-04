@@ -18,41 +18,13 @@ class VideoTextMatcher(BaseMatcher):
         img_in_channels = 2048,
         text_in_channels = 768,
         hidden_state_channels = 256,
-        init_std = 0.01,
-        temperature = 0.1):
-        super(VideoTextMatcher, self).__init__()
-        self.backbone1 = builder.build_backbone(backbone1)
-        self.backbone2 = builder.build_backbone(backbone2)
-        if neck is not None:
-            self.neck = builder.build_neck(neck)
-        else:
-            self.neck = None
-        self.head = builder.build_head(head)
+        init_std = 0.01):
+        super(VideoTextMatcher, self).__init__(backbone1,backbone2,head,train_cfg,test_cfg,fp16_enabled)
 
-        self.train_cfg = train_cfg
-        self.test_cfg = test_cfg
-
-        # aux_info is the list of tensor names beyond 'imgs' and 'label' which
-        # will be used in train_step and val_step, data_batch should contain
-        # these tensors
-        self.aux_info = []
-        if train_cfg is not None and 'aux_info' in train_cfg:
-            self.aux_info = train_cfg['aux_info']
-
-        self.init_weights()
-        self.fp16_enabled = fp16_enabled
-        if fp16_enabled is True:
-            self.backbone1 = self.backbone1.half()
-            self.backbone2 = self.backbone2.half()
-            if neck is not None:
-                self.neck = self.neck.half()
-            self.head = self.head.half()
         self.img_in_channels = img_in_channels
         self.text_in_channels = text_in_channels
         self.hidden_state_channels = hidden_state_channels
         self.init_std = init_std
-
-        self.temperature = temperature
 
         self.img_mlp = nn.Sequential(nn.Linear(img_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
         self.text_mlp = nn.Sequential(nn.Linear(text_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))

@@ -11,12 +11,13 @@ model = dict(
     ),
     head=dict(
         type='ContrastiveHead',
-        img_in_channels=2048,
-        text_in_channels=768,
-        hidden_state_channels=256,
         temperature=0.1,
-        init_std=0.01),
+    ),
     fp16_enabled=False,
+    img_in_channels=2048,
+    text_in_channels=768,
+    hidden_state_channels=256,
+    init_std=0.01
 )
 train_cfg = None
 test_cfg = None
