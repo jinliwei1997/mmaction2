@@ -53,7 +53,7 @@ class VideoTextMatcher(BaseMatcher):
         if self.avg_pool is not None:
             x = self.avg_pool(x)
         x = x.reshape((N, -1) + x.shape[1:])
-        x = self.consensus(x)
+        x = x.mean(dim=1, keepdim=True)
         x = x.squeeze(1)
         # dropout
         x = x.view(x.size(0), -1)
