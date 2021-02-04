@@ -39,6 +39,8 @@ class ContrastiveHead(nn.Module):
         # Similarity Matrix
         x = concat_all_gather(x)
         y = concat_all_gather(y)
+        print(x.shape)
+        print(y.shape)
         s = torch.matmul(x, y.permute(1, 0)) # (N) * (N * T)
         s = s.view(x.shape[0], x.shape[0], -1) # N * N * T
 

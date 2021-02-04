@@ -77,7 +77,7 @@ class VideoTextMatcher(BaseMatcher):
         if self.neck is not None:
             vis_feat, text_feat = self.neck(vis_feat, text_feat)
 
-        loss = self.head(vis_feat,text_feat, N)
+        loss = self.head(vis_feat,text_feat)
 
         return loss
 
@@ -93,7 +93,7 @@ class VideoTextMatcher(BaseMatcher):
         if self.neck is not None:
             vis_feat, text_feat = self.neck(vis_feat, text_feat)
 
-        loss = self.head(vis_feat, text_feat, N)
+        loss = self.head(vis_feat, text_feat)
 
         return loss
 
