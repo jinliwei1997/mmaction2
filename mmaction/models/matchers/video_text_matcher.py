@@ -30,7 +30,7 @@ class VideoTextMatcher(BaseMatcher):
         self.text_mlp = nn.Sequential(nn.Linear(text_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-
+        self.init_weights()
 
     def init_weights(self):
         """Initialize the model network weights."""
