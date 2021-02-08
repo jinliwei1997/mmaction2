@@ -30,8 +30,7 @@ train_pipeline = [
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
     dict(
         type='RawFrameDecode',
-        io_backend='memcached',
-        **mc_cfg),
+        ),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
