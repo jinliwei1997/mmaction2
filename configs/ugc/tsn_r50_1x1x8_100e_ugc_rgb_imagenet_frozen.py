@@ -121,3 +121,4 @@ work_dir = './work_dirs/tsn_r50_1x1x8_100e_ugc_rgb_imagenet_frozen/'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
+find_unused_parameters=True
