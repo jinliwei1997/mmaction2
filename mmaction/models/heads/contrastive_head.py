@@ -44,14 +44,14 @@ class ContrastiveHead(nn.Module):
 
         # vt_loss
         vt_nominator = torch.logsumexp(l_pos, dim=1)
-        vt_logits = torch.cat(l_pos, vt_l_neg, dim=1) # [N, T + t_queue_len]
+        vt_logits = torch.cat((l_pos, vt_l_neg), dim=1) # [N, T + t_queue_len]
         vt_denominator = torch.logsumexp(vt_logits, dim=1)
 
         losses['vt_loss'] = torch.mean(vt_denominator - vt_nominator)
 
         # tv_loss
         tv_nominator = torch.logsumexp(l_pos.view(-1, 1), dim=1) # [N * T]
-        tv_logits = torch.cat(l_pos.view(-1, 1), tv_l_neg, dim=1) # [N * T, 1 + v_queue_len]
+        tv_logits = torch.cat((l_pos.view(-1, 1), tv_l_neg), dim=1) # [N * T, 1 + v_queue_len]
         tv_denominator = torch.logsumexp(tv_logits, dim=1)
 
         losses['tv_loss'] = torch.mean(tv_denominator - tv_nominator)

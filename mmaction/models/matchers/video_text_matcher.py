@@ -17,19 +17,19 @@ class VideoTextMatcher(BaseMatcher):
         train_cfg=None,
         test_cfg=None,
         fp16_enabled=False,
-        img_in_channels = 2048,
-        text_in_channels = 768,
+        img_feat_dim = 2048,
+        text_feat_dim = 768,
         feature_dim = 256,
         init_std = 0.01):
         super(VideoTextMatcher, self).__init__(backbone1,backbone2,head,train_cfg,test_cfg,fp16_enabled)
 
-        self.img_in_channels = img_in_channels
-        self.text_in_channels = text_in_channels
+        self.img_feat_dim = img_feat_dim
+        self.text_feat_dim = text_feat_dim
         self.feature_dim = feature_dim
         self.init_std = init_std
 
-        self.img_mlp = nn.Sequential(nn.Linear(img_in_channels, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim))
-        self.text_mlp = nn.Sequential(nn.Linear(text_in_channels, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim))
+        self.img_mlp = nn.Sequential(nn.Linear(img_feat_dim, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim))
+        self.text_mlp = nn.Sequential(nn.Linear(text_feat_dim, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim))
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.init_mlp_weights()

@@ -16,8 +16,8 @@ model = dict(
     ),
     queue_len=65536,
     fp16_enabled=False,
-    img_in_channels=2048,
-    text_in_channels=768,
+    img_feat_dim=2048,
+    text_feat_dim=768,
     feature_dim=256,
     init_std=0.01
 )
