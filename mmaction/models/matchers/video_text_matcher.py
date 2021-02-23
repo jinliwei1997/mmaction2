@@ -189,7 +189,7 @@ class VideoTextMatcher(BaseMatcher):
         losses = self(imgs, texts_item)
 
         loss, log_vars = self._parse_losses(losses)
-        log_vars['acc'] = 0
+        # log_vars['acc'] = 0
         outputs = dict(
             loss=loss,
             log_vars=log_vars,

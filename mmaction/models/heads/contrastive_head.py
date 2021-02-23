@@ -50,13 +50,14 @@ class ContrastiveHead(nn.Module):
 
         losses['vt_loss'] = torch.mean(vt_denominator - vt_nominator)
 
+        """
         # tv_loss
         tv_nominator = torch.logsumexp(l_pos.view(-1, 1), dim=1) # [N * T]
         tv_logits = torch.cat((l_pos.view(-1, 1), tv_l_neg), dim=1) # [N * T, 1 + v_queue_len]
         tv_denominator = torch.logsumexp(tv_logits, dim=1)
 
         losses['tv_loss'] = torch.mean(tv_denominator - tv_nominator)
-
+        """
 
         return losses
 
