@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch
 from .. import builder
 from mmcv.cnn import normal_init
+import torch.distributed as dist
 
 @MATCHERS.register_module()
 class VideoTextMatcher(BaseMatcher):
@@ -190,8 +191,11 @@ class VideoTextMatcher(BaseMatcher):
 
         loss, log_vars = self._parse_losses(losses)
 
-        for key in recall:
-            log_vars[key] = recall[key]
+        for key, value in recall:
+            if dist.is_available() and dist.is_initialized():
+                value = value.data.clone()
+                dist.all_reduce(value.div_(dist.get_world_size()))
+            log_vars[key] = value.item()
 
         outputs = dict(
             loss=loss,
