@@ -25,45 +25,37 @@ class ContrastiveHead(nn.Module):
         pass
 
 
-    def forward(self, x, y):
+    def forward(self, l_pos, vt_l_neg, tv_l_neg):
         """Forward head.
 
         Args:
-            x (Tensor): [N * 256]
-            y (Tensor): [N * text_num_per_video(T), 256]
-            N : batch_size
+            l_pos: positive logits: [N , T]
+            vt_l_neg: V->T negative logits: [N , t_queue_len]
+            tv_l_neg: T->V negative logits: [N * T , v_queue_len]
+
         Returns:
             dict[str, Tensor]: A dictionary of loss components.
         """
-
-        # Similarity Matrix
-        x = concat_all_gather(x)
-        y = concat_all_gather(y)
-        print(x.shape)
-        print(y.shape)
-        s = torch.matmul(x, y.permute(1, 0)) # (N) * (N * T)
-        s = s.view(x.shape[0], x.shape[0], -1) # N * N * T
-
-        # MIL-NCE loss
-        nominator = s * torch.eye(s.shape[0])[:, :, None].cuda()
-        nominator = nominator.sum(dim=1)
-        nominator = torch.logsumexp(nominator, dim=1)
-        denominator = torch.cat((s, s.permute(1, 0, 2)), dim=1).view(s.shape[0], -1)
-        denominator = torch.logsumexp(denominator, dim=1)
+        l_pos /= self.temperature
+        vt_l_neg /= self.temperature
+        tv_l_neg /= self.temperature
 
         losses = dict()
-        losses['loss'] = torch.mean(denominator - nominator)
+
+        # vt_loss
+        vt_nominator = torch.logsumexp(l_pos, dim=1)
+        vt_logits = torch.cat(l_pos, vt_l_neg, dim=1) # [N, T + t_queue_len]
+        vt_denominator = torch.logsumexp(vt_logits, dim=1)
+
+        losses['vt_loss'] = torch.mean(vt_denominator - vt_nominator)
+
+        # tv_loss
+        tv_nominator = torch.logsumexp(l_pos.view(-1, 1), dim=1) # [N * T]
+        tv_logits = torch.cat(l_pos.view(-1, 1), tv_l_neg, dim=1) # [N * T, 1 + v_queue_len]
+        tv_denominator = torch.logsumexp(tv_logits, dim=1)
+
+        losses['tv_loss'] = torch.mean(tv_denominator - tv_nominator)
+
 
         return losses
 
-def concat_all_gather(tensor):
-    """
-    Performs all_gather operation on the provided tensors.
-    *** Warning ***: dist.all_gather has no gradient.
-    """
-    tensors_gather = [torch.ones_like(tensor)
-                      for _ in range(torch.distributed.get_world_size())]
-    dist.all_gather(tensors_gather, tensor, async_op=False)
-
-    output = torch.cat(tensors_gather, dim=0)
-    return output

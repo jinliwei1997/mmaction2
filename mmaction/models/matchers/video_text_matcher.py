@@ -1,6 +1,7 @@
 from ..registry import MATCHERS
 from .base import BaseMatcher
 import torch.nn as nn
+import torch
 from .. import builder
 from mmcv.cnn import normal_init
 
@@ -11,26 +12,40 @@ class VideoTextMatcher(BaseMatcher):
         backbone1,
         backbone2,
         head,
+        queue_len=65536,
         neck=None,
         train_cfg=None,
         test_cfg=None,
         fp16_enabled=False,
         img_in_channels = 2048,
         text_in_channels = 768,
-        hidden_state_channels = 256,
+        feature_dim = 256,
         init_std = 0.01):
         super(VideoTextMatcher, self).__init__(backbone1,backbone2,head,train_cfg,test_cfg,fp16_enabled)
 
         self.img_in_channels = img_in_channels
         self.text_in_channels = text_in_channels
-        self.hidden_state_channels = hidden_state_channels
+        self.feature_dim = feature_dim
         self.init_std = init_std
 
-        self.img_mlp = nn.Sequential(nn.Linear(img_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
-        self.text_mlp = nn.Sequential(nn.Linear(text_in_channels, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
+        self.img_mlp = nn.Sequential(nn.Linear(img_in_channels, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim))
+        self.text_mlp = nn.Sequential(nn.Linear(text_in_channels, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim))
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.init_mlp_weights()
+
+        self.queue_len = queue_len
+
+        # create v_queue and t_queue
+        self.register_buffer("v_queue", torch.randn(feature_dim, queue_len))
+        self.v_queue = nn.functional.normalize(self.v_queue, dim=0)
+        self.register_buffer("v_queue_ptr", torch.zeros(1, dtype=torch.long))
+
+        self.register_buffer("t_queue", torch.randn(feature_dim, queue_len))
+        self.t_queue = nn.functional.normalize(self.t_queue, dim=0)
+        self.register_buffer("t_queue_ptr", torch.zeros(1, dtype=torch.long))
+
+
 
     def init_mlp_weights(self):
         """Initialize the model network weights."""
@@ -41,14 +56,7 @@ class VideoTextMatcher(BaseMatcher):
             if isinstance(layer, nn.Linear):
                 normal_init(layer, std=self.init_std)
 
-    def forward(self, imgs, texts_item, return_loss=True):
-        """Define the computation performed at every call."""
-        if return_loss:
-            return self.forward_train(imgs, texts_item)
-
-        return self.forward_test(imgs, texts_item)
-
-    def extract_v_feat(self, imgs, N):
+    def encoder_v(self, imgs, N):
         x = self.backbone1(imgs)
         if self.avg_pool is not None:
             x = self.avg_pool(x)
@@ -60,45 +68,89 @@ class VideoTextMatcher(BaseMatcher):
         x = self.img_mlp(x)
         return x
 
-    def extract_t_feat(self, texts):
+    def encoder_t(self, texts):
         x = self.backbone2(texts)
         x = self.text_mlp(x)
         return x
+
+    @torch.no_grad()
+    def _dequeue_and_enqueue_v(self, keys):
+        """Update v_queue."""
+        # gather keys before updating v_queue
+        keys = concat_all_gather(keys)
+
+        batch_size = keys.shape[0]
+
+        ptr = int(self.v_queue_ptr)
+        assert self.queue_len % batch_size == 0  # for simplicity
+        
+        # replace the keys at ptr (dequeue and enqueue)
+        self.v_queue[:, ptr:ptr + batch_size] = keys.transpose(0, 1)
+        ptr = (ptr + batch_size) % self.queue_len  # move pointer
+
+        self.v_queue_ptr[0] = ptr
+
+    @torch.no_grad()
+    def _dequeue_and_enqueue_t(self, keys):
+        """Update v_queue."""
+        # gather keys before updating v_queue
+        keys = concat_all_gather(keys)
+
+        batch_size = keys.shape[0]
+
+        ptr = int(self.t_queue_ptr)
+        assert self.queue_len % batch_size == 0  # for simplicity
+
+        # replace the keys at ptr (dequeue and enqueue)
+        self.t_queue[:, ptr:ptr + batch_size] = keys.transpose(0, 1)
+        ptr = (ptr + batch_size) % self.queue_len  # move pointer
+
+        self.t_queue_ptr[0] = ptr
 
     def forward_train(self, imgs, texts_item):
 
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
-        vis_feat = self.extract_v_feat(imgs,N)
+        v_feat = self.encoder_v(imgs, N) # [N , C]
+        v_feat = nn.functional.normalize(v_feat, dim=1)
+
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
-        text_feat = self.extract_t_feat(texts_item)
+        t_feat = self.encoder_t(texts_item) # [N * text_num_per_video (T), C]
+        t_feat = nn.functional.normalize(t_feat, dim=1)
 
         if self.neck is not None:
-            vis_feat, text_feat = self.neck(vis_feat, text_feat)
+            v_feat, t_feat = self.neck(v_feat, t_feat)
 
-        loss = self.head(vis_feat,text_feat)
+        # positive logits: [N , T]
+        l_pos = torch.bmm(v_feat.view(N,1,self.feature_dim),t_feat.view(N,-1,self.feature_dim).transpose(1,2)).view(N,-1)
+
+        # V->T negative logits: [N , t_queue_len]
+        vt_l_neg = torch.mm(v_feat, self.t_queue.clone().detach())
+
+        # T->V negative logits: [N * T , v_queue_len]
+        tv_l_neg = torch.mm(t_feat, self.v_queue.clone().detach())
+
+        loss = self.head(l_pos, vt_l_neg, tv_l_neg)
+
+        self._dequeue_and_enqueue_v(v_feat)
+        self._dequeue_and_enqueue_t(t_feat)
+
 
         return loss
 
     def forward_test(self, imgs, texts_item):
-        """Defines the computation performed at every call when training."""
-        N = imgs.shape[0]
-        imgs = imgs.reshape((-1,) + imgs.shape[2:])
-        vis_feat = self.extract_v_feat(imgs, N)
-        for key in texts_item:
-            texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
-        text_feat = self.extract_t_feat(texts_item)
-
-        if self.neck is not None:
-            vis_feat, text_feat = self.neck(vis_feat, text_feat)
-
-        loss = self.head(vis_feat, text_feat)
-
-        return loss
+        pass
 
     def forward_gradcam(self, audios):
         raise NotImplementedError
+
+    def forward(self, imgs, texts_item, return_loss=True):
+        """Define the computation performed at every call."""
+        if return_loss:
+            return self.forward_train(imgs, texts_item)
+
+        return self.forward_test(imgs, texts_item)
 
     def train_step(self, data_batch, optimizer, **kwargs):
         """The iteration step during training.
@@ -159,3 +211,18 @@ class VideoTextMatcher(BaseMatcher):
             num_samples=len(next(iter(data_batch.values()))))
 
         return outputs
+
+# utils
+@torch.no_grad()
+def concat_all_gather(tensor):
+    """Performs all_gather operation on the provided tensors.
+    *** Warning ***: torch.distributed.all_gather has no gradient.
+    """
+    tensors_gather = [
+        torch.ones_like(tensor)
+        for _ in range(torch.distributed.get_world_size())
+    ]
+    torch.distributed.all_gather(tensors_gather, tensor, async_op=False)
+
+    output = torch.cat(tensors_gather, dim=0)
+    return output
