@@ -137,13 +137,13 @@ class VideoTextMatcher(BaseMatcher):
         # T->V negative logits: [N * T , v_queue_len]
         tv_l_neg = torch.mm(t_feat, self.v_queue.clone().detach())
 
-        loss = self.head(l_pos, vt_l_neg, tv_l_neg)
+        losses, recall = self.head(l_pos, vt_l_neg, tv_l_neg)
 
         self._dequeue_and_enqueue_v(v_feat)
         self._dequeue_and_enqueue_t(t_feat)
 
 
-        return loss
+        return losses, recall
 
     def forward_test(self, imgs, texts_item):
         pass
@@ -186,10 +186,13 @@ class VideoTextMatcher(BaseMatcher):
         """
         imgs = data_batch['imgs']
         texts_item = data_batch['texts_item']
-        losses = self(imgs, texts_item)
+        losses, recall = self(imgs, texts_item)
 
         loss, log_vars = self._parse_losses(losses)
-        # log_vars['acc'] = 0
+
+        for key in recall:
+            log_vars[key] = recall[key]
+
         outputs = dict(
             loss=loss,
             log_vars=log_vars,
@@ -204,19 +207,7 @@ class VideoTextMatcher(BaseMatcher):
         during val epochs. Note that the evaluation after training epochs is
         not implemented with this method, but an evaluation hook.
         """
-        imgs = data_batch['imgs']
-        texts_item = data_batch['texts_item']
-
-        losses = self(imgs, texts_item)
-
-        loss, log_vars = self._parse_losses(losses)
-
-        outputs = dict(
-            loss=loss,
-            log_vars=log_vars,
-            num_samples=len(next(iter(data_batch.values()))))
-
-        return outputs
+        pass
 
 # utils
 @torch.no_grad()

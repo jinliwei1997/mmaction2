@@ -36,12 +36,13 @@ class ContrastiveHead(nn.Module):
         Returns:
             dict[str, Tensor]: A dictionary of loss components.
         """
+        T = l_pos.shape[1]
         l_pos /= self.temperature
         vt_l_neg /= self.temperature
         tv_l_neg /= self.temperature
 
         losses = dict()
-
+        recall = dict()
 
         # vt_loss
         vt_nominator = torch.logsumexp(l_pos, dim=1)
@@ -49,6 +50,19 @@ class ContrastiveHead(nn.Module):
         vt_denominator = torch.logsumexp(vt_logits, dim=1)
 
         losses['vt_loss'] = torch.mean(vt_denominator - vt_nominator)
+
+        _, top1 = vt_denominator.topk(k=1,dim=1)
+        recall1 = torch.sum((top1 < T), dim=1) / T
+
+        _, top5 = vt_denominator.topk(k=5, dim=1)
+        recall5 = torch.sum((top5 < T), dim=1) / T
+
+        _, top10 = vt_denominator.topk(k=10, dim=1)
+        recall10 = torch.sum((top10 < T), dim=1) / T
+
+        recall['recall1'] = torch.mean(recall1)
+        recall['recall5'] = torch.mean(recall5)
+        recall['recall10'] = torch.mean(recall10)
 
         """
         # tv_loss
@@ -59,5 +73,5 @@ class ContrastiveHead(nn.Module):
         losses['tv_loss'] = torch.mean(tv_denominator - tv_nominator)
         """
 
-        return losses
+        return losses, recall
 
