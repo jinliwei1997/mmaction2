@@ -82,7 +82,8 @@ class VideoTextMatcher(BaseMatcher):
         batch_size = keys.shape[0]
 
         ptr = int(self.v_queue_ptr)
-        assert self.queue_len % batch_size == 0  # for simplicity
+        print('v_batch_size:', batch_size)
+        assert self.queue_len % batch_size == 0 # for simplicity
         
         # replace the keys at ptr (dequeue and enqueue)
         self.v_queue[:, ptr:ptr + batch_size] = keys.transpose(0, 1)
@@ -99,6 +100,7 @@ class VideoTextMatcher(BaseMatcher):
         batch_size = keys.shape[0]
 
         ptr = int(self.t_queue_ptr)
+        print('t_batch_size:', batch_size)
         assert self.queue_len % batch_size == 0  # for simplicity
 
         # replace the keys at ptr (dequeue and enqueue)
