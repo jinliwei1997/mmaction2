@@ -191,7 +191,7 @@ class VideoTextMatcher(BaseMatcher):
 
         loss, log_vars = self._parse_losses(losses)
 
-        for key, value in recall:
+        for key, value in recall.items():
             if dist.is_available() and dist.is_initialized():
                 value = value.data.clone()
                 dist.all_reduce(value.div_(dist.get_world_size()))
