@@ -82,30 +82,34 @@ class VideoTextMatcher(BaseMatcher):
         batch_size = keys.shape[0]
 
         ptr = int(self.v_queue_ptr)
-        print('v_batch_size:', batch_size)
-        assert self.queue_len % batch_size == 0 # for simplicity
-        
-        # replace the keys at ptr (dequeue and enqueue)
-        self.v_queue[:, ptr:ptr + batch_size] = keys.transpose(0, 1)
-        ptr = (ptr + batch_size) % self.queue_len  # move pointer
+        if ptr + batch_size > self.queue_len:
+            self.v_queue[:, ptr:] = keys.transpose(0, 1)[:, :self.queue_len-ptr]
+            self.v_queue[:, :ptr + batch_size-self.queue_len] = keys.transpose(0, 1)[:, self.queue_len-ptr:]
+            ptr = (ptr + batch_size) % self.queue_len  # move pointer
+        else:
+            # replace the keys at ptr (dequeue and enqueue)
+            self.v_queue[:, ptr:ptr + batch_size] = keys.transpose(0, 1)
+            ptr = (ptr + batch_size) % self.queue_len  # move pointer
 
         self.v_queue_ptr[0] = ptr
 
     @torch.no_grad()
     def _dequeue_and_enqueue_t(self, keys):
-        """Update v_queue."""
-        # gather keys before updating v_queue
+        """Update t_queue."""
+        # gather keys before updating t_queue
         keys = concat_all_gather(keys)
 
         batch_size = keys.shape[0]
 
         ptr = int(self.t_queue_ptr)
-        print('t_batch_size:', batch_size)
-        assert self.queue_len % batch_size == 0  # for simplicity
-
-        # replace the keys at ptr (dequeue and enqueue)
-        self.t_queue[:, ptr:ptr + batch_size] = keys.transpose(0, 1)
-        ptr = (ptr + batch_size) % self.queue_len  # move pointer
+        if ptr + batch_size > self.queue_len:
+            self.t_queue[:, ptr:] = keys.transpose(0, 1)[:, :self.queue_len - ptr]
+            self.t_queue[:, :ptr + batch_size - self.queue_len] = keys.transpose(0, 1)[:, self.queue_len - ptr:]
+            ptr = (ptr + batch_size) % self.queue_len  # move pointer
+        else:
+            # replace the keys at ptr (dequeue and enqueue)
+            self.t_queue[:, ptr:ptr + batch_size] = keys.transpose(0, 1)
+            ptr = (ptr + batch_size) % self.queue_len  # move pointer
 
         self.t_queue_ptr[0] = ptr
 

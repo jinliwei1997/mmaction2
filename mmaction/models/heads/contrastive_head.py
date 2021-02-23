@@ -42,6 +42,7 @@ class ContrastiveHead(nn.Module):
 
         losses = dict()
 
+
         # vt_loss
         vt_nominator = torch.logsumexp(l_pos, dim=1)
         vt_logits = torch.cat((l_pos, vt_l_neg), dim=1) # [N, T + t_queue_len]

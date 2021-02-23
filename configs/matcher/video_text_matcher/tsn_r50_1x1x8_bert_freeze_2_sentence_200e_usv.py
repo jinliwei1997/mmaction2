@@ -12,7 +12,7 @@ model = dict(
     ),
     head=dict(
         type='ContrastiveHead',
-        temperature=0.1,
+        temperature=1,
     ),
     queue_len=65536,
     fp16_enabled=False,
@@ -118,7 +118,7 @@ data = dict(
         ann_file=ann_file_val,
         data_prefix=data_root_val,
         pipeline=test_pipeline))
-optimizer = dict(type='SGD', lr=0.003, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.03, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 lr_config = dict(policy='CosineAnnealing', min_lr=0.)
 total_epochs = 200
@@ -133,7 +133,7 @@ log_config = dict(
     ])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/usv_matcher_2021_2_23/'
+work_dir = './work_dirs/usv_matcher_2021_2_23_2/'
 load_from = None
 resume_from = None
 workflow = [('train', 2)]
