@@ -120,7 +120,13 @@ data = dict(
         pipeline=test_pipeline))
 optimizer = dict(type='SGD', lr=0.03, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
-lr_config = dict(policy='CosineAnnealing', min_lr=0.)
+lr_config = dict(
+    policy='CosineAnnealing',
+    min_lr=0,
+    warmup='linear',
+    warmup_by_epoch=True,
+    warmup_iters=2
+)
 total_epochs = 200
 checkpoint_config = dict(interval=5)
 evaluation = dict(
