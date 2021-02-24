@@ -7,7 +7,7 @@ model = dict(
         norm_eval=False),
     backbone2=dict(
         type='BERT',
-        pretrained='/mnt/lustrenew/DATAshare/vug/video/UGC/bert_for_usu/results_title/checkpoint-75000',
+        pretrained='/mnt/lustre/jinliwei/bert_model_finetuned',
         freeze=True
     ),
     head=dict(
@@ -24,8 +24,8 @@ model = dict(
 train_cfg = None
 test_cfg = None
 dataset_type = 'VideoTextDataset'
-data_root = '/mnt/lustrenew/DATAshare/vug/video/UGC'
-data_root_val = '/mnt/lustrenew/DATAshare/vug/video/UGC'
+data_root = 'data/ugc'
+data_root_val = 'data/ugc'
 ann_file_train = '/mnt/lustre/jinliwei/annotation/usv_train_list_frame_text_title'
 ann_file_val = '/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text_title'
 ann_file_test = '/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text_title'
@@ -133,7 +133,7 @@ log_config = dict(
     ])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/usv_matcher_2021_2_23_4/'
+work_dir = './work_dirs/usv_matcher_2021_2_24_1/'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
