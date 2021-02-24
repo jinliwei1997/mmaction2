@@ -1135,11 +1135,12 @@ class RawFrameDecode:
                 filepath = osp.join(directory, filename_tmpl.format(frame_idx))
                 img_bytes = self.file_client.get(filepath)
                 # Get frame with channel order RGB directly.
-                try:
-                    cur_frame = mmcv.imfrombytes(img_bytes, channel_order='rgb')
-                except:
-                    print(f'filepath: {filepath}')
-                    raise ValueError
+
+                cur_frame = mmcv.imfrombytes(img_bytes, channel_order='rgb')
+                print(type(cur_frame))
+                print(cur_frame.shape)
+                print(f'filepath: {filepath}')
+
                 imgs.append(cur_frame)
             elif modality == 'Flow':
                 x_filepath = osp.join(directory,
