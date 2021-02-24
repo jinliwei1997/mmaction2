@@ -118,13 +118,12 @@ class VideoTextMatcher(BaseMatcher):
 
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
-        v_feat = self.encoder_v(imgs, N) # [N , C]
-        v_feat = nn.functional.normalize(v_feat, dim=1)
+        v_feat = nn.functional.normalize(self.encoder_v(imgs, N), dim=1) # [N , C]
 
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
-        t_feat = self.encoder_t(texts_item) # [N * text_num_per_video (T), C]
-        t_feat = nn.functional.normalize(t_feat, dim=1)
+
+        t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1) # [N * text_num_per_video (T), C]
 
         if self.neck is not None:
             v_feat, t_feat = self.neck(v_feat, t_feat)
@@ -135,10 +134,10 @@ class VideoTextMatcher(BaseMatcher):
         # V->T negative logits: [N , t_queue_len]
         vt_l_neg = torch.mm(v_feat, self.t_queue.clone().detach())
 
-        # T->V negative logits: [N * T , v_queue_len]
-        tv_l_neg = torch.mm(t_feat, self.v_queue.clone().detach())
+        # # T->V negative logits: [N * T , v_queue_len]
+        # tv_l_neg = torch.mm(t_feat, self.v_queue.clone().detach())
 
-        losses, recall = self.head(l_pos, vt_l_neg, tv_l_neg)
+        losses, recall = self.head(l_pos, vt_l_neg)
 
         self._dequeue_and_enqueue_v(v_feat)
         self._dequeue_and_enqueue_t(t_feat)

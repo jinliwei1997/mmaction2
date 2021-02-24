@@ -12,7 +12,7 @@ model = dict(
     ),
     head=dict(
         type='ContrastiveHead',
-        temperature=1,
+        temperature=0.1,
     ),
     queue_len=65536,
     fp16_enabled=False,

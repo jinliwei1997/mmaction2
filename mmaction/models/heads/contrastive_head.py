@@ -25,13 +25,13 @@ class ContrastiveHead(nn.Module):
         pass
 
 
-    def forward(self, l_pos, vt_l_neg, tv_l_neg):
+    def forward(self, l_pos, vt_l_neg):
         """Forward head.
 
         Args:
             l_pos: positive logits: [N , T]
             vt_l_neg: V->T negative logits: [N , t_queue_len]
-            tv_l_neg: T->V negative logits: [N * T , v_queue_len]
+            # tv_l_neg: T->V negative logits: [N * T , v_queue_len]
 
         Returns:
             dict[str, Tensor]: A dictionary of loss components.
@@ -39,7 +39,7 @@ class ContrastiveHead(nn.Module):
         T = l_pos.shape[1]
         l_pos /= self.temperature
         vt_l_neg /= self.temperature
-        tv_l_neg /= self.temperature
+        # tv_l_neg /= self.temperature
 
         losses = dict()
         recall = dict()
