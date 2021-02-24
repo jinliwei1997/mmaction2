@@ -103,7 +103,6 @@ class VideoTextMatcher(BaseMatcher):
         batch_size = keys.shape[0]
 
         ptr = int(self.t_queue_ptr)
-        print(ptr)
         if ptr + batch_size > self.queue_len:
             self.t_queue[:, ptr:] = keys.transpose(0, 1)[:, :self.queue_len - ptr]
             self.t_queue[:, :ptr + batch_size - self.queue_len] = keys.transpose(0, 1)[:, self.queue_len - ptr:]

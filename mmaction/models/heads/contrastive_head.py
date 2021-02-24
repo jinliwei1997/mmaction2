@@ -40,7 +40,8 @@ class ContrastiveHead(nn.Module):
         l_pos /= self.temperature
         vt_l_neg /= self.temperature
         # tv_l_neg /= self.temperature
-
+        print(f'l_pos shape: {l_pos.shape}')
+        print(f'vt_l_neg shape: {vt_l_neg.shape}')
         losses = dict()
         recall = dict()
 
