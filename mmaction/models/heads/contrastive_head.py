@@ -40,10 +40,9 @@ class ContrastiveHead(nn.Module):
         l_pos /= self.temperature
         vt_l_neg /= self.temperature
         # tv_l_neg /= self.temperature
-        print(f'l_pos shape: {l_pos.shape}')
-        print(f'vt_l_neg shape: {vt_l_neg.shape}')
+
         losses = dict()
-        recall = dict()
+        meta = dict()
 
         # vt_loss
         vt_nominator = torch.logsumexp(l_pos, dim=1)
@@ -61,9 +60,9 @@ class ContrastiveHead(nn.Module):
         _, top10 = vt_logits.topk(k=10, dim=1)
         recall10 = torch.true_divide(torch.sum((top10 < T), dim=1), T)
 
-        recall['recall1'] = torch.mean(recall1)
-        recall['recall5'] = torch.mean(recall5)
-        recall['recall10'] = torch.mean(recall10)
+        meta['recall1'] = torch.mean(recall1)
+        meta['recall5'] = torch.mean(recall5)
+        meta['recall10'] = torch.mean(recall10)
 
         """
         # tv_loss
@@ -74,5 +73,5 @@ class ContrastiveHead(nn.Module):
         losses['tv_loss'] = torch.mean(tv_denominator - tv_nominator)
         """
 
-        return losses, recall
+        return losses, meta
 

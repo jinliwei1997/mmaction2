@@ -11,7 +11,7 @@ model = dict(
         freeze=True
     ),
     head=dict(
-        type='ContrastiveHead',
+        type='MILNCEHead',
         temperature=0.1,
     ),
     fp16_enabled=False,
