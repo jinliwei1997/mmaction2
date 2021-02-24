@@ -186,11 +186,11 @@ class VideoTextMatcher(BaseMatcher):
         """
         imgs = data_batch['imgs']
         texts_item = data_batch['texts_item']
-        losses, recall = self(imgs, texts_item)
+        losses, meta = self(imgs, texts_item)
 
         loss, log_vars = self._parse_losses(losses)
 
-        for key, value in recall.items():
+        for key, value in meta.items():
             if dist.is_available() and dist.is_initialized():
                 value = value.data.clone()
                 dist.all_reduce(value.div_(dist.get_world_size()))

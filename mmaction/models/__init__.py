@@ -14,7 +14,7 @@ from .losses import (BCELossWithLogits, BinaryLogisticRegressionLoss, BMNLoss,
 from .necks import TPN
 from .recognizers import (AudioRecognizer, BaseRecognizer, recognizer2d,
                           recognizer3d)
-from .matchers import BaseMatcher, VideoTextMatcher
+from .matchers import BaseMatcher, VideoTextMatcher, VideoTextMatcherE2E
 from .registry import BACKBONES, HEADS, LOCALIZERS, LOSSES, RECOGNIZERS, MATCHERS
 from .roi_extractors import SingleRoIExtractor3D
 
@@ -30,5 +30,5 @@ __all__ = [
     'TPN', 'TPNHead', 'build_loss', 'build_neck', 'AudioRecognizer',
     'AudioTSNHead', 'X3D', 'X3DHead', 'ResNet3dLayer', 'DETECTORS',
     'SingleRoIExtractor3D', 'BBoxHeadAVA', 'ResNetAudio', 'build_detector',
-    'ConvAudio', 'AVARoIHead','MATCHERS','BaseMatcher','VideoTextMatcher','BERT'
+    'ConvAudio', 'AVARoIHead','MATCHERS','BaseMatcher','VideoTextMatcher','BERT','VideoTextMatcherE2E'
 ]
