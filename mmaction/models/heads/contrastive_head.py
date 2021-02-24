@@ -52,13 +52,13 @@ class ContrastiveHead(nn.Module):
         losses['vt_loss'] = torch.mean(vt_denominator - vt_nominator)
 
         _, top1 = vt_logits.topk(k=1, dim=1)
-        recall1 = torch.sum((top1 < T), dim=1) / T
+        recall1 = torch.true_divide(torch.sum((top1 < T), dim=1), T)
 
         _, top5 = vt_logits.topk(k=5, dim=1)
-        recall5 = torch.sum((top5 < T), dim=1) / T
+        recall5 = torch.true_divide(torch.sum((top5 < T), dim=1), T)
 
         _, top10 = vt_logits.topk(k=10, dim=1)
-        recall10 = torch.sum((top10 < T), dim=1) / T
+        recall10 = torch.true_divide(torch.sum((top10 < T), dim=1), T)
 
         recall['recall1'] = torch.mean(recall1)
         recall['recall5'] = torch.mean(recall5)
