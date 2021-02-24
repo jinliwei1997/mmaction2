@@ -1140,7 +1140,6 @@ class RawFrameDecode:
                 try:
                     cur_frame = mmcv.imfrombytes(img_bytes, channel_order='rgb')
                     imgs.append(cur_frame)
-                    print(cur_frame)
                 except:
                     broken_frame_num += 1
 
@@ -1163,8 +1162,9 @@ class RawFrameDecode:
                 for i in range(broken_frame_num):
                     imgs.append(imgs[0])
             else:
+                rd_img = np.random.randint(0, 255, (456, 256, 3), dtype='uint8')
                 for i in range(broken_frame_num):
-                    imgs.append(imgs[0])
+                    imgs.append(rd_img)
 
         results['imgs'] = imgs
         results['original_shape'] = imgs[0].shape[:2]
