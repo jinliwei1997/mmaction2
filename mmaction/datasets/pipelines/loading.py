@@ -1123,6 +1123,7 @@ class RawFrameDecode:
             self.file_client = FileClient(self.io_backend, **self.kwargs)
 
         imgs = list()
+        broken_frame_num = 0
 
         if results['frame_inds'].ndim != 1:
             results['frame_inds'] = np.squeeze(results['frame_inds'])
@@ -1136,12 +1137,14 @@ class RawFrameDecode:
                 img_bytes = self.file_client.get(filepath)
                 # Get frame with channel order RGB directly.
 
-                cur_frame = mmcv.imfrombytes(img_bytes, channel_order='rgb')
-                print(type(cur_frame))
-                print(cur_frame.shape)
-                print(f'filepath: {filepath}')
+                try:
+                    cur_frame = mmcv.imfrombytes(img_bytes, channel_order='rgb')
+                    imgs.append(cur_frame)
+                    print(cur_frame)
+                except:
+                    broken_frame_num += 1
 
-                imgs.append(cur_frame)
+
             elif modality == 'Flow':
                 x_filepath = osp.join(directory,
                                       filename_tmpl.format('x', frame_idx))
@@ -1154,6 +1157,14 @@ class RawFrameDecode:
                 imgs.extend([x_frame, y_frame])
             else:
                 raise NotImplementedError
+
+        if broken_frame_num > 0:
+            if len(imgs)!=0 :
+                for i in range(broken_frame_num):
+                    imgs.append(imgs[0])
+            else:
+                for i in range(broken_frame_num):
+                    imgs.append(imgs[0])
 
         results['imgs'] = imgs
         results['original_shape'] = imgs[0].shape[:2]
