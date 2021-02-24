@@ -17,18 +17,18 @@ class VideoTextMatcherE2E(BaseMatcher):
         test_cfg=None,
         fp16_enabled=False,
         img_feat_dim = 2048,
-        t_feat_dim = 768,
+        text_feat_dim = 768,
         hidden_state_channels = 256,
         init_std = 0.01):
         super(VideoTextMatcherE2E, self).__init__(backbone1,backbone2,head,train_cfg,test_cfg,fp16_enabled)
 
         self.img_feat_dim = img_feat_dim
-        self.t_feat_dim = t_feat_dim
+        self.text_feat_dim = text_feat_dim
         self.hidden_state_channels = hidden_state_channels
         self.init_std = init_std
 
         self.img_mlp = nn.Sequential(nn.Linear(img_feat_dim, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
-        self.text_mlp = nn.Sequential(nn.Linear(t_feat_dim, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
+        self.text_mlp = nn.Sequential(nn.Linear(text_feat_dim, self.hidden_state_channels * 2), nn.BatchNorm1d(self.hidden_state_channels * 2), nn.ReLU(), nn.Linear(self.hidden_state_channels * 2, self.hidden_state_channels))
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.init_mlp_weights()
