@@ -15,8 +15,8 @@ train_cfg = None
 test_cfg = dict(average_clips=None)
 # dataset settings
 dataset_type = 'RawframeDataset'
-data_root = '/mnt/lustrenew/DATAshare/vug/video/UGC'
-data_root_val = '/mnt/lustrenew/DATAshare/vug/video/UGC'
+data_root = 'data/ugc'
+data_root_val = 'data/ugc'
 ann_file_train = '/mnt/lustrenew/DATAshare/vug/video/UGC/annos/ugc_train_list_frames.txt'
 ann_file_val = '/mnt/lustrenew/DATAshare/vug/video/UGC/annos/ugc_val_list_frames.txt'
 ann_file_test = '/mnt/lustrenew/DATAshare/vug/video/UGC/annos/ugc_val_list_frames.txt'

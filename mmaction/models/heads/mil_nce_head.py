@@ -37,7 +37,7 @@ class MILNCEHead(nn.Module):
         v_feat = torch.true_divide(v_feat, self.temperature)
         t_feat = torch.true_divide(t_feat, self.temperature)
         s = torch.matmul(v_feat, t_feat.permute(1, 0)) # [N , N * T]
-        s = s.view(v_feat.shape[0], v_feat.shape[0], -1) # N * N * T
+        s = s.view(v_feat.shape[0], v_feat.shape[0], -1) # [N , N , T]
 
         # MIL-NCE loss
         nominator = s * torch.eye(s.shape[0])[:, :, None].cuda()
@@ -50,22 +50,38 @@ class MILNCEHead(nn.Module):
         losses = dict()
         losses['mil_nce_loss'] = torch.mean(denominator - nominator)
 
-        T = s.shape[2]
-        s = s.view(v_feat.shape[0], -1)  # [N , N * T]
+        with torch.no_grad():
+            N = s.shape[0]
+            T = s.shape[2]
+            s = s.view(v_feat.shape[0], -1)  # [N , N * T]
 
-        _, top1 = s.topk(k=1, dim=1)
-        recall1 = torch.true_divide(torch.sum((top1 < T), dim=1), T)
+            _,  rank = torch.sort(s, dim=1, descending=True)
 
-        _, top5 = s.topk(k=5, dim=1)
-        recall5 = torch.true_divide(torch.sum((top5 < T), dim=1), T)
+            recall1 = torch.zeros(N)
+            recall5 = torch.zeros(N)
+            recall10 = torch.zeros(N)
+            avg_rank = torch.zeros(N)
+            for i in range(N):
+                for j in range(N*T):
+                    if rank[i][j].item() >= T * i and rank[i][j].item() < T * (i + 1):
+                        avg_rank[i] += j
+                        if j<10:
+                            recall10 += 1
+                        if j<5:
+                            recall5 += 1
+                        if j<1:
+                            recall1 += 1
 
-        _, top10 = s.topk(k=10, dim=1)
-        recall10 = torch.true_divide(torch.sum((top10 < T), dim=1), T)
+            recall1 = torch.true_divide(recall1, T)
+            recall5 = torch.true_divide(recall5, T)
+            recall10 = torch.true_divide(recall10, T)
+            avg_rank = torch.true_divide(avg_rank, T)
 
-        meta = dict()
-        meta['recall1'] = torch.mean(recall1)
-        meta['recall5'] = torch.mean(recall5)
-        meta['recall10'] = torch.mean(recall10)
+            meta = dict()
+            meta['recall1'] = torch.mean(recall1)
+            meta['recall5'] = torch.mean(recall5)
+            meta['recall10'] = torch.mean(recall10)
+            meta['avg_rank'] = torch.mean(avg_rank)
 
         """
         # tv_loss
