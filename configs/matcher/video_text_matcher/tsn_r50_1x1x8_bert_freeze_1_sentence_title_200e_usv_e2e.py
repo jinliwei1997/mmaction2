@@ -138,7 +138,7 @@ log_config = dict(
     ])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/usv_matcher_2021_2_25_1_e2e/'
+work_dir = './work_dirs/usv_matcher_2021_2_25_2_e2e/'
 load_from = None
 resume_from = './work_dirs/usv_matcher_2021_2_25_1_e2e/latest.pth'
 workflow = [('train', 1)]
