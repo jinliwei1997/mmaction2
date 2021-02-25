@@ -57,10 +57,10 @@ class MILNCEHead(nn.Module):
 
             _,  rank = torch.sort(s, dim=1, descending=True)
 
-            recall1 = torch.zeros(N)
-            recall5 = torch.zeros(N)
-            recall10 = torch.zeros(N)
-            avg_rank = torch.zeros(N)
+            recall1 = torch.zeros(N).cuda()
+            recall5 = torch.zeros(N).cuda()
+            recall10 = torch.zeros(N).cuda()
+            avg_rank = torch.zeros(N).cuda()
             for i in range(N):
                 for j in range(N*T):
                     if rank[i][j].item() >= T * i and rank[i][j].item() < T * (i + 1):
