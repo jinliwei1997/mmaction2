@@ -15,11 +15,11 @@ train_cfg = None
 test_cfg = dict(average_clips=None)
 # dataset settings
 dataset_type = 'RawframeDataset'
-data_root = '/mnt/lustrenew/DATAshare/vug/video/UGC'
-data_root_val = '/mnt/lustrenew/DATAshare/vug/video/UGC'
-ann_file_train = '/mnt/lustrenew/DATAshare/vug/video/UGC/annos/ugc_train_list_frames.txt'
-ann_file_val = '/mnt/lustrenew/DATAshare/vug/video/UGC/annos/ugc_val_list_frames.txt'
-ann_file_test = '/mnt/lustrenew/DATAshare/vug/video/UGC/annos/ugc_val_list_frames.txt'
+data_root = 'data/ugc'
+data_root_val = 'data/ugc'
+ann_file_train = 'data/anno/ugc_train_list_frames.txt'
+ann_file_val = 'data/anno/ugc_val_list_frames.txt'
+ann_file_test = 'data/anno/ugc_val_list_frames.txt'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 mc_cfg = dict(
@@ -107,7 +107,7 @@ lr_config = dict(policy='step', step=[40, 80])
 total_epochs = 100
 checkpoint_config = dict(interval=5)
 evaluation = dict(
-    interval=5, metrics=['top_k_accuracy', 'mean_class_accuracy'], topk=(1, 5))
+    interval=1, metrics=['top_k_accuracy', 'mean_class_accuracy'], topk=(1, 5))
 log_config = dict(
     interval=20,
     hooks=[
