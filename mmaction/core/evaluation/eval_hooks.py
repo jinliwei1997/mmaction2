@@ -45,7 +45,7 @@ class EpochEvalHook(Hook):
 
     rule_map = {'greater': lambda x, y: x > y, 'less': lambda x, y: x < y}
     init_value_map = {'greater': -inf, 'less': inf}
-    greater_keys = ['acc', 'top', 'AR@', 'auc', 'precision']
+    greater_keys = ['acc', 'top', 'AR@', 'auc', 'precision', 'recall1']
     less_keys = ['loss']
 
     def __init__(self,
