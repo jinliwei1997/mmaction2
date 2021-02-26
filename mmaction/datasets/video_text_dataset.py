@@ -155,7 +155,7 @@ class VideoTextDataset(BaseDataset):
 
         metrics = metrics if isinstance(metrics, (list, tuple)) else [metrics]
         allowed_metrics = [
-            'recall', 'avg_rank'
+            'recall1', 'recall5','recall10', 'avg_rank'
         ]
 
         for metric in metrics:
