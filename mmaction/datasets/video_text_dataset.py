@@ -6,7 +6,8 @@ import torch
 
 from .base import BaseDataset
 from .registry import DATASETS
-
+import warnings
+from mmcv.utils import print_log
 
 @DATASETS.register_module()
 class VideoTextDataset(BaseDataset):
@@ -115,6 +116,80 @@ class VideoTextDataset(BaseDataset):
                 video_infos.append(video_info)
 
         return video_infos
+
+    def evaluate(self,
+                 results,
+                 metrics=['recall1', 'recall5', 'recall10', 'avg_rank'],
+                 logger=None,
+                 **deprecated_kwargs):
+        """Perform evaluation for common datasets.
+
+        Args:
+            results (list): Output results.
+            metrics (str | sequence[str]): Metrics to be performed.
+                Defaults: 'top_k_accuracy'.
+            metric_options (dict): Dict for metric options. Options are
+                ``topk`` for ``top_k_accuracy``.
+                Default: ``dict(top_k_accuracy=dict(topk=(1, 5)))``.
+            logger (logging.Logger | None): Logger for recording.
+                Default: None.
+            deprecated_kwargs (dict): Used for containing deprecated arguments.
+                See 'https://github.com/open-mmlab/mmaction2/pull/286'.
+
+        Returns:
+            dict: Evaluation results dict.
+        """
+        # Protect ``metric_options`` since it uses mutable value as default
+
+        if deprecated_kwargs != {}:
+            warnings.warn(
+                'Option arguments for metrics has been changed to '
+                "`metric_options`, See 'https://github.com/open-mmlab/mmaction2/pull/286' "  # noqa: E501
+                'for more details')
+
+        if not isinstance(results, list):
+            raise TypeError(f'results must be a list, but got {type(results)}')
+        assert len(results) == len(self), (
+            f'The length of results is not equal to the dataset len: '
+            f'{len(results)} != {len(self)}')
+
+        metrics = metrics if isinstance(metrics, (list, tuple)) else [metrics]
+        allowed_metrics = [
+            'recall', 'avg_rank'
+        ]
+
+        for metric in metrics:
+            if metric not in allowed_metrics:
+                raise KeyError(f'metric {metric} is not supported')
+
+        eval_results = {}
+
+        msg = f'Evaluating {metric} ...'
+        if logger is None:
+            msg = '\n' + msg
+        print_log(msg, logger=logger)
+
+        metrics = np.mean(results, axis=0)
+
+        eval_results['recall1'] = metrics[0]
+        eval_results['recall5'] = metrics[1]
+        eval_results['recall10'] = metrics[2]
+        eval_results['avg_rank'] = metrics[3]
+
+        log_msg = f'\nrecall1\t{metrics[0]:.4f}'
+        print_log(log_msg, logger=logger)
+
+        log_msg = f'\nrecall5\t{metrics[1]:.4f}'
+        print_log(log_msg, logger=logger)
+
+        log_msg = f'\nrecall10\t{metrics[2]:.4f}'
+        print_log(log_msg, logger=logger)
+
+        log_msg = f'\navg_rank\t{metrics[3]:.4f}'
+        print_log(log_msg, logger=logger)
+
+
+        return eval_results
 
     def prepare_train_frames(self, idx):
         """Prepare the frames for training given the index."""

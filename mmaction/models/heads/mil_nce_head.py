@@ -24,8 +24,13 @@ class MILNCEHead(nn.Module):
         """Initiate the parameters from scratch."""
         pass
 
+    def forward(self, v_feat, t_feat, return_loss=True):
+        if return_loss:
+            return self.forward_train(v_feat, t_feat)
 
-    def forward(self, v_feat, t_feat):
+        return self.forward_test(v_feat, t_feat)
+
+    def forward_train(self, v_feat, t_feat):
         """Forward head.
 
         Args:
@@ -34,9 +39,9 @@ class MILNCEHead(nn.Module):
         Returns:
             dict[str, Tensor]: A dictionary of loss components.
         """
-        v_feat = torch.true_divide(v_feat, self.temperature)
-        t_feat = torch.true_divide(t_feat, self.temperature)
+
         s = torch.matmul(v_feat, t_feat.permute(1, 0)) # [N , N * T]
+        s = torch.true_divide(s, self.temperature)
         s = s.view(v_feat.shape[0], v_feat.shape[0], -1) # [N , N , T]
 
         # MIL-NCE loss
@@ -77,11 +82,11 @@ class MILNCEHead(nn.Module):
             recall10 = torch.true_divide(recall10, T)
             avg_rank = torch.true_divide(avg_rank, T)
 
-            meta = dict()
-            meta['recall1'] = torch.mean(recall1)
-            meta['recall5'] = torch.mean(recall5)
-            meta['recall10'] = torch.mean(recall10)
-            meta['avg_rank'] = torch.mean(avg_rank)
+            metric = dict()
+            metric['recall1'] = torch.mean(recall1)
+            metric['recall5'] = torch.mean(recall5)
+            metric['recall10'] = torch.mean(recall10)
+            metric['avg_rank'] = torch.mean(avg_rank)
 
         """
         # tv_loss
@@ -92,5 +97,31 @@ class MILNCEHead(nn.Module):
         losses['tv_loss'] = torch.mean(tv_denominator - tv_nominator)
         """
 
-        return losses, meta
+        return losses, metric
 
+    def forward_test(self, v_feat, t_feat):
+
+        s = torch.matmul(v_feat, t_feat.permute(1, 0))  # [N , N * T]
+        s = torch.true_divide(s, self.temperature)
+        s = s.view(v_feat.shape[0], v_feat.shape[0], -1)  # [N , N , T]
+
+        with torch.no_grad():
+            N = s.shape[0]
+            T = s.shape[2]
+            s = s.view(v_feat.shape[0], -1)  # [N , N * T]
+
+            _, rank = torch.sort(s, dim=1, descending=True)
+
+            recall1 = torch.zeros(N).cuda()
+            recall5 = torch.zeros(N).cuda()
+            recall10 = torch.zeros(N).cuda()
+            avg_rank = torch.zeros(N).cuda()
+
+            recall1 = torch.true_divide(recall1, T)
+            recall5 = torch.true_divide(recall5, T)
+            recall10 = torch.true_divide(recall10, T)
+            avg_rank = torch.true_divide(avg_rank, T)
+
+            metric = torch.cat([recall1.view(N,1), recall5.view(N,1), recall10.view(N,1), avg_rank.view(N,1)], dim=1)
+            
+        return metric.cpu().numpy()

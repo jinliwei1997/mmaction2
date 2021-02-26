@@ -78,10 +78,21 @@ class VideoTextMatcherE2E(BaseMatcher):
         if self.neck is not None:
             v_feat, t_feat = self.neck(v_feat, t_feat)
 
-        return self.head(v_feat,t_feat)
+        return self.head(v_feat, t_feat)
 
     def forward_test(self, imgs, texts_item):
-        pass
+        N = imgs.shape[0]
+        imgs = imgs.reshape((-1,) + imgs.shape[2:])
+        v_feat = nn.functional.normalize(self.encoder_v(imgs, N), dim=1)  # [N , C]
+        for key in texts_item:
+            texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
+        t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1)  # [N * text_num_per_video (T), C]
+        t_feat = t_feat.view(N, -1)  # [N , T * C]
+
+        if self.neck is not None:
+            v_feat, t_feat = self.neck(v_feat, t_feat)
+
+        return self.head(v_feat, t_feat, return_loss=False)
 
     def forward_gradcam(self, audios):
         raise NotImplementedError
@@ -114,11 +125,11 @@ class VideoTextMatcherE2E(BaseMatcher):
         """
         imgs = data_batch['imgs']
         texts_item = data_batch['texts_item']
-        losses, meta = self(imgs, texts_item)
+        losses, metric = self(imgs, texts_item)
 
         loss, log_vars = self._parse_losses(losses)
 
-        for key, value in meta.items():
+        for key, value in metric.items():
             if dist.is_available() and dist.is_initialized():
                 value = value.data.clone()
                 dist.all_reduce(value.div_(dist.get_world_size()))
