@@ -117,6 +117,17 @@ class MILNCEHead(nn.Module):
             recall10 = torch.zeros(N).cuda()
             avg_rank = torch.zeros(N).cuda()
 
+            for i in range(N):
+                for j in range(N*T):
+                    if rank[i][j].item() >= T * i and rank[i][j].item() < T * (i + 1):
+                        avg_rank[i] += j
+                        if j<10:
+                            recall10[i] += 1
+                        if j<5:
+                            recall5[i] += 1
+                        if j<1:
+                            recall1[i] += 1
+
             recall1 = torch.true_divide(recall1, T)
             recall5 = torch.true_divide(recall5, T)
             recall10 = torch.true_divide(recall10, T)
