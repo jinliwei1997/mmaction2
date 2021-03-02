@@ -18,8 +18,8 @@ dataset_type = 'VideoDataset'
 data_root = 'data/UCF101/UCF-101'
 data_root_val = 'data/UCF101/UCF-101'
 ann_file_train = 'data/ucf101/annotations/trainlist01.txt'
-ann_file_val = 'data/ucf101/annotations/trainlist01.txt'
-ann_file_test = 'data/ucf101/annotations/trainlist01.txt'
+ann_file_val = 'data/ucf101/annotations/testlist01.txt'
+ann_file_test = 'data/ucf101/annotations/testlist01.txt'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 mc_cfg = dict(
