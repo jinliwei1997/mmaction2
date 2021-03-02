@@ -1,7 +1,7 @@
 # model settings
 model = dict(
     type='Recognizer2D',
-    backbone=dict(type='ResNet', pretrained=None, depth=50, norm_eval=False),
+    backbone=dict(type='ResNet', pretrained=None, depth=50, norm_eval=False, frozen_stages=4),
     cls_head=dict(
         type='TSNHead',
         num_classes=101,
@@ -109,7 +109,7 @@ log_config = dict(
 # runtime settings
 dist_params = dict(backend='nccl', port=29509)
 log_level = 'INFO'
-work_dir = './work_dirs/tsn_r50_1x1x8_100e_ucf_rgb_v_t_160e/'
+work_dir = './work_dirs/tsn_r50_1x1x8_100e_ucf_rgb_v_t_160e_frozen/'
 load_from = 'v_t_160e.pth'
 resume_from = None
 workflow = [('train', 1)]
