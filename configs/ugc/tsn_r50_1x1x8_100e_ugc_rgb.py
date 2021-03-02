@@ -119,5 +119,5 @@ dist_params = dict(backend='nccl', port=29509)
 log_level = 'INFO'
 work_dir = './work_dirs/tsn_r50_1x1x8_100e_ugc_rgb_v_t_160e/'
 load_from = None
-resume_from = './work_dirs/tsn_r50_1x1x8_100e_ugc_rgb_v_t_160e/'
+resume_from = './work_dirs/tsn_r50_1x1x8_100e_ugc_rgb_v_t_160e/latest.pth'
 workflow = [('train', 1)]
