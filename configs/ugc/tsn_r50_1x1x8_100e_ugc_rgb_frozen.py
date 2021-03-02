@@ -117,8 +117,8 @@ log_config = dict(
 # runtime settings
 dist_params = dict(backend='nccl', port=29509)
 log_level = 'INFO'
-work_dir = './work_dirs/tsn_r50_1x1x8_100e_ugc_rgb_frozen/'
-load_from = 'resnet50.pth'
+work_dir = './work_dirs/tsn_r50_1x1x8_100e_ugc_rgb_v_t_160e_frozen/'
+load_from = 'v_t_160e.pth'
 resume_from = None
 workflow = [('train', 1)]
 find_unused_parameters=True
