@@ -15,11 +15,11 @@ train_cfg = None
 test_cfg = dict(average_clips=None)
 # dataset settings
 dataset_type = 'VideoDataset'
-data_root = 'data/UCF101/UCF-101'
-data_root_val = 'data/UCF101/UCF-101'
-ann_file_train = 'data/ucf101/annotations/trainlist01.txt'
-ann_file_val = 'data/ucf101/annotations/testlist01.txt'
-ann_file_test = 'data/ucf101/annotations/testlist01.txt'
+data_root = './'
+data_root_val = './'
+ann_file_train = 'data/ucf101/ucf101_train_split_1_rawframes.txt'
+ann_file_val = 'data/ucf101/ucf101_val_split_1_rawframes.txt'
+ann_file_test = 'data/ucf101/ucf101_val_split_1_rawframes.txt'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 mc_cfg = dict(
@@ -27,9 +27,11 @@ mc_cfg = dict(
     client_cfg='/mnt/lustre/share/memcached_client/client.conf',
     sys_path='/mnt/lustre/share/pymc/py3')
 train_pipeline = [
-    dict(type='DecordInit'),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(type='DecordDecode'),
+    dict(
+        type='RawFrameDecode',
+        io_backend='memcached',
+        **mc_cfg),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
@@ -47,9 +49,11 @@ train_pipeline = [
     dict(type='ToTensor', keys=['imgs', 'label'])
 ]
 val_pipeline = [
-    dict(type='DecordInit'),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(type='DecordDecode'),
+    dict(
+        type='RawFrameDecode',
+        io_backend='memcached',
+        **mc_cfg),
     dict(type='Resize', scale=(-1, 256)),
     dict(type='CenterCrop', crop_size=224),
     dict(type='Flip', flip_ratio=0),
@@ -59,9 +63,11 @@ val_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 test_pipeline = [
-    dict(type='DecordInit'),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(type='DecordDecode'),
+    dict(
+        type='RawFrameDecode',
+        io_backend='memcached',
+        **mc_cfg),
     dict(type='RawFrameDecode'),
     dict(type='Resize', scale=(-1, 256)),
     dict(type='TenCrop', crop_size=224),
