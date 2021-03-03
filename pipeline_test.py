@@ -18,14 +18,13 @@ img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 
 cfg = dict(
-    type = 'VideoTextDataset',
-    ann_file = 'test_dataset/annotation',
-    data_prefix = 'test_dataset',
+    type = 'VideoDataset',
+    ann_file = 'data/ucf101/annotations/trainlist01.txt',
+    data_prefix = 'data/UCF101/UCF-101',
     pipeline=[
+        dict(type='DecordInit'),
         dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-        dict(
-            type='RawFrameDecode'
-        ),
+        dict(type='DecordDecode'),
         dict(type='Resize', scale=(-1, 256), lazy=True),
         dict(
             type='MultiScaleCrop',
@@ -39,10 +38,8 @@ cfg = dict(
         dict(type='Fuse'),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='FormatShape', input_format='NCHW'),
-        dict(type='LoadTexts', sample_mode='number', sample_number=2),
-        dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
-        dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
-        dict(type='ToTensor', keys=['imgs'])
+        dict(type='Collect', keys=['imgs', 'label'], meta_keys=[]),
+        dict(type='ToTensor', keys=['imgs', 'label'])
     ]
 )
 
