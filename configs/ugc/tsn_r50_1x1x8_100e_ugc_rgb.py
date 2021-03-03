@@ -31,7 +31,6 @@ train_pipeline = [
     dict(
         type='RawFrameDecode',
         io_backend='memcached',
-        decoding_backend='turbojpeg',
         **mc_cfg),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
@@ -59,7 +58,6 @@ val_pipeline = [
     dict(
         type='RawFrameDecode',
         io_backend='memcached',
-        decoding_backend='turbojpeg',
         **mc_cfg),
     dict(type='Resize', scale=(-1, 256)),
     dict(type='CenterCrop', crop_size=224),
@@ -79,7 +77,6 @@ test_pipeline = [
     dict(
         type='RawFrameDecode',
         io_backend='memcached',
-        decoding_backend='turbojpeg',
         **mc_cfg),
     dict(type='Resize', scale=(-1, 256)),
     dict(type='TenCrop', crop_size=224),
