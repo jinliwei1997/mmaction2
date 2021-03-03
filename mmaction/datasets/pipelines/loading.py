@@ -935,14 +935,9 @@ class DecordInit:
             self.file_client = FileClient(self.io_backend, **self.kwargs)
 
         file_obj = io.BytesIO(self.file_client.get(results['filename']))
-        path = results['filename']
-        print(f'Pathhhhhhhhhhhhhhhhhhh {path}')
         container = decord.VideoReader(file_obj, num_threads=self.num_threads)
         results['video_reader'] = container
         results['total_frames'] = len(container)
-        print(f'FFFFFFFFFFFrames {len(container)}')
-        print(f'TTTTTTTTTTTType {type(container[12])}')
-        print(container)
         return results
 
     def __repr__(self):

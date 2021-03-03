@@ -30,7 +30,9 @@ train_pipeline = [
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
     dict(
         type='RawFrameDecode',
-        ),
+        io_backend='memcached',
+        decoding_backend='turbojpeg',
+        **mc_cfg),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
@@ -54,7 +56,11 @@ val_pipeline = [
         frame_interval=1,
         num_clips=8,
         test_mode=True),
-    dict(type='RawFrameDecode'),
+    dict(
+        type='RawFrameDecode',
+        io_backend='memcached',
+        decoding_backend='turbojpeg',
+        **mc_cfg),
     dict(type='Resize', scale=(-1, 256)),
     dict(type='CenterCrop', crop_size=224),
     dict(type='Flip', flip_ratio=0),
@@ -70,7 +76,11 @@ test_pipeline = [
         frame_interval=1,
         num_clips=25,
         test_mode=True),
-    dict(type='RawFrameDecode'),
+    dict(
+        type='RawFrameDecode',
+        io_backend='memcached',
+        decoding_backend='turbojpeg',
+        **mc_cfg),
     dict(type='Resize', scale=(-1, 256)),
     dict(type='TenCrop', crop_size=224),
     dict(type='Flip', flip_ratio=0),
