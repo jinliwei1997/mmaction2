@@ -941,7 +941,7 @@ class DecordInit:
         results['video_reader'] = container
         results['total_frames'] = len(container)
         print(f'FFFFFFFFFFFrames {len(container)}')
-        print(f'TTTTTTTTTTType {type(container[12])}')
+        print(f'TTTTTTTTTTTType {type(container[12])}')
         print(container)
         return results
 
