@@ -29,9 +29,10 @@ def cal_avg_metrics(gt_rank):
     return mean_rk, median_rk, recall1, recall5, recall10
 
 def eval_retrieval_metrics(v_feat, t_feat, split_name, split):
+    tot = sum([len(x) for x in split])
     print(f'Eval {split_name}:')
-    print(f'Total videos of val set: {v_feat.shape[0]}')
-    print(f'Subsets: {len(split)} avg videos per subset: {v_feat.shape[0]/len(split)}')
+    print(f'Total videos of val set: {tot}')
+    print(f'Subsets: {len(split)} avg videos per subset: {tot/len(split)}')
 
     v_t_gt_rank=[]
     t_v_gt_rank=[]
