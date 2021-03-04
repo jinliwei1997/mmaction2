@@ -4,10 +4,10 @@ import pickle
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Process a checkpoint to be published')
-    parser.add_argument('v_t_feature', help='V_T feature pickle file path')
-    parser.add_argument('random_1000_split_list', default=None, help='random 1000 split list pickle file path')
-    parser.add_argument('inter_class_split_list', default=None, help='inter class split list pickle file path')
-    parser.add_argument('intra_class_split_list', default=None, help='intra class split list pickle file path')
+    parser.add_argument('--v_t_feature', help='V_T feature pickle file path')
+    parser.add_argument('--random_1000_split_list', default=None, help='random 1000 split list pickle file path')
+    parser.add_argument('--inter_class_split_list', default=None, help='inter class split list pickle file path')
+    parser.add_argument('--intra_class_split_list', default=None, help='intra class split list pickle file path')
     args = parser.parse_args()
     return args
 
