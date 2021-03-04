@@ -119,7 +119,7 @@ class VideoTextDataset(BaseDataset):
 
     def evaluate(self,
                  results,
-                 metrics=['recall1', 'recall5', 'recall10', 'avg_rank'],
+                 metrics=['vt_retrieval_metrics_full', 'tv_retrieval_metrics_full'],
                  logger=None,
                  **deprecated_kwargs):
         """Perform evaluation for common datasets.
@@ -154,40 +154,48 @@ class VideoTextDataset(BaseDataset):
             f'{len(results)} != {len(self)}')
 
         metrics = metrics if isinstance(metrics, (list, tuple)) else [metrics]
-        allowed_metrics = [
-            'recall1', 'recall5','recall10', 'avg_rank'
-        ]
+        allowed_metrics = ['vt_retrieval_metrics_full', 'tv_retrieval_metrics_full']
 
         for metric in metrics:
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
         eval_results = {}
+        for metric in metrics:
+            msg = f'Evaluating {metric} ...'
+            if logger is None:
+                msg = '\n' + msg
+            print_log(msg, logger=logger)
 
-        msg = f'Evaluating {metric} ...'
-        if logger is None:
-            msg = '\n' + msg
-        print_log(msg, logger=logger)
+            if metric == 'vt_retrieval_metrics_full':
+                v_feat = np.array([result[0] for result in results])
+                t_feat = np.array([result[1] for result in results])
+                assert t_feat.shape[1] == 1  # 1 video vs. 1 text
+                mean_rk, median_rk, recall1, recall5, recall10 = eval_retrieval_metrics(v_feat, t_feat.reshape(t_feat[0], -1))
 
-        metrics = np.mean(results, axis=0)
+                eval_results['vt_mean_rk_full'] = mean_rk
+                eval_results['vt_median_rk_full'] = median_rk
+                eval_results['vt_recall1_full'] = recall1
+                eval_results['vt_recall5_full'] = recall5
+                eval_results['vt_recall10_full'] = recall10
 
-        eval_results['recall1'] = metrics[0]
-        eval_results['recall5'] = metrics[1]
-        eval_results['recall10'] = metrics[2]
-        eval_results['avg_rank'] = metrics[3]
+                log_msg = f'\nvt_mean_rk_full\t{mean_rk:.4f}\nvt_median_rk_full\t{median_rk:.4f}\nvt_recall1_full\t{recall1:.4f}\nvt_recall5_full\t{recall5:.4f}\nvt_recall10_full\t{recall10:.4f}'
+                print_log(log_msg, logger=logger)
 
-        log_msg = f'\nrecall1\t{metrics[0]:.4f}'
-        print_log(log_msg, logger=logger)
+            if metric == 'tv_retrieval_metrics_full':
+                v_feat = np.array([result[0] for result in results])
+                t_feat = np.array([result[1] for result in results])
+                assert t_feat.shape[1] == 1 # 1 video vs. 1 text
+                mean_rk, median_rk, recall1, recall5, recall10 = eval_retrieval_metrics(t_feat.reshape(t_feat[0],-1),v_feat)
 
-        log_msg = f'\nrecall5\t{metrics[1]:.4f}'
-        print_log(log_msg, logger=logger)
+                eval_results['tv_mean_rk_full'] = mean_rk
+                eval_results['tv_median_rk_full'] = median_rk
+                eval_results['tv_recall1_full'] = recall1
+                eval_results['tv_recall5_full'] = recall5
+                eval_results['tv_recall10_full'] = recall10
 
-        log_msg = f'\nrecall10\t{metrics[2]:.4f}'
-        print_log(log_msg, logger=logger)
-
-        log_msg = f'\navg_rank\t{metrics[3]:.4f}'
-        print_log(log_msg, logger=logger)
-
+                log_msg = f'\ntv_mean_rk_full\t{mean_rk:.4f}\ntv_median_rk_full\t{median_rk:.4f}\ntv_recall1_full\t{recall1:.4f}\ntv_recall5_full\t{recall5:.4f}\ntv_recall10_full\t{recall10:.4f}'
+                print_log(log_msg, logger=logger)
 
         return eval_results
 
@@ -231,3 +239,16 @@ class VideoTextDataset(BaseDataset):
             results['label'] = onehot
 
         return self.pipeline(results)
+
+def eval_retrieval_metrics(q_feat, k_feat):
+    s = np.matmul(q_feat, np.transpose(k_feat)) # [N , N]
+    N = s.shape[0]
+    rank = np.argsort(s)[:,::-1]
+    mask = np.repeat(np.arange(N).reshape(N, 1), axis=1, repeats=N)
+    gt_rank = np.argsort(rank == mask)[:, ::-1][:, :1].reshape(N)
+    mean_rk = np.mean(gt_rank)
+    median_rk = np.median(gt_rank)
+    recall1 = np.sum(gt_rank < 1) / N
+    recall5 = np.sum(gt_rank < 5) / N
+    recall10 = np.sum(gt_rank < 10) / N
+    return mean_rk, median_rk, recall1, recall5, recall10

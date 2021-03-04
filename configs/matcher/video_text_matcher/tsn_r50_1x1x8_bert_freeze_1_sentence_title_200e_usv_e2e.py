@@ -130,8 +130,8 @@ total_epochs = 200
 checkpoint_config = dict(interval=5)
 evaluation = dict(
     interval=1,
-    key_indicator='recall1',
-    metrics=['recall1', 'recall5', 'recall10', 'avg_rank'],
+    key_indicator='vt_mean_rk_full',
+    metrics=['vt_retrieval_metrics_full', 'tv_retrieval_metrics_full'],
 )
 log_config = dict(
     interval=1,

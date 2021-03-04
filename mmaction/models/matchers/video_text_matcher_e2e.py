@@ -92,7 +92,7 @@ class VideoTextMatcherE2E(BaseMatcher):
         if self.neck is not None:
             v_feat, t_feat = self.neck(v_feat, t_feat)
 
-        return self.head(v_feat, t_feat, return_loss=False)
+        return zip(v_feat.cpu().numpy(),t_feat.view(N, -1, v_feat.shape[1]).cpu().numpy())
 
     def forward_gradcam(self, audios):
         raise NotImplementedError
