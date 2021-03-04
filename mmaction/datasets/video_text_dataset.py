@@ -161,41 +161,41 @@ class VideoTextDataset(BaseDataset):
                 raise KeyError(f'metric {metric} is not supported')
 
         eval_results = {}
-        for metric in metrics:
-            msg = f'Evaluating {metric} ...'
-            if logger is None:
-                msg = '\n' + msg
-            print_log(msg, logger=logger)
-
-            if metric == 'vt_retrieval_metrics_full':
-                v_feat = np.array([result[0] for result in results])
-                t_feat = np.array([result[1] for result in results])
-                assert t_feat.shape[1] == 1  # 1 video vs. 1 text
-                mean_rk, median_rk, recall1, recall5, recall10 = eval_retrieval_metrics(v_feat, t_feat.reshape(t_feat[0], -1))
-
-                eval_results['vt_mean_rk_full'] = mean_rk
-                eval_results['vt_median_rk_full'] = median_rk
-                eval_results['vt_recall1_full'] = recall1
-                eval_results['vt_recall5_full'] = recall5
-                eval_results['vt_recall10_full'] = recall10
-
-                log_msg = f'\nvt_mean_rk_full\t{mean_rk:.4f}\nvt_median_rk_full\t{median_rk:.4f}\nvt_recall1_full\t{recall1:.4f}\nvt_recall5_full\t{recall5:.4f}\nvt_recall10_full\t{recall10:.4f}'
-                print_log(log_msg, logger=logger)
-
-            if metric == 'tv_retrieval_metrics_full':
-                v_feat = np.array([result[0] for result in results])
-                t_feat = np.array([result[1] for result in results])
-                assert t_feat.shape[1] == 1 # 1 video vs. 1 text
-                mean_rk, median_rk, recall1, recall5, recall10 = eval_retrieval_metrics(t_feat.reshape(t_feat[0],-1),v_feat)
-
-                eval_results['tv_mean_rk_full'] = mean_rk
-                eval_results['tv_median_rk_full'] = median_rk
-                eval_results['tv_recall1_full'] = recall1
-                eval_results['tv_recall5_full'] = recall5
-                eval_results['tv_recall10_full'] = recall10
-
-                log_msg = f'\ntv_mean_rk_full\t{mean_rk:.4f}\ntv_median_rk_full\t{median_rk:.4f}\ntv_recall1_full\t{recall1:.4f}\ntv_recall5_full\t{recall5:.4f}\ntv_recall10_full\t{recall10:.4f}'
-                print_log(log_msg, logger=logger)
+        # for metric in metrics:
+        #     msg = f'Evaluating {metric} ...'
+        #     if logger is None:
+        #         msg = '\n' + msg
+        #     print_log(msg, logger=logger)
+        #vt_recall5_full\t{recall5:.4f}\nvt_recall10_full\t{recall10:.4f}'
+        #     if metric == 'vt_retrieval_metrics_full':
+        #         v_feat = np.array([result[0] for result in results])
+        #         t_feat = np.array([result[1] for result in results])
+        #         assert t_feat.shape[1] == 1  # 1 video vs. 1 text
+        #         mean_rk, median_rk, recall1, recall5, recall10 = eval_retrieval_metrics(v_feat, t_feat.reshape(t_feat[0], -1))
+        #
+        #         eval_results['vt_mean_rk_full'] = mean_rk
+        #         eval_results['vt_median_rk_full'] = median_rk
+        #         eval_results['vt_recall1_full'] = recall1
+        #         eval_results['vt_recall5_full'] = recall5
+        #         eval_results['vt_recall10_full'] = recall10
+        #
+        #         log_msg = f'\nvt_mean_rk_full\t{mean_rk:.4f}\nvt_median_rk_full\t{median_rk:.4f}\nvt_recall1_full\t{recall1:.4f}\n
+        #         print_log(log_msg, logger=logger)
+        #
+        #     if metric == 'tv_retrieval_metrics_full':
+        #         v_feat = np.array([result[0] for result in results])
+        #         t_feat = np.array([result[1] for result in results])
+        #         assert t_feat.shape[1] == 1 # 1 video vs. 1 text
+        #         mean_rk, median_rk, recall1, recall5, recall10 = eval_retrieval_metrics(t_feat.reshape(t_feat[0],-1),v_feat)
+        #
+        #         eval_results['tv_mean_rk_full'] = mean_rk
+        #         eval_results['tv_median_rk_full'] = median_rk
+        #         eval_results['tv_recall1_full'] = recall1
+        #         eval_results['tv_recall5_full'] = recall5
+        #         eval_results['tv_recall10_full'] = recall10
+        #
+        #         log_msg = f'\ntv_mean_rk_full\t{mean_rk:.4f}\ntv_median_rk_full\t{median_rk:.4f}\ntv_recall1_full\t{recall1:.4f}\ntv_recall5_full\t{recall5:.4f}\ntv_recall10_full\t{recall10:.4f}'
+        #         print_log(log_msg, logger=logger)
 
         return eval_results
 
