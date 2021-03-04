@@ -60,9 +60,11 @@ def main():
         random_1000_split_list = [range(i, min(i+1000, v_feat.shape[0])) for i in range(0, v_feat.shape[0], 1000)]
     eval_retrieval_metrics(v_feat, t_feat, 'random_1000_split', random_1000_split_list)
     if args.inter_class_split_list is not None:
-        eval_retrieval_metrics(v_feat, t_feat, 'inter_class_split', args.inter_class_split_list)
+        inter_class_split_list = pickle.load(open(args.inter_class_split_list,'rb'))
+        eval_retrieval_metrics(v_feat, t_feat, 'inter_class_split', inter_class_split_list)
     if args.intra_class_split_list is not None:
-        eval_retrieval_metrics(v_feat, t_feat, 'intra_class_split', args.intra_class_split_list)
+        intra_class_split_list = pickle.load(open(args.intra_class_split_list, 'rb'))
+        eval_retrieval_metrics(v_feat, t_feat, 'intra_class_split', intra_class_split_list)
 
 if __name__ == '__main__':
     main()
