@@ -119,3 +119,4 @@ work_dir = './work_dirs/tsn_r50_1x1x8_100e_ucf_rgb_v_t_160e_frozen/'
 load_from = 'v_t_160e.pth'
 resume_from = None
 workflow = [('train', 1)]
+find_unused_parameters=True
