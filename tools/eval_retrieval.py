@@ -5,9 +5,9 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='Process a checkpoint to be published')
     parser.add_argument('v_t_feature', help='V_T feature pickle file path')
-    parser.add_argument('random_1000_split_list', default='', help='random 1000 split list pickle file path')
-    parser.add_argument('inter_class_split_list', default='', help='inter class split list pickle file path')
-    parser.add_argument('intra_class_split_list', default='', help='intra class split list pickle file path')
+    parser.add_argument('random_1000_split_list', default=None, help='random 1000 split list pickle file path')
+    parser.add_argument('inter_class_split_list', default=None, help='inter class split list pickle file path')
+    parser.add_argument('intra_class_split_list', default=None, help='intra class split list pickle file path')
     args = parser.parse_args()
     return args
 
@@ -55,12 +55,12 @@ def main():
     v_feat = np.array([result[0] for result in results])
     t_feat = np.array([result[1] for result in results])
     t_feat = t_feat.reshape(t_feat.shape[0], -1)
-    if args.random_1000_split_list == '':
+    if args.random_1000_split_list is None:
         random_1000_split_list = [range(i, min(i+1000, v_feat.shape[0])) for i in range(0, v_feat.shape[0], 1000)]
     eval_retrieval_metrics(v_feat, t_feat, 'random_1000_split', random_1000_split_list)
-    if args.inter_class_split_list != '':
+    if args.inter_class_split_list is not None:
         eval_retrieval_metrics(v_feat, t_feat, 'inter_class_split', args.inter_class_split_list)
-    if args.intra_class_split_list != '':
+    if args.intra_class_split_list is not None:
         eval_retrieval_metrics(v_feat, t_feat, 'intra_class_split', args.intra_class_split_list)
 
 if __name__ == '__main__':
