@@ -7,7 +7,7 @@ model = dict(
         norm_eval=False),
     backbone2=dict(
         type='BERT',
-        pretrained='/mnt/lustre/jinliwei/multi_cased_L-12_H-768_A-12',
+        pretrained='/mnt/lustre/jinliwei/bert_model',
         freeze=True
     ),
     head=dict(
@@ -54,7 +54,7 @@ train_pipeline = [
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
     dict(type='LoadTexts', sample_mode='number', sample_number=1),
-    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/multi_cased_L-12_H-768_A-12'),
+    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
     dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs'])
 ]
@@ -78,7 +78,7 @@ val_pipeline = [
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
     dict(type='LoadTexts', sample_mode='number', sample_number=1),
-    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/multi_cased_L-12_H-768_A-12'),
+    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
     dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs'])
 ]
@@ -102,7 +102,7 @@ test_pipeline = [
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
     dict(type='LoadTexts', sample_mode='number', sample_number=1),
-    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/multi_cased_L-12_H-768_A-12'),
+    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
     dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs'])
 ]
