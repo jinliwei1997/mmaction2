@@ -431,6 +431,7 @@ def parse_hmdb51_split(level):
         class_list = sorted(os.listdir(frame_path))
         class_dict = dict()
         print("sb1")
+
         with open(class_index_file, 'w') as f:
             content = []
             for class_id, class_name in enumerate(class_list):
@@ -440,6 +441,7 @@ def parse_hmdb51_split(level):
                 content.append(cur_line)
             content = '\n'.join(content)
             f.write(content)
+
         print("sb2")
         for i in range(1, 4):
             train_content = []
