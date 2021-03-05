@@ -13,7 +13,7 @@ model = dict(
         in_channels=2048,
         spatial_type='avg',
         consensus=dict(type='AvgConsensus', dim=1),
-        dropout_ratio=0.8,
+        dropout_ratio=0.4,
         init_std=0.001))
 # model training and testing settings
 train_cfg = None
@@ -104,7 +104,7 @@ lr_config = dict(policy='step', step=[20, 40])
 total_epochs = 50
 checkpoint_config = dict(interval=5)
 evaluation = dict(
-    interval=5, metrics=['top_k_accuracy', 'mean_class_accuracy'], topk=(1, 5))
+    interval=1, metrics=['top_k_accuracy', 'mean_class_accuracy'], topk=(1, 5))
 log_config = dict(
     interval=20,
     hooks=[
