@@ -464,6 +464,7 @@ def parse_hmdb51_split(level):
                             test_content.append(target_line)
             train_content = '\n'.join(train_content)
             test_content = '\n'.join(test_content)
+            print("SSSSSSSSSSSSSSSBBBBBB")
             with open(train_file_template.format(i), 'w') as fout:
                 fout.write(train_content)
             with open(test_file_template.format(i), 'w') as fout:
