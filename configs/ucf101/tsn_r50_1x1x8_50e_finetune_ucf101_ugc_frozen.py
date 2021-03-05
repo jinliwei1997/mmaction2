@@ -118,3 +118,4 @@ work_dir = './work_dirs/tsn_r50_1x1x8_50e_finetune_ucf101_ugc_frozen/'
 load_from = 'ckpts/v_t_160e.pth'
 resume_from = None
 workflow = [('train', 1)]
+find_unused_parameters=True
