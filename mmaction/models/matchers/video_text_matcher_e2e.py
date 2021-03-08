@@ -58,7 +58,7 @@ class VideoTextMatcherE2E(BaseMatcher):
 
     def encoder_t(self, texts):
         x = self.backbone2(texts)
-        if self.use_text_mlp():
+        if self.use_text_mlp:
             x = self.text_mlp(x)
         return x
 
