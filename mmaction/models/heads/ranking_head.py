@@ -1,23 +1,20 @@
 import torch.nn as nn
 import torch
 import torch.distributed as dist
+import numpy as np
 
 from ..registry import HEADS
 
 @HEADS.register_module
-class MILNCEHead(nn.Module):
-    """Head for contrastive learning.
+class RankingHead(nn.Module):
+    """Head for RankingLoss.
 
-    Args:
-        temperature (float): The temperature hyper-parameter that
-            controls the concentration level of the distribution.
-            Default: 0.1.
     """
 
     def __init__(self,
-        temperature=0.1):
-        super(MILNCEHead, self).__init__()
-        self.temperature = temperature
+        margin = 0.1):
+        super(RankingHead, self).__init__()
+        self.Criterion = nn.MarginRankingLoss(margin)
 
 
     def init_weights(self):
@@ -35,22 +32,23 @@ class MILNCEHead(nn.Module):
         """
 
         s = torch.matmul(v_feat, t_feat.permute(1, 0)) # [N , N * T]
-        s = torch.true_divide(s, self.temperature)
-        s = s.view(v_feat.shape[0], v_feat.shape[0], -1) # [N , N , T]
+        s = s.view(v_feat.shape[0], v_feat.shape[0]) # [N , N]
+        N = s.shape[0]
+        # Ranking loss
+        x = []
+        y = []
+        for i in range(N):
+            for j in range(N):
+                if j != i:
+                    x.append(i)
+                    y.append(j)
 
-        # MIL-NCE loss
-        nominator = s * torch.eye(s.shape[0])[:, :, None].cuda()
-        nominator = nominator.sum(dim=1)
-        nominator = torch.logsumexp(nominator, dim=1)
-        denominator = torch.cat((s, s.permute(1, 0, 2)), dim=1).view(s.shape[0], -1)
-        denominator = torch.logsumexp(denominator, dim=1)
-
+        pos = s[torch.tensor(x), torch.tensor(x)]
+        v_t_neg = s[torch.tensor(x), torch.tensor(y)]
+        t_v_neg = torch.transpose(s, 0, 1)[torch.tensor(x), torch.tensor(y)]
         losses = dict()
-        losses['mil_nce_loss'] = torch.mean(denominator - nominator)
-
-        s = torch.matmul(v_feat, t_feat.permute(1, 0))  # [N , N * T]
-        s = torch.true_divide(s, self.temperature)
-        s = s.view(v_feat.shape[0], v_feat.shape[0], -1)  # [N , N , T]
+        losses['v_t_ranking_loss'] = self.Criterion(pos, v_t_neg, torch.ones(N * (N - 1)))
+        losses['t_v_ranking_loss'] = self.Criterion(pos, t_v_neg, torch.ones(N * (N - 1)))
 
         with torch.no_grad():
             N = s.shape[0]
@@ -84,6 +82,5 @@ class MILNCEHead(nn.Module):
             metric['recall5'] = torch.mean(recall5)
             metric['recall10'] = torch.mean(recall10)
             metric['mean_rk'] = torch.mean(mean_rk)
-
 
         return losses, metric

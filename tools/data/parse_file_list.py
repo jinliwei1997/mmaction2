@@ -430,7 +430,6 @@ def parse_hmdb51_split(level):
 
         class_list = sorted(os.listdir(frame_path))
         class_dict = dict()
-        print("sb1")
 
         with open(class_index_file, 'w') as f:
             content = []
@@ -442,7 +441,6 @@ def parse_hmdb51_split(level):
             content = '\n'.join(content)
             f.write(content)
 
-        print("sb2")
         for i in range(1, 4):
             train_content = []
             test_content = []
@@ -467,7 +465,6 @@ def parse_hmdb51_split(level):
                             test_content.append(target_line)
             train_content = '\n'.join(train_content)
             test_content = '\n'.join(test_content)
-            print("SSSSSSSSSSSSSSSBBBBBB")
             with open(train_file_template.format(i), 'w') as fout:
                 fout.write(train_content)
             with open(test_file_template.format(i), 'w') as fout:
