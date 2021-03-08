@@ -16,8 +16,9 @@ model = dict(
     fp16_enabled=False,
     img_feat_dim=2048,
     text_feat_dim=768,
-    feature_dim=256,
-    init_std=0.01
+    feature_dim=768,
+    init_std=0.01,
+    use_text_mlp=False
 )
 train_cfg = None
 test_cfg = None

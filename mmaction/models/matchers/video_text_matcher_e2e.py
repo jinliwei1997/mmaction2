@@ -19,7 +19,8 @@ class VideoTextMatcherE2E(BaseMatcher):
         img_feat_dim = 2048,
         text_feat_dim = 768,
         feature_dim = 256,
-        init_std = 0.01):
+        init_std = 0.01,
+        use_text_mlp = True):
         super(VideoTextMatcherE2E, self).__init__(backbone1,backbone2,head,train_cfg,test_cfg,fp16_enabled)
 
         self.img_feat_dim = img_feat_dim
@@ -32,6 +33,7 @@ class VideoTextMatcherE2E(BaseMatcher):
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.init_mlp_weights()
+        self.use_text_mlp = use_text_mlp
 
     def init_mlp_weights(self):
         """Initialize the model network weights."""
@@ -56,7 +58,8 @@ class VideoTextMatcherE2E(BaseMatcher):
 
     def encoder_t(self, texts):
         x = self.backbone2(texts)
-        x = self.text_mlp(x)
+        if self.use_text_mlp():
+            x = self.text_mlp(x)
         return x
 
     def forward(self, imgs, texts_item, return_loss=True):
