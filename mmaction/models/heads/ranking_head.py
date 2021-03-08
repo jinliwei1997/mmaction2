@@ -50,6 +50,7 @@ class RankingHead(nn.Module):
         losses['v_t_ranking_loss'] = self.Criterion(pos, v_t_neg, torch.ones(N * (N - 1)).cuda())
         losses['t_v_ranking_loss'] = self.Criterion(pos, t_v_neg, torch.ones(N * (N - 1)).cuda())
 
+        s = s.view(v_feat.shape[0], v_feat.shape[0], -1)  # [N , N , T]
         with torch.no_grad():
             N = s.shape[0]
             T = s.shape[2]
