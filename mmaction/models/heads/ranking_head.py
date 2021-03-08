@@ -47,8 +47,8 @@ class RankingHead(nn.Module):
         v_t_neg = s[torch.tensor(x), torch.tensor(y)]
         t_v_neg = torch.transpose(s, 0, 1)[torch.tensor(x), torch.tensor(y)]
         losses = dict()
-        losses['v_t_ranking_loss'] = self.Criterion(pos, v_t_neg, torch.ones(N * (N - 1)).gpu())
-        losses['t_v_ranking_loss'] = self.Criterion(pos, t_v_neg, torch.ones(N * (N - 1)).gpu())
+        losses['v_t_ranking_loss'] = self.Criterion(pos, v_t_neg, torch.ones(N * (N - 1)).cuda())
+        losses['t_v_ranking_loss'] = self.Criterion(pos, t_v_neg, torch.ones(N * (N - 1)).cuda())
 
         with torch.no_grad():
             N = s.shape[0]
