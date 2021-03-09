@@ -4,6 +4,7 @@ import torch.nn as nn
 from .. import builder
 from mmcv.cnn import normal_init
 import torch.distributed as dist
+import torch
 
 @MATCHERS.register_module()
 class VideoTextMatcherE2E(BaseMatcher):
@@ -78,6 +79,9 @@ class VideoTextMatcherE2E(BaseMatcher):
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
         t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1) # [N * text_num_per_video (T), C]
 
+        v_feat = torch.cat(GatherLayer.apply(v_feat), dim=0)  # (2N)xd
+        t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
+        print(v_feat.shape)
         if self.neck is not None:
             v_feat, t_feat = self.neck(v_feat, t_feat)
 
@@ -147,3 +151,23 @@ class VideoTextMatcherE2E(BaseMatcher):
 
     def val_step(self, data_batch, optimizer, **kwargs):
         pass
+
+
+class GatherLayer(torch.autograd.Function):
+    """Gather tensors from all process, supporting backward propagation.
+    """
+
+    @staticmethod
+    def forward(ctx, input):
+        ctx.save_for_backward(input)
+        output = [torch.zeros_like(input) \
+            for _ in range(dist.get_world_size())]
+        dist.all_gather(output, input)
+        return tuple(output)
+
+    @staticmethod
+    def backward(ctx, *grads):
+        input, = ctx.saved_tensors
+        grad_out = torch.zeros_like(input)
+        grad_out[:] = grads[dist.get_rank()]
+        return grad_out
