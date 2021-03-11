@@ -21,7 +21,7 @@ cfg = dict(
     type = 'VideoAudioTextDataset',
     ann_file = '/mnt/lustre/jinliwei/annotation/usv_train_list_frame_text_title',
     data_prefix = 'data/ugc',
-    train_pipeline=[
+    pipeline=[
         dict(type='LoadAudioFeature'),
         dict(type='SampleFrames', clip_len=64, frame_interval=1, num_clips=1),
         dict(type='AudioFeatureSelector'),
