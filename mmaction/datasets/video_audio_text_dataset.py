@@ -97,10 +97,11 @@ class VideoAudioTextDataset(BaseDataset):
                 idx = 0
                 # idx for frame_dir
                 frame_dir = line_split[idx]
+                video_info['audio_path'] = self.data_prefix + '/melspectrogram/sensebee_datalist_1286' + frame_dir[13:] + '.npy'
                 if self.data_prefix is not None:
                     frame_dir = osp.join(self.data_prefix, frame_dir)
                 video_info['frame_dir'] = frame_dir
-                video_info['audio_path'] = self.data_prefix + '/melspectrogram/sensebee_datalist_1286' + frame_dir[11:] + '.npy'
+
                 idx += 1
                 if self.with_offset:
                     # idx for offset and total_frames
