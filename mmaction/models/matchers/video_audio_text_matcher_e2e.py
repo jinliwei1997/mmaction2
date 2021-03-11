@@ -104,7 +104,7 @@ class VideoAudioTextMatcherE2E(nn.Module):
 
         audios = audios.reshape((-1,) + audios.shape[2:])
         a_feat = self.encoder_a(audios,N)
-        v_a_feat = nn.functional.normalize(self.init_mlp_weights(torch.cat((v_feat, a_feat), dim=1),dim=1))
+        v_a_feat = nn.functional.normalize(self.img_audio_mlp(torch.cat((v_feat, a_feat), dim=1)), dim=1)
         v_a_feat = torch.cat(GatherLayer.apply(v_a_feat), dim=0)
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
