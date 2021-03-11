@@ -18,13 +18,19 @@ img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 
 cfg = dict(
-    type = 'VideoDataset',
-    ann_file = 'data/ucf101/annotations/trainlist01.txt',
-    data_prefix = 'data/UCF101/UCF-101',
-    pipeline=[
-        dict(type='DecordInit'),
+    type = 'VideoAudioTextDataset',
+    ann_file = '/mnt/lustre/jinliwei/annotation/usv_train_list_frame_text_title',
+    data_prefix = 'data/ugc',
+    train_pipeline=[
+        dict(type='LoadAudioFeature'),
+        dict(type='SampleFrames', clip_len=64, frame_interval=1, num_clips=1),
+        dict(type='AudioFeatureSelector'),
+        dict(type='FormatAudioShape', input_format='NCTF'),
+
         dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-        dict(type='DecordDecode'),
+        dict(
+            type='RawFrameDecode'
+        ),
         dict(type='Resize', scale=(-1, 256), lazy=True),
         dict(
             type='MultiScaleCrop',
@@ -38,12 +44,14 @@ cfg = dict(
         dict(type='Fuse'),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='FormatShape', input_format='NCHW'),
-        dict(type='Collect', keys=['imgs', 'label'], meta_keys=[]),
-        dict(type='ToTensor', keys=['imgs', 'label'])
+        dict(type='LoadTexts', sample_mode='number', sample_number=1),
+        dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
+        dict(type='Collect', keys=['imgs', 'audios', 'texts_item'], meta_keys=[]),
+        dict(type='ToTensor', keys=['imgs', 'audios'])
     ]
 )
 
-video_text_dataset = build_dataset(cfg)
+video_audio_text_dataset = build_dataset(cfg)
 
-result = video_text_dataset[0]
+result = video_audio_text_dataset[0]
 print (result)
