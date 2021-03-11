@@ -7,7 +7,7 @@ import torch.distributed as dist
 import torch
 
 @MATCHERS.register_module()
-class VideoAudioTextMatcherE2E(nn.module):
+class VideoAudioTextMatcherE2E(nn.Module):
     """VideoTextMatcher model framework."""
     def __init__(self,
         v_backbone,
