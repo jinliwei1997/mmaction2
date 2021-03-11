@@ -1338,7 +1338,7 @@ class LoadAudioFeature:
             results (dict): The resulting dict to be modified and passed
                 to the next transform in pipeline.
         """
-        print(results['audio_path'])
+
         if osp.exists(results['audio_path']):
             feature_map = np.load(results['audio_path'])
         else:

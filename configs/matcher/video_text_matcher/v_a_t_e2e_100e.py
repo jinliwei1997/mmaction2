@@ -15,7 +15,6 @@ model = dict(
         type='MILNCEHead',
         temperature=0.05,
     ),
-    fp16_enabled=False,
     img_feat_dim=2048,
     audio_feat_dim=2048,
     text_feat_dim=768,
