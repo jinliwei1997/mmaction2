@@ -23,6 +23,7 @@ class VideoAudioTextMatcherE2E(nn.Module):
         feature_dim = 256,
         init_std = 0.01,
         use_text_mlp = True):
+        super().__init__()
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
         self.v_backbone = builder.build_backbone(v_backbone)
