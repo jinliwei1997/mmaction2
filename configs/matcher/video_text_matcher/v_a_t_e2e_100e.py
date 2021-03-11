@@ -123,7 +123,7 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs', 'audios'])
 ]
 data = dict(
-    videos_per_gpu=16,
+    videos_per_gpu=32,
     workers_per_gpu=5,
     train=dict(
         type=dataset_type,
@@ -164,7 +164,7 @@ log_config = dict(
     ])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/v_a_t_e2e_100e'
+work_dir = './work_dirs/v_a_t_e2e_100e_2'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
