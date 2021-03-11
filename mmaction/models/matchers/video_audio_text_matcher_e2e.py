@@ -73,7 +73,7 @@ class VideoAudioTextMatcherE2E(nn.Module):
         return x
 
     def encoder_a(self, audios, N):
-        x = self.t_backbone(audios)
+        x = self.a_backbone(audios)
         if self.avg_pool is not None:
             x = self.avg_pool(x)
         x = x.reshape((N, -1) + x.shape[1:])
