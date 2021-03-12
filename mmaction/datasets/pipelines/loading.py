@@ -1698,7 +1698,7 @@ class LoadTexts:
 
         total_frames = results["total_frames"]
 
-        print(results[self.prefix + "text_path"])
+        # print(results[self.prefix + "text_path"])
         if os.path.exists(results[self.prefix + "text_path"]):
             fin = open(results[self.prefix + "text_path"],'r')
             lines = fin.readlines()
