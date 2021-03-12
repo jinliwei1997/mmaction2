@@ -148,9 +148,9 @@ class VideoAudioTextMatcherE2E(nn.Module):
                 averaging the logs.
         """
         imgs = data_batch['imgs']
-        audios = data_batch['audios']
+        subtitle_texts_item = data_batch['subtitle_texts_item']
         texts_item = data_batch['texts_item']
-        losses, metric = self(imgs, audios, texts_item)
+        losses, metric = self(imgs, subtitle_texts_item, texts_item)
 
         loss, log_vars = self._parse_losses(losses)
 

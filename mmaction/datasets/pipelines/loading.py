@@ -1679,10 +1679,13 @@ class LoadTexts:
     def __init__(self,
                  sample_mode = None,
                  sample_ratio = None,
-                 sample_number = None):
+                 sample_number = None,
+                 prefix = ''
+                 ):
         self.sample_mode = sample_mode
         self.sample_ratio = sample_ratio
         self.sample_number = sample_number
+        self.prefix = prefix
         assert sample_mode in ['number','ratio']
 
     def __call__(self, results):
@@ -1695,9 +1698,12 @@ class LoadTexts:
 
         total_frames = results["total_frames"]
 
-        fin = open(results["text_path"],'r')
-        lines = fin.readlines()
-        fin.close()
+        if os.path.exists(results[self.prefix + "text_path"]):
+            fin = open(results[self.prefix + "text_path"],'r')
+            lines = fin.readlines()
+            fin.close()
+        else:
+            lines = [['1\n'],['0\n'],['\n'],['1 1\n']]
 
         num_sentences = int(lines[0].rstrip())
         assert num_sentences * 3 + 1 <= len(lines)
@@ -1723,8 +1729,8 @@ class LoadTexts:
             texts.append(sentence)
             texts_locations.append(np.array([st,ed]))
 
-        results["texts"] = texts
-        results["texts_locations"] = texts_locations
+        results[self.prefix + "texts"] = texts
+        results[self.prefix + "texts_locations"] = texts_locations
         return results
 
 
@@ -1738,9 +1744,9 @@ class TextTokenize:
         tokenizer_dir
     """
 
-    def __init__(self,tokenizer_dir):
+    def __init__(self, tokenizer_dir, prefix):
         self.tokenizer = BertTokenizer.from_pretrained(tokenizer_dir)
-
+        self.prefix = prefix
 
     def __call__(self, results):
         """Perform the text tokenizing.
@@ -1749,6 +1755,6 @@ class TextTokenize:
             results (dict): The resulting dict to be modified and passed
                 to the next transform in pipeline.
         """
-        texts_item = self.tokenizer(results['texts'], truncation=True, padding='max_length', return_tensors="pt")
-        results['texts_item'] = texts_item
+        texts_item = self.tokenizer(results[self.prefix + 'texts'], truncation=True, padding='max_length', return_tensors="pt")
+        results[self.prefix + 'texts_item'] = texts_item
         return results
