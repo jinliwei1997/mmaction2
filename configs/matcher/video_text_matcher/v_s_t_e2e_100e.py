@@ -154,7 +154,7 @@ log_config = dict(
         dict(type='TextLoggerHook'),
         dict(type='TensorboardLoggerHook')
     ])
-dist_params = dict(backend='nccl')
+dist_params = dict(backend='nccl', port = 29999)
 log_level = 'INFO'
 work_dir = './work_dirs/v_s_t_e2e_100e'
 load_from = None
