@@ -1744,7 +1744,7 @@ class TextTokenize:
         tokenizer_dir
     """
 
-    def __init__(self, tokenizer_dir, prefix):
+    def __init__(self, tokenizer_dir, prefix = ''):
         self.tokenizer = BertTokenizer.from_pretrained(tokenizer_dir)
         self.prefix = prefix
 
