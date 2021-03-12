@@ -1680,8 +1680,7 @@ class LoadTexts:
                  sample_mode = None,
                  sample_ratio = None,
                  sample_number = None,
-                 prefix = ''
-                 ):
+                 prefix = ''):
         self.sample_mode = sample_mode
         self.sample_ratio = sample_ratio
         self.sample_number = sample_number

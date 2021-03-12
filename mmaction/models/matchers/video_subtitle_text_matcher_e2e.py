@@ -90,7 +90,7 @@ class VideoSubtitleTextMatcherE2E(nn.Module):
         for key in subtitle_texts_item:
             subtitle_texts_item[key] = subtitle_texts_item[key].reshape((-1,) + subtitle_texts_item[key].shape[2:])
         s_feat = self.encoder_t(subtitle_texts_item)
-
+        print(v_feat.shape, s_feat.shape)
         v_s_feat = nn.functional.normalize(self.img_subtitle_mlp(torch.cat((v_feat, s_feat), dim=1)), dim=1)
         v_s_feat = torch.cat(GatherLayer.apply(v_s_feat), dim=0)
 
