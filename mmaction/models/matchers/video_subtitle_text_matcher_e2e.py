@@ -12,14 +12,12 @@ class VideoAudioTextMatcherE2E(nn.Module):
     """VideoTextMatcher model framework."""
     def __init__(self,
         v_backbone,
-        a_backbone,
         t_backbone,
         head,
         neck = None,
         train_cfg = None,
         test_cfg = None,
         img_feat_dim = 2048,
-        audio_feat_dim = 2048,
         text_feat_dim = 768,
         feature_dim = 256,
         init_std = 0.01,
@@ -28,16 +26,14 @@ class VideoAudioTextMatcherE2E(nn.Module):
         self.train_cfg = train_cfg
         self.test_cfg = test_cfg
         self.v_backbone = builder.build_backbone(v_backbone)
-        self.a_backbone = builder.build_backbone(a_backbone)
         self.t_backbone = builder.build_backbone(t_backbone)
         self.head = builder.build_head(head)
         self.img_feat_dim = img_feat_dim
-        self.audio_feat_dim = audio_feat_dim
         self.text_feat_dim = text_feat_dim
         self.feature_dim = feature_dim
         self.init_std = init_std
 
-        self.img_audio_mlp = nn.Sequential(nn.Linear(img_feat_dim + audio_feat_dim, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim))
+        self.img_subtitle_mlp = nn.Sequential(nn.Linear(img_feat_dim + text_feat_dim, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim))
         self.text_mlp = nn.Sequential(nn.Linear(text_feat_dim, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim))
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
@@ -48,14 +44,13 @@ class VideoAudioTextMatcherE2E(nn.Module):
     def init_weights(self):
         """Initialize the model network weights."""
         self.v_backbone.init_weights()
-        self.a_backbone.init_weights()
         self.t_backbone.init_weights()
         self.head.init_weights()
         self.init_mlp_weights()
 
     def init_mlp_weights(self):
         """Initialize the model network weights."""
-        for layer in self.img_audio_mlp:
+        for layer in self.img_subtitle_mlp:
             if isinstance(layer, nn.Linear):
                 normal_init(layer, std=self.init_std)
         for layer in self.text_mlp:
@@ -73,62 +68,57 @@ class VideoAudioTextMatcherE2E(nn.Module):
         x = x.view(x.size(0), -1)
         return x
 
-    def encoder_a(self, audios, N):
-        x = self.a_backbone(audios)
-        if self.avg_pool is not None:
-            x = self.avg_pool(x)
-        x = x.reshape((N, -1) + x.shape[1:])
-        x = x.mean(dim=1, keepdim=True)
-        x = x.squeeze(1)
-        # dropout
-        x = x.view(x.size(0), -1)
-        return x
-
     def encoder_t(self, texts):
         x = self.t_backbone(texts)
         if self.use_text_mlp:
             x = self.text_mlp(x)
         return x
 
-    def forward(self, imgs, audios, texts_item, return_loss=True):
+    def forward(self, imgs, subtitle_texts_item, texts_item, return_loss=True):
         """Define the computation performed at every call."""
         if return_loss:
-            return self.forward_train(imgs, audios, texts_item)
+            return self.forward_train(imgs, subtitle_texts_item, texts_item)
 
-        return self.forward_test(imgs, audios, texts_item)
+        return self.forward_test(imgs, subtitle_texts_item, texts_item)
 
-    def forward_train(self, imgs, audios, texts_item):
+    def forward_train(self, imgs, subtitle_texts_item, texts_item):
 
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
         v_feat = self.encoder_v(imgs, N)
 
-        audios = audios.reshape((-1,) + audios.shape[2:])
-        a_feat = self.encoder_a(audios,N)
-        v_a_feat = nn.functional.normalize(self.img_audio_mlp(torch.cat((v_feat, a_feat), dim=1)), dim=1)
-        v_a_feat = torch.cat(GatherLayer.apply(v_a_feat), dim=0)
+        for key in subtitle_texts_item:
+            subtitle_texts_item[key] = subtitle_texts_item[key].reshape((-1,) + subtitle_texts_item[key].shape[2:])
+        s_feat = self.encoder_t(subtitle_texts_item)
+
+        v_s_feat = nn.functional.normalize(self.img_subtitle_mlp(torch.cat((v_feat, s_feat), dim=1)), dim=1)
+        v_s_feat = torch.cat(GatherLayer.apply(v_s_feat), dim=0)
+
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
         t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1) # [N * text_num_per_video (T), C]
         t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
 
-        return self.head(v_a_feat, t_feat)
+        return self.head(v_s_feat, t_feat)
 
-    def forward_test(self, imgs, audios, texts_item):
+    def forward_test(self, imgs, subtitle_texts_item, texts_item):
         N = imgs.shape[0]
         imgs = imgs.reshape((-1,) + imgs.shape[2:])
         v_feat = self.encoder_v(imgs, N)
 
-        audios = audios.reshape((-1,) + audios.shape[2:])
-        a_feat = self.encoder_a(audios, N)
-        v_a_feat = nn.functional.normalize(self.img_audio_mlp(torch.cat((v_feat, a_feat), dim=1)), dim=1)
-        v_a_feat = torch.cat(GatherLayer.apply(v_a_feat), dim=0)
+        for key in subtitle_texts_item:
+            subtitle_texts_item[key] = subtitle_texts_item[key].reshape((-1,) + subtitle_texts_item[key].shape[2:])
+        s_feat = self.encoder_t(subtitle_texts_item)
+
+        v_s_feat = nn.functional.normalize(self.img_subtitle_mlp(torch.cat((v_feat, s_feat), dim=1)), dim=1)
+        v_s_feat = torch.cat(GatherLayer.apply(v_s_feat), dim=0)
+
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
         t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1)  # [N * text_num_per_video (T), C]
         t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
 
-        return zip(v_a_feat.cpu().numpy(),t_feat.view(N, -1, v_feat.shape[1]).cpu().numpy())
+        return zip(v_s_feat.cpu().numpy(),t_feat.view(N, -1, v_feat.shape[1]).cpu().numpy())
 
     def forward_gradcam(self, audios):
         raise NotImplementedError
