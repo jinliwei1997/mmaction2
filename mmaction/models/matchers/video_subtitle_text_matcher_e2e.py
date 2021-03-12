@@ -8,7 +8,7 @@ import torch
 from collections import OrderedDict
 
 @MATCHERS.register_module()
-class VideoAudioTextMatcherE2E(nn.Module):
+class VideoSubtitleTextMatcherE2E(nn.Module):
     """VideoTextMatcher model framework."""
     def __init__(self,
         v_backbone,
