@@ -1695,9 +1695,10 @@ class LoadTexts:
             results (dict): The resulting dict to be modified and passed
                 to the next transform in pipeline.
         """
-        print("prefix: ", self.prefix)
+
         total_frames = results["total_frames"]
 
+        print(results[self.prefix + "text_path"])
         if os.path.exists(results[self.prefix + "text_path"]):
             fin = open(results[self.prefix + "text_path"],'r')
             lines = fin.readlines()
@@ -1749,7 +1750,6 @@ class TextTokenize:
         self.prefix = prefix
 
     def __call__(self, results):
-        print("prefix: ", self.prefix)
         """Perform the text tokenizing.
 
         Args:
