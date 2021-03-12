@@ -118,7 +118,7 @@ class VideoAudioTextMatcherE2E(nn.Module):
         t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1)  # [N * text_num_per_video (T), C]
         t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
 
-        return zip(v_s_feat.cpu().numpy(),t_feat.view(N, -1, v_feat.shape[1]).cpu().numpy())
+        return zip(v_s_feat.cpu().numpy(),t_feat.view(N, -1, t_feat.shape[1]).cpu().numpy())
 
     def forward_gradcam(self, audios):
         raise NotImplementedError

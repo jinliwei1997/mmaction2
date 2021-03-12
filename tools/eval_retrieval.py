@@ -58,7 +58,10 @@ def main():
     t_feat = t_feat.reshape(t_feat.shape[0], -1)
     if args.random_1000_split_list is None:
         random_1000_split_list = [range(i, min(i+1000, v_feat.shape[0])) for i in range(0, v_feat.shape[0], 1000)]
-    eval_retrieval_metrics(v_feat, t_feat, 'random_1000_split', random_1000_split_list)
+        eval_retrieval_metrics(v_feat, t_feat, 'random_1000_split', random_1000_split_list)
+    else:
+        random_1000_split_list = pickle.load(open(args.random_1000_split_list,'rb'))
+        eval_retrieval_metrics(v_feat, t_feat, 'random_1000_split', random_1000_split_list)
     if args.inter_class_split_list is not None:
         inter_class_split_list = pickle.load(open(args.inter_class_split_list,'rb'))
         eval_retrieval_metrics(v_feat, t_feat, 'inter_class_split', inter_class_split_list)
