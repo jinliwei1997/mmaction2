@@ -55,7 +55,7 @@ class VideoSubtitleAudioTextMatcherE2E(nn.Module):
 
     def init_mlp_weights(self):
         """Initialize the model network weights."""
-        for layer in self.img_subtitle_mlp:
+        for layer in self.img_subtitle_audio_mlp:
             if isinstance(layer, nn.Linear):
                 normal_init(layer, std=self.init_std)
         for layer in self.text_mlp:
@@ -108,7 +108,7 @@ class VideoSubtitleAudioTextMatcherE2E(nn.Module):
         audios = audios.reshape((-1,) + audios.shape[2:])
         a_feat = self.encoder_a(audios, N)
 
-        v_s_a_feat = nn.functional.normalize(self.img_subtitle_mlp(torch.cat((v_feat, s_feat, a_feat), dim=1)), dim=1)
+        v_s_a_feat = nn.functional.normalize(self.img_subtitle_audio_mlp(torch.cat((v_feat, s_feat, a_feat), dim=1)), dim=1)
         v_s_a_feat = torch.cat(GatherLayer.apply(v_s_a_feat), dim=0)
 
         for key in texts_item:
@@ -130,7 +130,7 @@ class VideoSubtitleAudioTextMatcherE2E(nn.Module):
         audios = audios.reshape((-1,) + audios.shape[2:])
         a_feat = self.encoder_a(audios, N)
 
-        v_s_a_feat = nn.functional.normalize(self.img_subtitle_mlp(torch.cat((v_feat, s_feat, a_feat), dim=1)), dim=1)
+        v_s_a_feat = nn.functional.normalize(self.img_subtitle_audio_mlp(torch.cat((v_feat, s_feat, a_feat), dim=1)), dim=1)
 
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
