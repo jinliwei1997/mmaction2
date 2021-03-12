@@ -51,5 +51,5 @@ cfg = dict(
 
 video_subtitle_text_dataset = build_dataset(cfg)
 
-result = video_subtitle_text_dataset[0]
-print (result)
+
+print (video_subtitle_text_dataset[0],video_subtitle_text_dataset[1],video_subtitle_text_dataset[2])

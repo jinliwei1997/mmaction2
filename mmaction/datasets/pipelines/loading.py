@@ -1703,7 +1703,7 @@ class LoadTexts:
             lines = fin.readlines()
             fin.close()
         else:
-            lines = [['1\n'],['0\n'],['\n'],['1 1\n']]
+            lines = ['1\n','0\n','\n','1 1\n']
 
         num_sentences = int(lines[0].rstrip())
         assert num_sentences * 3 + 1 <= len(lines)
