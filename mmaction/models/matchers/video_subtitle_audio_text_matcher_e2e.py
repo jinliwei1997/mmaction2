@@ -172,7 +172,7 @@ class VideoSubtitleAudioTextMatcherE2E(nn.Module):
         subtitle_texts_item = data_batch['subtitle_texts_item']
         texts_item = data_batch['texts_item']
         audios = data_batch['audios']
-        losses, metric = self(imgs, subtitle_texts_item, texts_item)
+        losses, metric = self(imgs = imgs, subtitle_texts_item = subtitle_texts_item, audios = audios , texts_item = texts_item)
 
         loss, log_vars = self._parse_losses(losses)
 
