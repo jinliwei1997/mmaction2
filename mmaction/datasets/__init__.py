@@ -15,11 +15,12 @@ from .video_dataset import VideoDataset
 from .video_text_dataset import VideoTextDataset
 from .video_audio_text_dataset import VideoAudioTextDataset
 from .video_subtitle_text_dataset import VideoSubtitleTextDataset
+from .video_subtitle_audio_text_dataset import VideoSubtitleAudioTextDataset
 
 __all__ = [
     'VideoDataset', 'build_dataloader', 'build_dataset', 'RepeatDataset',
     'RawframeDataset', 'BaseDataset', 'ActivityNetDataset', 'SSNDataset',
     'HVUDataset', 'AudioDataset', 'AudioFeatureDataset', 'ImageDataset',
     'RawVideoDataset', 'AVADataset', 'AudioVisualDataset','VideoTextDataset',
-    'VideoAudioTextDataset', 'VideoSubtitleTextDataset'
+    'VideoAudioTextDataset', 'VideoSubtitleTextDataset','VideoSubtitleAudioTextDataset'
 ]
