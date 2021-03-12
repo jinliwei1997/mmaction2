@@ -70,8 +70,6 @@ class VideoSubtitleTextMatcherE2E(nn.Module):
 
     def encoder_t(self, texts):
         x = self.t_backbone(texts)
-        if self.use_text_mlp:
-            x = self.text_mlp(x)
         return x
 
     def forward(self, imgs, subtitle_texts_item, texts_item, return_loss=True):
@@ -90,13 +88,13 @@ class VideoSubtitleTextMatcherE2E(nn.Module):
         for key in subtitle_texts_item:
             subtitle_texts_item[key] = subtitle_texts_item[key].reshape((-1,) + subtitle_texts_item[key].shape[2:])
         s_feat = self.encoder_t(subtitle_texts_item)
-        print('feat_shape-----------------------------:', v_feat.shape, s_feat.shape)
+
         v_s_feat = nn.functional.normalize(self.img_subtitle_mlp(torch.cat((v_feat, s_feat), dim=1)), dim=1)
         v_s_feat = torch.cat(GatherLayer.apply(v_s_feat), dim=0)
 
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
-        t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1) # [N * text_num_per_video (T), C]
+        t_feat = nn.functional.normalize(self.text_mlp(self.encoder_t(texts_item)), dim=1) # [N * text_num_per_video (T), C]
         t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
 
         return self.head(v_s_feat, t_feat)
