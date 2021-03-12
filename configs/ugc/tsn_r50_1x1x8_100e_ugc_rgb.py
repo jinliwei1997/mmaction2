@@ -72,7 +72,7 @@ test_pipeline = [
         type='SampleFrames',
         clip_len=1,
         frame_interval=1,
-        num_clips=25,
+        num_clips=24,
         test_mode=True),
     dict(
         type='RawFrameDecode',
@@ -87,7 +87,8 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 data = dict(
-    videos_per_gpu=16,
+    # videos_per_gpu=16,
+    videos_per_gpu=1,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
