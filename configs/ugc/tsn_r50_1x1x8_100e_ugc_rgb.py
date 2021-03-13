@@ -126,6 +126,6 @@ log_config = dict(
 dist_params = dict(backend='nccl', port=29509)
 log_level = 'INFO'
 work_dir = './work_dirs/tsn_r50_1x1x8_100e_ugc_rgb_v_t_100e/'
-load_from = './work_dirs/v_t_e2e_100e/latest.pth'
+load_from = 'v_t_100e_visual.pth'
 resume_from = None
 workflow = [('train', 1)]
