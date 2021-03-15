@@ -166,6 +166,6 @@ dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = './work_dirs/v_a_t_e2e_100e'
 load_from = None
-resume_from = None
+resume_from = './work_dirs/v_a_t_e2e_100e/epoch_65.pth'
 workflow = [('train', 1)]
 find_unused_parameters=True
