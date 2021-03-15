@@ -4,8 +4,8 @@ import pickle
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Process a checkpoint to be published')
-    parser.add_argument('--v_t_feature', help='V_T feature pickle file path')
-    parser.add_argument('--result_pkl', default=None, help='result_pickle')
+    parser.add_argument('--v_t_result', help='V_T feature pickle file path')
+    parser.add_argument('--label_result', default=None, help='label result')
     parser.add_argument('--anno', default='/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text_title', help='anno')
     args = parser.parse_args()
     return args
