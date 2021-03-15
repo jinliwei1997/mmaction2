@@ -46,7 +46,7 @@ def main():
         cnt += 1
 
     lines = open(args.anno, 'r').readlines()
-    label = [int(line.rstrip().split(' ')[0].split('/')[-2]) for line in lines]
+    label = [line.rstrip().split(' ')[0].split('/')[-2] for line in lines]
     label_id = [label_dict[i] for i in label]
 
     eval_zero_shot(v_feat, np.array(label_feat), label_id)
