@@ -36,7 +36,7 @@ def main():
     args = parse_args()
     results = pickle.load(open(args.v_t_feature, 'rb'))
     v_feat = np.array([result[0] for result in results])
-    d = pickle.load(open(args.label_feat_dict, 'rb'))
+    d = pickle.load(open(args.label_feature_dict, 'rb'))
     label_feat = []
     label_dict = {}
     cnt = 0
