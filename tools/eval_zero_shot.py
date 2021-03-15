@@ -5,7 +5,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description='Process a checkpoint to be published')
     parser.add_argument('--v_t_feature', help='V_T feature pickle file path')
-    parser.add_argument('--label_feature_dict', default=None, help='label_feature_dict')
+    parser.add_argument('--result_pkl', default=None, help='result_pickle')
     parser.add_argument('--anno', default='/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text_title', help='anno')
     args = parser.parse_args()
     return args
@@ -34,9 +34,16 @@ def eval_zero_shot(v_feat, label_feat, label):
 
 def main():
     args = parse_args()
+    anno = '/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text_label'
+    lines = open(anno, 'r').readlines()
+    result = pickle.load(open(args.result_pkl, 'rb'))
+
+    d = {}
+    for i in range(len(result)):
+        d[lines[i].rstrip().split(' ')[0].split('/')[-2]] = result[i][1][0]
+
     results = pickle.load(open(args.v_t_feature, 'rb'))
     v_feat = np.array([result[0] for result in results])
-    d = pickle.load(open(args.label_feature_dict, 'rb'))
     label_feat = []
     label_dict = {}
     cnt = 0
