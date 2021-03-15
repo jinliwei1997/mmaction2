@@ -36,13 +36,13 @@ def main():
     args = parse_args()
     anno = '/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text_label'
     lines = open(anno, 'r').readlines()
-    result = pickle.load(open(args.result_pkl, 'rb'))
+    result = pickle.load(open(args.label_result, 'rb'))
 
     d = {}
     for i in range(len(result)):
         d[lines[i].rstrip().split(' ')[0].split('/')[-2]] = result[i][1][0]
 
-    results = pickle.load(open(args.v_t_feature, 'rb'))
+    results = pickle.load(open(args.v_t_result, 'rb'))
     v_feat = np.array([result[0] for result in results])
     label_feat = []
     label_dict = {}
