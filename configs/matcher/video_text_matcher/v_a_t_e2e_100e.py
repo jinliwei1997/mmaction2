@@ -164,7 +164,7 @@ log_config = dict(
     ])
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/v_a_t_e2e_100e_2'
+work_dir = './work_dirs/v_a_t_e2e_100e'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
