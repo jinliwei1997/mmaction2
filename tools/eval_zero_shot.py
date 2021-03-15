@@ -42,7 +42,7 @@ def main():
     cnt = 0
     for key in d:
         label_feat.append(d[key])
-        label_dict[d[key]] = cnt
+        label_dict[key] = cnt
         cnt += 1
 
     lines = open(args.anno, 'r').readlines()
