@@ -126,7 +126,6 @@ class VideoAudioTextMatcherE2E(nn.Module):
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
         t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1)  # [N * text_num_per_video (T), C]
 
-        print(v_a_feat.cpu().numpy().shape, t_feat.view(N, -1, t_feat.shape[1]).cpu().numpy().shape)
         return zip(v_a_feat.cpu().numpy(),t_feat.view(N, -1, t_feat.shape[1]).cpu().numpy())
 
     def forward_gradcam(self, audios):

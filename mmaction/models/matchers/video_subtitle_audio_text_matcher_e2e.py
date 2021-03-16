@@ -134,8 +134,7 @@ class VideoSubtitleAudioTextMatcherE2E(nn.Module):
 
         for key in texts_item:
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
-        t_feat = nn.functional.normalize(self.text_mlp(self.encoder_t(texts_item)),
-                                         dim=1)  # [N * text_num_per_video (T), C]
+        t_feat = nn.functional.normalize(self.text_mlp(self.encoder_t(texts_item)),dim=1)  # [N * text_num_per_video (T), C]
 
         return zip(v_s_a_feat.cpu().numpy(),t_feat.view(N, -1, t_feat.shape[1]).cpu().numpy())
 
