@@ -26,9 +26,18 @@ def eval_zero_shot(v_feat, label_feat, label):
     rank = np.argsort(s)[:, ::-1]
     mask = np.repeat(label.reshape(N, 1), axis=1, repeats=212)
     gt_rank = np.argsort(rank == mask)[:, ::-1][:, :1].reshape(N)
+    cls_cnt = [0 for i in range(212)]
+    cls_cnt_pos = [0 for i in range(212)]
+    for i in range(N):
+        cls_cnt[label[i]] += 1
+        if gt_rank[i] == 0:
+            cls_cnt_pos[label[i]] += 1
 
+    cls_acc = [cls_cnt_pos[i]/cls_cnt[i] for i in range(212)]
+    mca = sum(cls_acc)/212
     mean_rk, median_rk, recall1, recall5, recall10 = cal_avg_metrics(np.array(gt_rank))
     print('---V to T Zero Shot Classification---\n')
+    print(f'mca {mca}')
     print(f'vt_mean_rk\t{mean_rk:.4f}\nvt_median_rk\t{median_rk:.4f}\nvt_recall1\t{recall1:.4f}\nvt_recall5\t{recall5:.4f}\nvt_recall10\t{recall10:.4f}\n')
 
 
