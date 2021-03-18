@@ -21,7 +21,8 @@ split = 1  # official train/test splits. valid numbers: 1, 2, 3
 ann_file_train = f'data/ucf101/ucf101_train_split_{split}_rawframes.txt'
 ann_file_val = f'data/ucf101/ucf101_val_split_{split}_rawframes.txt'
 ann_file_test = f'data/ucf101/ucf101_val_split_{split}_rawframes.txt'
-img_norm_cfg = dict(mean=[104, 117, 128], std=[1, 1, 1], to_bgr=False)
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 train_pipeline = [
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
     dict(type='RawFrameDecode'),
@@ -78,18 +79,15 @@ data = dict(
         type=dataset_type,
         ann_file=ann_file_train,
         data_prefix=data_root,
-        start_index=0,
         pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
         ann_file=ann_file_val,
-        start_index=0,
         data_prefix=data_root_val,
         pipeline=val_pipeline),
     test=dict(
         type=dataset_type,
         ann_file=ann_file_test,
-        start_index=0,
         data_prefix=data_root_val,
         pipeline=test_pipeline))
 # optimizer
@@ -98,11 +96,11 @@ optimizer = dict(
     weight_decay=0.0005)  # this lr is used for 8 gpus
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 # learning policy
-lr_config = dict(policy='step', min_lr=[40, 80])
+lr_config = dict(policy='step', step=[40, 80])
 total_epochs = 100
 checkpoint_config = dict(interval=5)
 evaluation = dict(
-    interval=5, metrics=['top_k_accuracy', 'mean_class_accuracy'], topk=(1, 5))
+    interval=1, metrics=['top_k_accuracy', 'mean_class_accuracy'], topk=(1, 5))
 log_config = dict(
     interval=20,
     hooks=[
@@ -112,7 +110,7 @@ log_config = dict(
 # runtime settings
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/tsn_r50_1x1x8_100e_ucf101_rgb_scratch/'
+work_dir = './work_dirs/ucf_scratch/'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
