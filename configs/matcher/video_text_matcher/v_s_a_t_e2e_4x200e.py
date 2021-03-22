@@ -155,7 +155,7 @@ lr_config = dict(
     warmup_by_epoch=True,
     warmup_iters=1
 )
-total_epochs = 100
+total_epochs = 200
 checkpoint_config = dict(interval=5)
 evaluation = dict(
     interval=1,
