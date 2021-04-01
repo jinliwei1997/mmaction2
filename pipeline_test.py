@@ -27,11 +27,11 @@ cfg = dict(
     ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_title_train',
     data_prefix = '',
     pipeline=[
-        dict(type='PyAVInit',
+        dict(type='OpenCVInit',
              io_backend='memcached',
              **mc_cfg),
         dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-        dict(type='PyAVDecode', multi_thread=True),
+        dict(type='OpenCVDecode'),
         dict(type='Resize', scale=(-1, 256), lazy=True),
         dict(
             type='MultiScaleCrop',
