@@ -1067,6 +1067,7 @@ class OpenCVDecode:
 
         for frame_ind in results['frame_inds']:
             cur_frame = container[frame_ind]
+            print(type(cur_frame), cur_frame.shape)
             # last frame may be None in OpenCV
             while isinstance(cur_frame, type(None)):
                 frame_ind -= 1
