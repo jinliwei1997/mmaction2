@@ -18,15 +18,13 @@ img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 
 cfg = dict(
-    type = 'VideoSubtitleTextDataset',
-    ann_file = '/mnt/lustre/jinliwei/annotation/usv_train_list_frame_text_title',
-    data_prefix = 'data/ugc',
+    type = 'Mp4TextDataset',
+    ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_title_train',
+    data_prefix = '',
     pipeline=[
-
+        dict(type='DecordInit'),
         dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-        dict(
-            type='RawFrameDecode',
-            ),
+        dict(type='DecordDecode'),
         dict(type='Resize', scale=(-1, 256), lazy=True),
         dict(
             type='MultiScaleCrop',
@@ -42,14 +40,12 @@ cfg = dict(
         dict(type='FormatShape', input_format='NCHW'),
         dict(type='LoadTexts', sample_mode='number', sample_number=1),
         dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
-        dict(type='LoadTexts', sample_mode='number', sample_number=1, prefix='subtitle_'),
-        dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model', prefix='subtitle_'),
-        dict(type='Collect', keys=['imgs', 'texts_item', 'subtitle_texts_item'], meta_keys=[]),
+        dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
         dict(type='ToTensor', keys=['imgs'])
     ]
 )
 
-video_subtitle_text_dataset = build_dataset(cfg)
+mp4_text_dataset = build_dataset(cfg)
 
 
-print (video_subtitle_text_dataset[0],video_subtitle_text_dataset[1],video_subtitle_text_dataset[2])
+print (mp4_text_dataset[0],mp4_text_dataset[1],mp4_text_dataset[2])
