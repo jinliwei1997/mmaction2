@@ -1066,10 +1066,7 @@ class OpenCVDecode:
             results['frame_inds'] = np.squeeze(results['frame_inds'])
 
         for frame_ind in results['frame_inds']:
-            try:
-                cur_frame = container[frame_ind]
-            except:
-                cur_frame = container[0]
+            cur_frame = container[frame_ind]
             # last frame may be None in OpenCV
             while isinstance(cur_frame, type(None)):
                 frame_ind -= 1

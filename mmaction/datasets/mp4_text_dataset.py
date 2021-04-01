@@ -151,7 +151,7 @@ class Mp4TextDataset(BaseDataset):
         #     if logger is None:
         #         msg = '\n' + msg
         #     print_log(msg, logger=logger)
-        #vt_recall5_full\t{recall5:.4f}\nvt_recall10_full\t{recall10:.4f}'
+        # vt_recall5_full\t{recall5:.4f}\nvt_recall10_full\t{recall10:.4f}'
         #     if metric == 'vt_retrieval_metrics_full':
         #         v_feat = np.array([result[0] for result in results])
         #         t_feat = np.array([result[1] for result in results])

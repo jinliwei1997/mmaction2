@@ -17,14 +17,21 @@ from mmaction.utils import collect_env, get_root_logger
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 
+mc_cfg = dict(
+    server_list_cfg='/mnt/lustre/share/memcached_client/server_list.conf',
+    client_cfg='/mnt/lustre/share/memcached_client/client.conf',
+    sys_path='/mnt/lustre/share/pymc/py3')
+
 cfg = dict(
     type = 'Mp4TextDataset',
     ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_title_train',
     data_prefix = '',
     pipeline=[
-        dict(type='OpenCVInit'),
+        dict(type='PyAVInit',
+             io_backend='memcached',
+             **mc_cfg),
         dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-        dict(type='OpenCVDecode'),
+        dict(type='PyAVDecode', multi_thread=True),
         dict(type='Resize', scale=(-1, 256), lazy=True),
         dict(
             type='MultiScaleCrop',
