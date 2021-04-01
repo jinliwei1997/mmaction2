@@ -22,12 +22,12 @@ model = dict(
 )
 train_cfg = None
 test_cfg = None
-dataset_type = 'VideoTextDataset'
-data_root = 'data/ugc'
-data_root_val = 'data/ugc'
-ann_file_train = '/mnt/lustre/jinliwei/annotation/usv_train_list_frame_text_title'
-ann_file_val = '/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text_title'
-ann_file_test = '/mnt/lustre/jinliwei/annotation/usv_val_list_frame_text_title'
+dataset_type = 'Mp4TextDataset'
+data_root = ''
+data_root_val = ''
+ann_file_train = '/mnt/lustre/jinliwei/annotation/bili_video_title_train'
+ann_file_val = '/mnt/lustre/jinliwei/annotation/bili_video_title_train'
+ann_file_test = '/mnt/lustre/jinliwei/annotation/bili_video_title_train'
 mc_cfg = dict(
     server_list_cfg='/mnt/lustre/share/memcached_client/server_list.conf',
     client_cfg='/mnt/lustre/share/memcached_client/client.conf',
@@ -35,11 +35,9 @@ mc_cfg = dict(
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 train_pipeline = [
+    dict(type='DecordInit'),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(
-        type='RawFrameDecode',
-        io_backend='memcached',
-        **mc_cfg),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
@@ -59,11 +57,9 @@ train_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 val_pipeline = [
+    dict(type='DecordInit'),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(
-        type='RawFrameDecode',
-        io_backend='memcached',
-        **mc_cfg),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
@@ -83,11 +79,9 @@ val_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 test_pipeline = [
+    dict(type='DecordInit'),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(
-        type='RawFrameDecode',
-        io_backend='memcached',
-        **mc_cfg),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
