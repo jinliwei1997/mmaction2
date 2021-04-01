@@ -141,7 +141,8 @@ log_config = dict(
     hooks=[
         dict(type='TextLoggerHook'),
         dict(type='TensorboardLoggerHook')
-    ])
+    ]
+)
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 work_dir = './work_dirs/bili_v_t_e2e_200e'

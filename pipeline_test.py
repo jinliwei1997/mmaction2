@@ -48,4 +48,5 @@ cfg = dict(
 mp4_text_dataset = build_dataset(cfg)
 
 
-print (mp4_text_dataset[0],mp4_text_dataset[1],mp4_text_dataset[2])
+for i in len(mp4_text_dataset):
+    print(mp4_text_dataset[i])
