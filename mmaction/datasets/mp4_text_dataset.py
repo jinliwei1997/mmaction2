@@ -94,8 +94,8 @@ class Mp4TextDataset(BaseDataset):
             for line in fin:
                 line = line.strip()
                 video_info = {}
-                
-                video_info['filename'] = line.split('.mp4')[0]+'.mp4'
+
+                video_info['filename'] = line.split('.mp4 ')[0]+'.mp4'
                 video_info['text_path'] = line.split('.mp4')[1][1:]
 
                 video_infos.append(video_info)
