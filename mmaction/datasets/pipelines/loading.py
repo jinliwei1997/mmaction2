@@ -1076,7 +1076,7 @@ class OpenCVDecode:
                 imgs.append(cur_frame)
             except:
                 try:
-                    imgs.append[imgs[0]]
+                    imgs.append(imgs[0])
                 except:
                     print('broken_video: ', results['filename'])
         results['video_reader'] = None
