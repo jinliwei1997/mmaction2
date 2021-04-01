@@ -13,6 +13,7 @@ from mmaction.apis import train_model
 from mmaction.datasets import build_dataset
 from mmaction.models import build_model
 from mmaction.utils import collect_env, get_root_logger
+from tqdm import trange
 
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
@@ -55,5 +56,5 @@ cfg = dict(
 mp4_text_dataset = build_dataset(cfg)
 
 
-for i in range(len(mp4_text_dataset)):
+for i in trange(len(mp4_text_dataset)):
     print(mp4_text_dataset[i])

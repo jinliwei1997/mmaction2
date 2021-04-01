@@ -1079,6 +1079,7 @@ class OpenCVDecode:
                     imgs.append(imgs[0])
                 except:
                     print('broken_video: ', results['filename'])
+
         results['video_reader'] = None
         del container
 
