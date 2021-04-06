@@ -110,7 +110,7 @@ log_config = dict(
 # runtime settings
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/ucf_v_t_100e_finetune/'
-load_from = 'v_t_100e_visual.pth'
+work_dir = './work_dirs/ucf_v_t_300e_finetune/'
+load_from = 'v_t_300e_visual.pth'
 resume_from = None
 workflow = [('train', 1)]
