@@ -48,7 +48,7 @@ train_pipeline = [
         random_crop=False,
         max_wh_scale_gap=1,
         lazy=True),
-    dict(type='Resize', scale=(224, 224), keep_ratio=False, lazy=True),
+    dict(type='Resize', scale=(112, 112), keep_ratio=False, lazy=True),
     dict(type='Flip', flip_ratio=0.5, lazy=True),
     dict(type='Fuse'),
     dict(type='Normalize', **img_norm_cfg),
