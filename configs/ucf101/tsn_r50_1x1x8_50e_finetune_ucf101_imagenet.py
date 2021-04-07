@@ -5,7 +5,6 @@ model = dict(
         type='ResNet',
         pretrained='torchvision://resnet50',
         depth=50,
-        frozen_stages=4,
         norm_eval=False),
     cls_head=dict(
         type='TSNHead',
