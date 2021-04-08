@@ -25,9 +25,9 @@ test_cfg = None
 dataset_type = 'Mp4TextDataset'
 data_root = ''
 data_root_val = ''
-ann_file_train = '/mnt/lustre/jinliwei/annotation/bili_video_title_train'
-ann_file_val = '/mnt/lustre/jinliwei/annotation/bili_video_title_train'
-ann_file_test = '/mnt/lustre/jinliwei/annotation/bili_video_title_train'
+ann_file_train = '/mnt/lustre/jinliwei/annotation/bili_video_dm_train'
+ann_file_val = '/mnt/lustre/jinliwei/annotation/bili_video_dm_train'
+ann_file_test = '/mnt/lustre/jinliwei/annotation/bili_video_dm_train'
 mc_cfg = dict(
     server_list_cfg='/mnt/lustre/share/memcached_client/server_list.conf',
     client_cfg='/mnt/lustre/share/memcached_client/client.conf',
@@ -122,7 +122,7 @@ data = dict(
         pipeline=test_pipeline)
 )
 
-optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.03, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 lr_config = dict(
     policy='CosineAnnealing',
