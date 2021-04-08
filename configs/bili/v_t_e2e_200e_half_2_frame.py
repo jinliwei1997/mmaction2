@@ -35,9 +35,9 @@ mc_cfg = dict(
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 train_pipeline = [
-    dict(type='OpenCVInit'),
+    dict(type='DecordInit'),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=2),
-    dict(type='OpenCVDecode'),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
@@ -120,7 +120,7 @@ data = dict(
         pipeline=test_pipeline)
 )
 
-optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001) # 4 gpus
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 lr_config = dict(policy='step', step=[50, 100, 150])
 total_epochs = 200
