@@ -25,14 +25,14 @@ mc_cfg = dict(
 
 cfg = dict(
     type = 'Mp4TextDataset',
-    ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_title_train',
+    ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_dm_train',
     data_prefix = '',
     pipeline=[
-        dict(type='OpenCVInit',
+        dict(type='DecordInit',
              io_backend='memcached',
              **mc_cfg),
-        dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-        dict(type='OpenCVDecode'),
+        dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=2),
+        dict(type='DecordDecode'),
         dict(type='Resize', scale=(-1, 256), lazy=True),
         dict(
             type='MultiScaleCrop',
@@ -41,7 +41,7 @@ cfg = dict(
             random_crop=False,
             max_wh_scale_gap=1,
             lazy=True),
-        dict(type='Resize', scale=(224, 224), keep_ratio=False, lazy=True),
+        dict(type='Resize', scale=(112, 112), keep_ratio=False, lazy=True),
         dict(type='Flip', flip_ratio=0.5, lazy=True),
         dict(type='Fuse'),
         dict(type='Normalize', **img_norm_cfg),
@@ -57,4 +57,6 @@ mp4_text_dataset = build_dataset(cfg)
 
 
 for i in trange(len(mp4_text_dataset)):
+    if i > 10:
+        break
     print(mp4_text_dataset[i])
