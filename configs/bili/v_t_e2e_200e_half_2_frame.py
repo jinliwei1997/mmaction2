@@ -124,7 +124,13 @@ data = dict(
 
 optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001) # 4 gpus
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
-lr_config = dict(policy='step', step=[50, 100, 150])
+lr_config = dict(
+    policy='CosineAnnealing',
+    min_lr=0,
+    warmup='linear',
+    warmup_by_epoch=True,
+    warmup_iters=1
+)
 total_epochs = 200
 checkpoint_config = dict(interval=5)
 evaluation = dict(
@@ -139,9 +145,10 @@ log_config = dict(
         dict(type='TensorboardLoggerHook')
     ]
 )
+
 dist_params = dict(backend='nccl', port=29666)
 log_level = 'INFO'
-work_dir = './work_dirs/bili_v_t_e2e_200e_half_2_frame'
+work_dir = './work_dirs/bili_v_t_e2e_200e_half_4_frame'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
