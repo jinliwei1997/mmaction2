@@ -4,7 +4,7 @@ import os
 import os.path as osp
 import sys
 from multiprocessing import Pool
-
+from pathlib import Path
 
 def resize_videos(full_path):
     """Generate resized video cache.
@@ -16,6 +16,7 @@ def resize_videos(full_path):
     Returns:
         bool: Whether generate video cache successfully.
     """
+    full_path = Path(full_path)
     vid_path = full_path.replace(args.src_dir,'')
     out_full_path = osp.join(args.out_dir, vid_path)
     dir_name = osp.dirname(vid_path)
