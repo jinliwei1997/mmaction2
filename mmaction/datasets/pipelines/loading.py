@@ -788,21 +788,26 @@ class PyAVDecode:
         container = results['video_reader']
         imgs = list()
 
-        if self.multi_thread:
-            container.streams.video[0].thread_type = 'AUTO'
-        if results['frame_inds'].ndim != 1:
-            results['frame_inds'] = np.squeeze(results['frame_inds'])
+        try:
+            if self.multi_thread:
+                container.streams.video[0].thread_type = 'AUTO'
+            if results['frame_inds'].ndim != 1:
+                results['frame_inds'] = np.squeeze(results['frame_inds'])
 
-        # set max indice to make early stop
-        max_inds = max(results['frame_inds'])
-        i = 0
-        for frame in container.decode(video=0):
-            if i > max_inds + 1:
-                break
-            imgs.append(frame.to_rgb().to_ndarray())
-            i += 1
+            # set max indice to make early stop
+            max_inds = max(results['frame_inds'])
+            i = 0
+            for frame in container.decode(video=0):
+                if i > max_inds + 1:
+                    break
+                imgs.append(frame.to_rgb().to_ndarray())
+                i += 1
 
-        results['video_reader'] = None
+            results['video_reader'] = None
+        except:
+            imgs = [np.zeros((360, 360, 3)) for i in results['frame_inds']]
+            print(results['filename'])
+
         del container
 
         # the available frame in pyav may be less than its length,

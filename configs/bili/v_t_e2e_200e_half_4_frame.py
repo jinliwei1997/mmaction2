@@ -35,11 +35,11 @@ mc_cfg = dict(
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 train_pipeline = [
-    dict(type='DecordInit',
+    dict(type='PyAVInit',
          io_backend='memcached',
          **mc_cfg),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=4),
-    dict(type='DecordDecode'),
+    dict(type='PyAVDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
