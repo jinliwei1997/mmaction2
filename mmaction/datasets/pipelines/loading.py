@@ -1063,7 +1063,7 @@ class OpenCVDecode:
         """
         container = results['video_reader']
         imgs = list()
-        print(results['frame_inds'].shape)
+
         if results['frame_inds'].ndim != 1:
             results['frame_inds'] = np.squeeze(results['frame_inds'])
         for frame_ind in results['frame_inds']:
@@ -1073,8 +1073,7 @@ class OpenCVDecode:
                 frame_ind -= 1
                 cur_frame = container[frame_ind]
             imgs.append(cur_frame)
-            imgs.append(imgs[0])
-
+        print(imgs.shape)
         results['video_reader'] = None
         del container
 
