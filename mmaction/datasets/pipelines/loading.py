@@ -1079,6 +1079,7 @@ class OpenCVDecode:
             for frame_ind in results['frame_inds']:
                 cur_frame = np.zeros((360, 360, 3))
                 imgs.append(cur_frame)
+            print(results['filename'])
 
         # print('frame_inds:', results['frame_inds'])
         # print('total_frames:', results['total_frames'])
