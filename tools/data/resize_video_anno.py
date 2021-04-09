@@ -16,31 +16,31 @@ def resize_videos(full_path):
     Returns:
         bool: Whether generate video cache successfully.
     """
-    full_path = Path(full_path)
     vid_path = full_path.replace(args.src_dir,'')
+
     out_full_path = osp.join(args.out_dir, vid_path)
     dir_name = osp.dirname(vid_path)
     out_dir = osp.join(args.out_dir, dir_name)
     if not osp.exists(out_dir):
         os.makedirs(out_dir)
     result = os.popen(
-        f'ffprobe -hide_banner -loglevel error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 {full_path}'  # noqa:E501
+        f'ffprobe -hide_banner -loglevel error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "{full_path}"'  # noqa:E501
     )
     w, h = [int(d) for d in result.readline().rstrip().split(',')]
     if w > h:
-        cmd = (f'ffmpeg -hide_banner -loglevel error -i {full_path} '
+        cmd = (f'ffmpeg -hide_banner -loglevel error -i "{full_path}" '
                f'-vf {"mpdecimate," if args.remove_dup else ""}'
                f'scale=-2:{args.scale} '
                f'{"-vsync vfr" if args.remove_dup else ""} '
                f'-c:v libx264 {"-g 16" if args.dense else ""} '
-               f'-an {out_full_path} -y')
+               f'-an "{out_full_path}" -y')
     else:
-        cmd = (f'ffmpeg -hide_banner -loglevel error -i {full_path} '
+        cmd = (f'ffmpeg -hide_banner -loglevel error -i "{full_path}" '
                f'-vf {"mpdecimate," if args.remove_dup else ""}'
                f'scale={args.scale}:-2 '
                f'{"-vsync vfr" if args.remove_dup else ""} '
                f'-c:v libx264 {"-g 16" if args.dense else ""} '
-               f'-an {out_full_path} -y')
+               f'-an "{out_full_path}" -y')
     os.popen(cmd)
     print(f'{vid_path} done')
     sys.stdout.flush()
