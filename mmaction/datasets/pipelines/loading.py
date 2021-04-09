@@ -1066,12 +1066,23 @@ class OpenCVDecode:
 
         if results['frame_inds'].ndim != 1:
             results['frame_inds'] = np.squeeze(results['frame_inds'])
-        for frame_ind in results['frame_inds']:
-            cur_frame = container[frame_ind]
-            # last frame may be None in OpenCV
-            while isinstance(cur_frame, type(None)):
-                frame_ind -= 1
+        try:
+            for frame_ind in results['frame_inds']:
                 cur_frame = container[frame_ind]
+                # last frame may be None in OpenCV
+                while isinstance(cur_frame, type(None)):
+                    frame_ind -= 1
+                    cur_frame = container[frame_ind]
+                imgs.append(cur_frame)
+        except:
+            imgs = []
+            for frame_ind in results['frame_inds']:
+                cur_frame = np.zeros(360,360)
+                imgs.append(cur_frame)
+
+        imgs = []
+        for frame_ind in results['frame_inds']:
+            cur_frame = np.zeros(360, 360)
             imgs.append(cur_frame)
 
         print('frame_inds:', results['frame_inds'])
