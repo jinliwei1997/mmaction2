@@ -1031,8 +1031,8 @@ class OpenCVInit:
         results['new_path'] = new_path
         results['video_reader'] = container
         results['total_frames'] = len(container)
-        print('OpenCVInit success')
-        print(len(container))
+        # print('OpenCVInit success')
+        # print(len(container))
 
         return results
 
@@ -1074,17 +1074,11 @@ class OpenCVDecode:
                     frame_ind -= 1
                     cur_frame = container[frame_ind]
                 imgs.append(cur_frame)
-                print(cur_frame.shape)
         except:
             imgs = []
             for frame_ind in results['frame_inds']:
-                cur_frame = np.zeros(360,360)
+                cur_frame = np.zeros((360, 360, 3))
                 imgs.append(cur_frame)
-
-        imgs = []
-        for frame_ind in results['frame_inds']:
-            cur_frame = np.zeros((360, 360, 3))
-            imgs.append(cur_frame)
 
         print('frame_inds:', results['frame_inds'])
         print('total_frames:', results['total_frames'])
