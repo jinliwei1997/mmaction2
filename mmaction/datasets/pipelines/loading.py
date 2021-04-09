@@ -1032,6 +1032,7 @@ class OpenCVInit:
         results['video_reader'] = container
         results['total_frames'] = len(container)
         print('OpenCVInit success')
+        print(len(container))
 
         return results
 
@@ -1065,7 +1066,6 @@ class OpenCVDecode:
 
         if results['frame_inds'].ndim != 1:
             results['frame_inds'] = np.squeeze(results['frame_inds'])
-
         for frame_ind in results['frame_inds']:
             cur_frame = container[frame_ind]
             # last frame may be None in OpenCV
