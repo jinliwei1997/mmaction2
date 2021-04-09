@@ -975,8 +975,11 @@ class DecordDecode:
             idx: container[idx].asnumpy()
             for idx in np.unique(frame_inds)
         }
-        imgs = [frame_dict[idx] for idx in frame_inds]
-        print(imgs[0].shape)
+        try:
+            imgs = [frame_dict[idx] for idx in frame_inds]
+        except:
+            print(results['filename'])
+            imgs = [np.zeros((360, 360, 3)) for idx in frame_inds]
         results['video_reader'] = None
         del container
 
