@@ -971,11 +971,11 @@ class DecordDecode:
 
         frame_inds = results['frame_inds']
         # Generate frame index mapping in order
-        frame_dict = {
-            idx: container[idx].asnumpy()
-            for idx in np.unique(frame_inds)
-        }
         try:
+            frame_dict = {
+                idx: container[idx].asnumpy()
+                for idx in np.unique(frame_inds)
+            }
             imgs = [frame_dict[idx] for idx in frame_inds]
         except:
             print(results['filename'])
