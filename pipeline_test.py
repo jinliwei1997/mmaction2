@@ -58,5 +58,5 @@ mp4_text_dataset = build_dataset(cfg)
 
 for i in range(len(mp4_text_dataset)):
     print(i)
-    for key in mp4_text_dataset[i]:
-        print(mp4_text_dataset[i][key].shape)
+    print(mp4_text_dataset[i]['imgs'].shape)
+
