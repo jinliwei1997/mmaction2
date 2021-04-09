@@ -1074,6 +1074,7 @@ class OpenCVDecode:
                     frame_ind -= 1
                     cur_frame = container[frame_ind]
                 imgs.append(cur_frame)
+                print(cur_frame.shape)
         except:
             imgs = []
             for frame_ind in results['frame_inds']:
