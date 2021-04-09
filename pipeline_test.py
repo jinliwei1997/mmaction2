@@ -57,6 +57,8 @@ mp4_text_dataset = build_dataset(cfg)
 
 
 for i in range(2270,len(mp4_text_dataset)):
-    print('video', i)
-    print(mp4_text_dataset[i]['imgs'].shape)
+    try:
+        sp = mp4_text_dataset[i]['imgs'].shape
+    except:
+        print(f'error {i} ', mp4_text_dataset.video_infos['filename'])
 
