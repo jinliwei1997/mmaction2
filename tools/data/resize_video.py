@@ -6,7 +6,7 @@ import sys
 from multiprocessing import Pool
 
 
-def resize_videos(vid_item):
+def resize_videos(full_path):
     """Generate resized video cache.
 
     Args:
@@ -16,7 +16,7 @@ def resize_videos(vid_item):
     Returns:
         bool: Whether generate video cache successfully.
     """
-    full_path, vid_path = vid_item
+    vid_path = full_path.replace(args.src_dir,'')
     out_full_path = osp.join(args.out_dir, vid_path)
     dir_name = osp.dirname(vid_path)
     out_dir = osp.join(args.out_dir, dir_name)
@@ -93,18 +93,11 @@ if __name__ == '__main__':
     print('Extension of videos: ', args.ext)
     fullpath_list = glob.glob(args.src_dir + '/*' * args.level + '.' +
                               args.ext)
-    print(fullpath_list)
+
     done_fullpath_list = glob.glob(args.out_dir + '/*' * args.level + args.ext)
     print('Total number of videos found: ', len(fullpath_list))
     print('Total number of videos transfer finished: ',
           len(done_fullpath_list))
-    if args.level == 2:
-        vid_list = list(
-            map(
-                lambda p: osp.join(
-                    osp.basename(osp.dirname(p)), osp.basename(p)),
-                fullpath_list))
-    elif args.level == 1:
-        vid_list = list(map(lambda p: osp.basename(p), fullpath_list))
+
     pool = Pool(args.num_worker)
-    pool.map(resize_videos, zip(fullpath_list, vid_list))
+    pool.map(resize_videos, fullpath_list)
