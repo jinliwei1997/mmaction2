@@ -38,7 +38,7 @@ train_pipeline = [
     dict(type='DecordInit',
          io_backend='memcached',
          **mc_cfg),
-    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=4),
+    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=16),
     dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
