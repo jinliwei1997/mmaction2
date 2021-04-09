@@ -1073,6 +1073,9 @@ class OpenCVDecode:
                 frame_ind -= 1
                 cur_frame = container[frame_ind]
             imgs.append(cur_frame)
+
+        print('frame_inds:', results['frame_inds'])
+        print('total_frames:', results['total_frames'])
         print(imgs.shape)
         results['video_reader'] = None
         del container
