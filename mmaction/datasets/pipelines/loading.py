@@ -1076,7 +1076,7 @@ class OpenCVDecode:
 
         print('frame_inds:', results['frame_inds'])
         print('total_frames:', results['total_frames'])
-        print(imgs.shape)
+        print(imgs[0].shape)
         results['video_reader'] = None
         del container
 
