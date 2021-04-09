@@ -977,6 +977,10 @@ class DecordDecode:
                 for idx in np.unique(frame_inds)
             }
             imgs = [frame_dict[idx] for idx in frame_inds]
+            for i in range(len(imgs)):
+                if len(imgs[i].shape) != 3 or imgs[i].shape[2] != 3:
+                    print(results['filename'], i)
+                    imgs[i] = np.zeros((360, 360, 3))
         except:
             print(results['filename'])
             imgs = [np.zeros((360, 360, 3)) for idx in frame_inds]

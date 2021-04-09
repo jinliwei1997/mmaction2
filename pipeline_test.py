@@ -56,7 +56,7 @@ cfg = dict(
 mp4_text_dataset = build_dataset(cfg)
 
 
-for i in range(2270,len(mp4_text_dataset)):
+for i in range(2270, len(mp4_text_dataset)):
     try:
         sp = mp4_text_dataset[i]['imgs'].shape
     except:
