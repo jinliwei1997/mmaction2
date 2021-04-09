@@ -1033,7 +1033,7 @@ class OpenCVInit:
         results['total_frames'] = len(container)
         print('OpenCVInit success')
         print(len(container))
-        print(len(results['frame_inds']))
+
         return results
 
     def __del__(self):
@@ -1063,7 +1063,7 @@ class OpenCVDecode:
         """
         container = results['video_reader']
         imgs = list()
-
+        print(results['frame_inds'].shape)
         if results['frame_inds'].ndim != 1:
             results['frame_inds'] = np.squeeze(results['frame_inds'])
         for frame_ind in results['frame_inds']:
