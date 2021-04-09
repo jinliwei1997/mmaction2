@@ -980,6 +980,11 @@ class DecordDecode:
         except:
             print(results['filename'])
             imgs = [np.zeros((360, 360, 3)) for idx in frame_inds]
+
+        print(imgs[0].shape)
+        # print(results['filename'])
+        imgs = [np.zeros((360, 360, 3)) for idx in frame_inds]
+
         results['video_reader'] = None
         del container
 
