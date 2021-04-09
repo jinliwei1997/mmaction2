@@ -1082,7 +1082,7 @@ class OpenCVDecode:
 
         imgs = []
         for frame_ind in results['frame_inds']:
-            cur_frame = np.zeros(360, 360)
+            cur_frame = np.zeros((360, 360))
             imgs.append(cur_frame)
 
         print('frame_inds:', results['frame_inds'])
