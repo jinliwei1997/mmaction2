@@ -89,7 +89,7 @@ if __name__ == '__main__':
     with open('../annotation/bili_video_dm_train') as f:
         t_lines = f.readlines()
         lines.extend(t_lines)
-    with open('../annotation/bili_video_dm_test') as f:
+    with open('../annotation/bili_video_dm_val') as f:
         t_lines = f.readlines()
         lines.extend(t_lines)
     print(len(lines))
