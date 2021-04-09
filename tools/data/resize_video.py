@@ -58,8 +58,7 @@ def parse_args():
     parser.add_argument(
         '--level',
         type=int,
-        choices=[1, 2],
-        default=2,
+        default=4,
         help='directory level of data')
     parser.add_argument(
         '--remove-dup',
