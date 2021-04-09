@@ -1080,9 +1080,9 @@ class OpenCVDecode:
                 cur_frame = np.zeros((360, 360, 3))
                 imgs.append(cur_frame)
 
-        print('frame_inds:', results['frame_inds'])
-        print('total_frames:', results['total_frames'])
-        print(imgs[0].shape)
+        # print('frame_inds:', results['frame_inds'])
+        # print('total_frames:', results['total_frames'])
+        # print(imgs[0].shape)
         results['video_reader'] = None
         del container
 
