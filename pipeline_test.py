@@ -31,7 +31,7 @@ cfg = dict(
         dict(type='OpenCVInit',
              io_backend='memcached',
              **mc_cfg),
-        dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=2),
+        dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=4),
         dict(type='OpenCVDecode'),
         dict(type='Resize', scale=(-1, 256), lazy=True),
         dict(
@@ -41,7 +41,7 @@ cfg = dict(
             random_crop=False,
             max_wh_scale_gap=1,
             lazy=True),
-        dict(type='Resize', scale=(112, 112), keep_ratio=False, lazy=True),
+        dict(type='Resize', scale=(224, 224), keep_ratio=False, lazy=True),
         dict(type='Flip', flip_ratio=0.5, lazy=True),
         dict(type='Fuse'),
         dict(type='Normalize', **img_norm_cfg),
