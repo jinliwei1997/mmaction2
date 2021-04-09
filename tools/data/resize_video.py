@@ -93,6 +93,7 @@ if __name__ == '__main__':
     print('Extension of videos: ', args.ext)
     fullpath_list = glob.glob(args.src_dir + '/*' * args.level + '.' +
                               args.ext)
+    print(fullpath_list)
     done_fullpath_list = glob.glob(args.out_dir + '/*' * args.level + args.ext)
     print('Total number of videos found: ', len(fullpath_list))
     print('Total number of videos transfer finished: ',
