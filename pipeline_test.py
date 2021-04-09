@@ -56,7 +56,7 @@ cfg = dict(
 mp4_text_dataset = build_dataset(cfg)
 
 
-for i in trange(len(mp4_text_dataset)):
-    if i > 10:
-        break
-    print(mp4_text_dataset[i])
+for i in range(len(mp4_text_dataset)):
+    print(i)
+    for key in mp4_text_dataset[i]:
+        print(mp4_text_dataset[i][key].shape)

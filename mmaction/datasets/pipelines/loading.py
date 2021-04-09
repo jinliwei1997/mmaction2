@@ -1031,6 +1031,7 @@ class OpenCVInit:
         results['new_path'] = new_path
         results['video_reader'] = container
         results['total_frames'] = len(container)
+        print('OpenCVInit success')
 
         return results
 
@@ -1066,19 +1067,13 @@ class OpenCVDecode:
             results['frame_inds'] = np.squeeze(results['frame_inds'])
 
         for frame_ind in results['frame_inds']:
-            try:
+            cur_frame = container[frame_ind]
+            # last frame may be None in OpenCV
+            while isinstance(cur_frame, type(None)):
+                frame_ind -= 1
                 cur_frame = container[frame_ind]
-
-                # last frame may be None in OpenCV
-                while isinstance(cur_frame, type(None)):
-                    frame_ind -= 1
-                    cur_frame = container[frame_ind]
-                imgs.append(cur_frame)
-            except:
-                try:
-                    imgs.append(imgs[0])
-                except:
-                    print('broken_video: ', results['filename'])
+            imgs.append(cur_frame)
+            imgs.append(imgs[0])
 
         results['video_reader'] = None
         del container
