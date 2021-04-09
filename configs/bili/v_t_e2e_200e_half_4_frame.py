@@ -38,7 +38,7 @@ train_pipeline = [
     dict(type='DecordInit',
          io_backend='memcached',
          **mc_cfg),
-    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=16),
+    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=4),
     dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
@@ -103,7 +103,7 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 data = dict(
-    videos_per_gpu=16,
+    videos_per_gpu=32,
     workers_per_gpu=8,
     train=dict(
         type=dataset_type,
