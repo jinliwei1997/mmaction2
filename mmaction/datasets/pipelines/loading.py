@@ -1033,7 +1033,7 @@ class OpenCVInit:
         results['total_frames'] = len(container)
         print('OpenCVInit success')
         print(len(container))
-
+        print(len(results['frame_inds']))
         return results
 
     def __del__(self):
