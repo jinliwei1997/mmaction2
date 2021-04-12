@@ -51,6 +51,8 @@ def resize_videos(full_path, time_step = 10):
     sys.stdout.flush()
     cmd = f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{out_full_path}"'
     r = os.popen(cmd)
+    print(r.readlines())
+    sys.stdout.flush()
     duration = int(float(r.readlines().rstrip()))
 
     print(duration)
