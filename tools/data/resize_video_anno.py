@@ -6,7 +6,7 @@ import sys
 from multiprocessing import Pool
 from pathlib import Path
 
-def resize_videos(full_path):
+def resize_videos(full_path, time_step = 10):
     """Generate resized video cache.
 
     Args:
@@ -19,8 +19,9 @@ def resize_videos(full_path):
     vid_path = full_path.replace(args.src_dir,'')
     partition = vid_path.split('/')[0]
     vid_name = vid_path.split('/')[-1]
-    out_full_path = osp.join(args.out_dir, partition, vid_name)
-    out_dir = osp.join(args.out_dir, partition)
+    BV = vid_path.split('/')[-2]
+    out_full_path = osp.join(args.out_dir, partition, BV, vid_name)
+    out_dir = osp.join(args.out_dir, partition, BV)
     if not osp.exists(out_dir):
         os.makedirs(out_dir)
     result = os.popen(
@@ -41,9 +42,22 @@ def resize_videos(full_path):
                f'{"-vsync vfr" if args.remove_dup else ""} '
                f'-c:v libx264 {"-g 16" if args.dense else ""} '
                f'-an "{out_full_path}" -y')
+
     r = os.popen(cmd)
     r.readlines()
-    print(f'{out_full_path} done')
+
+    cmd = f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{out_full_path}"'
+    r = os.popen(cmd)
+    duration = int(float(r.readlines().rstrip()))
+
+
+    for i in range(0, duration, time_step):
+        cmd = f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{out_full_path}"'
+        r = os.popen(cmd)
+        path_i = out_full_path[:-4]+f'_&_{i}.mp4'
+        r.readlines(f'ffmpeg -i {out_full_path} -ss {i} -t {time_step} {path_i}')
+
+    print(f'{out_full_path} done; time: {duration}s')
     sys.stdout.flush()
     return True
 
