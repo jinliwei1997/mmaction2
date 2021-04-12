@@ -57,7 +57,7 @@ def resize_videos(full_path, time_step = 10):
 
     for i in range(0, duration, time_step):
         path_i = out_full_path[:-4]+f'_&_{i}.mp4'
-        cmd = f'ffmpeg -i {out_full_path} -ss {i} -t {time_step} {path_i}'
+        cmd = f'ffmpeg -i {out_full_path} -ss {i} -t {time_step} "{path_i}"'
         r = os.popen(cmd)
         r.readlines()
 
