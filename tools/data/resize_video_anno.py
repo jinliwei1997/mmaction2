@@ -47,6 +47,11 @@ def resize_videos(full_path):
     sys.stdout.flush()
     return True
 
+def gao(full_path):
+    try:
+        resize_videos(full_path)
+    except:
+        print(f'error {full_path}')
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -83,7 +88,6 @@ def parse_args():
 
     return args
 
-
 if __name__ == '__main__':
     args = parse_args()
 
@@ -98,4 +102,4 @@ if __name__ == '__main__':
     fullpath_list = [line.rstrip().split(' ##$$## ')[0] for line in lines]
     print(fullpath_list[:10])
     pool = Pool(args.num_worker)
-    pool.map(resize_videos, fullpath_list)
+    pool.map(gao, fullpath_list)
