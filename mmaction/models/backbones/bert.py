@@ -26,7 +26,7 @@ class BERT(nn.Module):
             logger = get_root_logger()
             logger.info(f'load model from: {self.pretrained}')
             self.model = AutoModel.from_pretrained(self.pretrained).to('cuda')
-            # self.model.train()
+            self.model.train()
         else:
             raise TypeError('pretrained must be a str')
 
