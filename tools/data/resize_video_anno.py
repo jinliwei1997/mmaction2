@@ -45,7 +45,7 @@ def resize_videos(full_path, time_step = 10):
 
     r = os.popen(cmd)
     r.readlines()
-
+    print("------------sb-----------")
     cmd = f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{out_full_path}"'
     r = os.popen(cmd)
     duration = int(float(r.readlines().rstrip()))
