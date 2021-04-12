@@ -5,6 +5,7 @@ import os.path as osp
 import sys
 from multiprocessing import Pool
 from pathlib import Path
+import logging
 
 def resize_videos(full_path, time_step = 10):
     """Generate resized video cache.
@@ -57,7 +58,7 @@ def resize_videos(full_path, time_step = 10):
 
     for i in range(0, duration, time_step):
         path_i = out_full_path[:-4]+f'_&_{i}.mp4'
-        cmd = f'ffmpeg -loglevel error -i "{out_full_path}" -ss {i} -t {time_step} "{path_i}"'
+        cmd = f'ffmpeg -loglevel error -i "{out_full_path}" -ss {i} -t {time_step} "{path_i}" -y'
         r = os.popen(cmd)
         r.readlines()
 
@@ -69,6 +70,7 @@ def gao(full_path):
     try:
         resize_videos(full_path)
     except:
+        logging.debug(full_path)
         print(f'error {full_path}')
 
 def parse_args():
@@ -102,11 +104,14 @@ def parse_args():
         help='resize image short side length keeping ratio')
     parser.add_argument(
         '--num-worker', type=int, default=8, help='number of workers')
+    parser.add_argument(
+        '--st', type=int, default=0, help='[st*50000: (st+1)*50000]')
     args = parser.parse_args()
 
     return args
 
 if __name__ == '__main__':
+    logging.basicConfig(filename='cache_error.log', level=logging.DEBUG)
     args = parse_args()
 
     lines = []
@@ -119,5 +124,6 @@ if __name__ == '__main__':
     print(len(lines))
     fullpath_list = [line.rstrip().split(' ##$$## ')[0] for line in lines]
     print(fullpath_list[:10])
+
     pool = Pool(args.num_worker)
-    pool.map(gao, fullpath_list)
+    pool.map(gao, fullpath_list[args.st*50000: (args.st+1)*50000])
