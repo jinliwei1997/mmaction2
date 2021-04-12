@@ -7,7 +7,7 @@ from multiprocessing import Pool
 from pathlib import Path
 import logging
 
-def resize_videos(full_path, time_step = 10):
+def resize_videos(full_path, time_step = 20):
     """Generate resized video cache.
 
     Args:
