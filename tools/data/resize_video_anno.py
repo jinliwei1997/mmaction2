@@ -27,6 +27,7 @@ def resize_videos(full_path, time_step = 10):
     result = os.popen(
         f'ffprobe -hide_banner -loglevel error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "{full_path}"'  # noqa:E501
     )
+    print("------------sb-----------")
     w, h = [int(d) for d in result.readline().rstrip().split(',')]
     if w > h:
         cmd = (f'ffmpeg -hide_banner -loglevel error -i "{full_path}" '
