@@ -17,10 +17,10 @@ def resize_videos(full_path):
         bool: Whether generate video cache successfully.
     """
     vid_path = full_path.replace(args.src_dir,'')
-
-    out_full_path = osp.join(args.out_dir, vid_path)
-    dir_name = osp.dirname(vid_path)
-    out_dir = osp.join(args.out_dir, dir_name)
+    partition = vid_path.split('/')[1]
+    vid_name = vid_path.split('/')[-1]
+    out_full_path = osp.join(args.out_dir, partition, vid_name)
+    out_dir = osp.join(args.out_dir, partition)
     if not osp.exists(out_dir):
         os.makedirs(out_dir)
     result = os.popen(
@@ -43,7 +43,7 @@ def resize_videos(full_path):
                f'-an "{out_full_path}" -y')
     r = os.popen(cmd)
     r.readlines()
-    print(f'{vid_path} done')
+    print(f'{out_full_path} done')
     sys.stdout.flush()
     return True
 
