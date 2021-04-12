@@ -54,11 +54,12 @@ def resize_videos(full_path, time_step = 10):
 
     print(duration)
     sys.stdout.flush()
+
     for i in range(0, duration, time_step):
-        cmd = f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{out_full_path}"'
-        r = os.popen(cmd)
         path_i = out_full_path[:-4]+f'_&_{i}.mp4'
-        r.readlines(f'ffmpeg -i {out_full_path} -ss {i} -t {time_step} {path_i}')
+        cmd = f'ffmpeg -i {out_full_path} -ss {i} -t {time_step} {path_i}'
+        r = os.popen(cmd)
+        r.readlines()
 
     print(f'{out_full_path} done; time: {duration}s')
     sys.stdout.flush()
