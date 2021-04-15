@@ -5,15 +5,8 @@ import warnings
 print("sb1")
 import mmcv
 import torch
-from mmcv import Config
-from mmcv.runner import init_dist, set_random_seed
-from mmcv.utils import get_git_hash
 print("sb2")
-from mmaction import __version__
-from mmaction.apis import train_model
-from mmaction.datasets import build_dataset
 from mmaction.models import build_model
-from mmaction.utils import collect_env, get_root_logger
 from tqdm import trange
 print("sb3")
 img_norm_cfg = dict(
