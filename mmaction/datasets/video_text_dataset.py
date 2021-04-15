@@ -120,6 +120,7 @@ class VideoTextDataset(BaseDataset):
 
     def evaluate(self,
                  results,
+                 metrics=['vt_retrieval_metrics_full', 'tv_retrieval_metrics_full'],
                  logger=None,
                  **deprecated_kwargs):
         """Perform evaluation for common datasets.
