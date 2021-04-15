@@ -67,7 +67,7 @@ val_pipeline = [
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(type='CenterCrop', crop_size=224, lazy=True),
     dict(type='Resize', scale=(112, 112), keep_ratio=False, lazy=True),
-    dict(type='Flip', flip_ratio=0),
+    dict(type='Flip', flip_ratio=0, lazy=True),
     dict(type='Fuse'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
