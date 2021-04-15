@@ -185,16 +185,3 @@ class Mp4TextDataset(BaseDataset):
             results['label'] = onehot
 
         return self.pipeline(results)
-
-def eval_retrieval_metrics(q_feat, k_feat):
-    s = np.matmul(q_feat, np.transpose(k_feat)) # [N , N]
-    N = s.shape[0]
-    rank = np.argsort(s)[:,::-1]
-    mask = np.repeat(np.arange(N).reshape(N, 1), axis=1, repeats=N)
-    gt_rank = np.argsort(rank == mask)[:, ::-1][:, :1].reshape(N)
-    mean_rk = np.mean(gt_rank)
-    median_rk = np.median(gt_rank)
-    recall1 = np.sum(gt_rank < 1) / N
-    recall5 = np.sum(gt_rank < 5) / N
-    recall10 = np.sum(gt_rank < 10) / N
-    return mean_rk, median_rk, recall1, recall5, recall10
