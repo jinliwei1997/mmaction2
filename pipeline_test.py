@@ -25,7 +25,7 @@ mc_cfg = dict(
 
 cfg = dict(
     type = 'Mp4TextDataset',
-    ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_dm_test',
+    ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_test',
     data_prefix = '',
     pipeline = [
         dict(type='OpenCVInit',
