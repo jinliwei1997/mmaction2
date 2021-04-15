@@ -50,9 +50,9 @@ cfg = dict(
         dict(type='ToTensor', keys=['imgs'])
     ]
 )
-
+print('before')
 mp4_text_dataset = build_dataset(cfg)
-
+print('after')
 
 for i in range(len(mp4_text_dataset)):
     try:
