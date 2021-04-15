@@ -160,43 +160,13 @@ class VideoTextDataset(BaseDataset):
             if metric not in allowed_metrics:
                 raise KeyError(f'metric {metric} is not supported')
 
-        eval_results = {}
-        # for metric in metrics:
-        #     msg = f'Evaluating {metric} ...'
-        #     if logger is None:
-        #         msg = '\n' + msg
-        #     print_log(msg, logger=logger)
-        #vt_recall5_full\t{recall5:.4f}\nvt_recall10_full\t{recall10:.4f}'
-        #     if metric == 'vt_retrieval_metrics_full':
-        #         v_feat = np.array([result[0] for result in results])
-        #         t_feat = np.array([result[1] for result in results])
-        #         assert t_feat.shape[1] == 1  # 1 video vs. 1 text
-        #         mean_rk, median_rk, recall1, recall5, recall10 = eval_retrieval_metrics(v_feat, t_feat.reshape(t_feat[0], -1))
-        #
-        #         eval_results['vt_mean_rk_full'] = mean_rk
-        #         eval_results['vt_median_rk_full'] = median_rk
-        #         eval_results['vt_recall1_full'] = recall1
-        #         eval_results['vt_recall5_full'] = recall5
-        #         eval_results['vt_recall10_full'] = recall10
-        #
-        #         log_msg = f'\nvt_mean_rk_full\t{mean_rk:.4f}\nvt_median_rk_full\t{median_rk:.4f}\nvt_recall1_full\t{recall1:.4f}\n
-        #         print_log(log_msg, logger=logger)
-        #
-        #     if metric == 'tv_retrieval_metrics_full':
-        #         v_feat = np.array([result[0] for result in results])
-        #         t_feat = np.array([result[1] for result in results])
-        #         assert t_feat.shape[1] == 1 # 1 video vs. 1 text
-        #         mean_rk, median_rk, recall1, recall5, recall10 = eval_retrieval_metrics(t_feat.reshape(t_feat[0],-1),v_feat)
-        #
-        #         eval_results['tv_mean_rk_full'] = mean_rk
-        #         eval_results['tv_median_rk_full'] = median_rk
-        #         eval_results['tv_recall1_full'] = recall1
-        #         eval_results['tv_recall5_full'] = recall5
-        #         eval_results['tv_recall10_full'] = recall10
-        #
-        #         log_msg = f'\ntv_mean_rk_full\t{mean_rk:.4f}\ntv_median_rk_full\t{median_rk:.4f}\ntv_recall1_full\t{recall1:.4f}\ntv_recall5_full\t{recall5:.4f}\ntv_recall10_full\t{recall10:.4f}'
-        #         print_log(log_msg, logger=logger)
 
+        v_feat = np.array([result[0] for result in results])
+        t_feat = np.array([result[1] for result in results])
+        t_feat = t_feat.reshape(t_feat.shape[0], -1)
+        random_1000_split_list = [range(i, min(i + 1000, v_feat.shape[0])) for i in range(0, v_feat.shape[0], 1000)]
+        eval_retrieval_metrics(v_feat, t_feat, 'random_1000_split', random_1000_split_list)
+        eval_results = {}
         return eval_results
 
     def prepare_train_frames(self, idx):
@@ -246,6 +216,41 @@ def eval_retrieval_metrics(q_feat, k_feat):
     rank = np.argsort(s)[:,::-1]
     mask = np.repeat(np.arange(N).reshape(N, 1), axis=1, repeats=N)
     gt_rank = np.argsort(rank == mask)[:, ::-1][:, :1].reshape(N)
+    mean_rk = np.mean(gt_rank)
+    median_rk = np.median(gt_rank)
+    recall1 = np.sum(gt_rank < 1) / N
+    recall5 = np.sum(gt_rank < 5) / N
+    recall10 = np.sum(gt_rank < 10) / N
+    return mean_rk, median_rk, recall1, recall5, recall10
+
+def eval_retrieval_metrics(v_feat, t_feat, split_name, split):
+    tot = sum([len(x) for x in split])
+    print(f'Eval {split_name}:')
+    print(f'Total videos of val set: {tot}')
+    print(f'Subsets: {len(split)} avg videos per subset: {tot/len(split)}')
+
+    v_t_gt_rank=[]
+    t_v_gt_rank=[]
+    for subset in split:
+        sub_v_feat = [v_feat[i] for i in subset]
+        sub_t_feat = [t_feat[i] for i in subset]
+        v_t_gt_rank.extend(get_gt_rank(np.array(sub_v_feat), np.array(sub_t_feat)))
+        t_v_gt_rank.extend(get_gt_rank(np.array(sub_t_feat), np.array(sub_v_feat)))
+
+    mean_rk, median_rk, recall1, recall5, recall10 = cal_avg_metrics(np.array(v_t_gt_rank))
+    mean_rk, median_rk, recall1, recall5, recall10 = cal_avg_metrics(np.array(t_v_gt_rank))
+
+
+def get_gt_rank(q_feat, k_feat):
+    s = np.matmul(q_feat, np.transpose(k_feat))  # [N , N]
+    N = s.shape[0]
+    rank = np.argsort(s)[:, ::-1]
+    mask = np.repeat(np.arange(N).reshape(N, 1), axis=1, repeats=N)
+    gt_rank = np.argsort(rank == mask)[:, ::-1][:, :1].reshape(N)
+    return gt_rank
+
+def cal_avg_metrics(gt_rank):
+    N = gt_rank.shape[0]
     mean_rk = np.mean(gt_rank)
     median_rk = np.median(gt_rank)
     recall1 = np.sum(gt_rank < 1) / N
