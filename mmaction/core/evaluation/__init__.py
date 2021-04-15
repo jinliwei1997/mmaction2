@@ -6,12 +6,12 @@ from .accuracy import (average_precision_at_temporal_iou,
                        softmax, top_k_accuracy)
 from .eval_detection import ActivityNetLocalization
 from .eval_hooks import DistEpochEvalHook, EpochEvalHook
-
+from .eval_retrieval import get_gt_rank, cal_avg_metrics, eval_retrieval_metrics
 __all__ = [
     'DistEpochEvalHook', 'EpochEvalHook', 'top_k_accuracy',
     'mean_class_accuracy', 'confusion_matrix', 'mean_average_precision',
     'get_weighted_score', 'average_recall_at_avg_proposals',
     'pairwise_temporal_iou', 'average_precision_at_temporal_iou',
     'ActivityNetLocalization', 'softmax', 'interpolated_precision_recall',
-    'mmit_mean_average_precision'
+    'mmit_mean_average_precision', 'get_gt_rank', 'cal_avg_metrics', 'eval_retrieval_metrics'
 ]
