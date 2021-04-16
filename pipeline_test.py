@@ -7,6 +7,7 @@ import mmcv
 import torch
 print("sb2")
 from mmaction.models import build_model
+from mmaction.datasets import build_dataset
 from tqdm import trange
 print("sb3")
 img_norm_cfg = dict(
