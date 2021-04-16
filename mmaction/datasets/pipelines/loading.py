@@ -237,7 +237,7 @@ class SampleFrames:
         results['clip_len'] = self.clip_len
         results['frame_interval'] = self.frame_interval
         results['num_clips'] = self.num_clips
-        print(results['total_frames'], results['frame_inds'])
+        # print(results['total_frames'], results['frame_inds'])
         return results
 
     def __repr__(self):

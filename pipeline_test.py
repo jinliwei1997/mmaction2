@@ -1,15 +1,12 @@
-print("sb0")
 import os.path as osp
 import time
 import warnings
-print("sb1")
 import mmcv
 import torch
-print("sb2")
 from mmaction.models import build_model
 from mmaction.datasets import build_dataset
 from tqdm import trange
-print("sb3")
+
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 
@@ -45,9 +42,8 @@ cfg = dict(
         dict(type='ToTensor', keys=['imgs'])
     ]
 )
-print('before')
+
 mp4_text_dataset = build_dataset(cfg)
-print('after')
 
 for i in range(len(mp4_text_dataset)):
     try:
