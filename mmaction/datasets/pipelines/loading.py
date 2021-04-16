@@ -237,6 +237,7 @@ class SampleFrames:
         results['clip_len'] = self.clip_len
         results['frame_interval'] = self.frame_interval
         results['num_clips'] = self.num_clips
+        print(results['total_frames'], results['frame_inds'])
         return results
 
     def __repr__(self):
@@ -982,19 +983,11 @@ class DecordDecode:
                 for idx in np.unique(frame_inds)
             }
             imgs = [frame_dict[idx] for idx in frame_inds]
-            if len(imgs)==0:
-                print(results['filename'])
-            for i in range(len(imgs)):
-                if len(imgs[i].shape) != 3 or imgs[i].shape[2] != 3:
-                    print(results['filename'], i)
-                    imgs[i] = np.zeros((360, 360, 3))
+
         except:
             print(results['filename'])
             imgs = [np.zeros((360, 360, 3)) for idx in frame_inds]
 
-        #print(imgs[0].shape)
-        # print(results['filename'])
-        imgs = [np.zeros((360, 360, 3)) for idx in frame_inds]
 
         results['video_reader'] = None
         del container
