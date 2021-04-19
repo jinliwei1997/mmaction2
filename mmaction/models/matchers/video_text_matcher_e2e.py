@@ -21,7 +21,8 @@ class VideoTextMatcherE2E(BaseMatcher):
         text_feat_dim = 768,
         feature_dim = 256,
         init_std = 0.01,
-        use_text_mlp = True):
+        use_text_mlp = True,
+        gather_flag = True):
         super(VideoTextMatcherE2E, self).__init__(backbone1,backbone2,head,train_cfg,test_cfg,fp16_enabled)
 
         self.img_feat_dim = img_feat_dim
@@ -79,8 +80,9 @@ class VideoTextMatcherE2E(BaseMatcher):
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
         t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1) # [N * text_num_per_video (T), C]
 
-        v_feat = torch.cat(GatherLayer.apply(v_feat), dim=0) # (2N) x d
-        t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
+        if gather_flag == True:
+            v_feat = torch.cat(GatherLayer.apply(v_feat), dim=0) # (2N) x d
+            t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
         # print(v_feat.shape)
         if self.neck is not None:
             v_feat, t_feat = self.neck(v_feat, t_feat)

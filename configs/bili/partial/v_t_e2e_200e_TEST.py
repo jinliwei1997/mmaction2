@@ -18,7 +18,8 @@ model = dict(
     img_feat_dim=2048,
     text_feat_dim=768,
     feature_dim=256,
-    init_std=0.01
+    init_std=0.01,
+    gather_flag=False
 )
 train_cfg = None
 test_cfg = None
@@ -99,7 +100,7 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 data = dict(
-    videos_per_gpu=32,
+    videos_per_gpu=64,
     workers_per_gpu=5,
     train=dict(
         type=dataset_type,
@@ -141,7 +142,7 @@ log_config = dict(
 )
 dist_params = dict(backend='nccl',port = 29513)
 log_level = 'INFO'
-work_dir = './work_dirs/bili_v_t_e2e_200e_dm_partial_split_raw_new'
+work_dir = './work_dirs/TEST'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
