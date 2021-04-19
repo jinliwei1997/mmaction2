@@ -36,6 +36,7 @@ class VideoTextMatcherE2E(BaseMatcher):
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.init_mlp_weights()
         self.use_text_mlp = use_text_mlp
+        self.gather_flag = gather_flag
 
     def init_mlp_weights(self):
         """Initialize the model network weights."""
@@ -80,7 +81,7 @@ class VideoTextMatcherE2E(BaseMatcher):
             texts_item[key] = texts_item[key].reshape((-1,) + texts_item[key].shape[2:])
         t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1) # [N * text_num_per_video (T), C]
 
-        if gather_flag == True:
+        if self.gather_flag == True:
             v_feat = torch.cat(GatherLayer.apply(v_feat), dim=0) # (2N) x d
             t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
         # print(v_feat.shape)
