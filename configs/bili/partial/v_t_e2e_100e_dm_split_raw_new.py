@@ -35,11 +35,11 @@ mc_cfg = dict(
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_bgr=False)
 train_pipeline = [
-    dict(type='OpenCVInit',
+    dict(type='DecordInit',
          io_backend='memcached',
          **mc_cfg),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(type='OpenCVDecode'),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
@@ -59,11 +59,11 @@ train_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 val_pipeline = [
-    dict(type='OpenCVInit',
+    dict(type='DecordInit',
          io_backend='memcached',
          **mc_cfg),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(type='OpenCVDecode'),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(type='CenterCrop', crop_size=224, lazy=True),
     dict(type='Resize', scale=(112, 112), keep_ratio=False, lazy=True),
@@ -77,9 +77,11 @@ val_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 test_pipeline = [
-    dict(type='OpenCVInit'),
+    dict(type='DecordInit',
+         io_backend='memcached',
+         **mc_cfg),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(type='OpenCVDecode'),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
         type='MultiScaleCrop',
