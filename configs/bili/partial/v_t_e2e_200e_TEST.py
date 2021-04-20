@@ -26,9 +26,9 @@ test_cfg = None
 dataset_type = 'Mp4TextDataset'
 data_root = ''
 data_root_val = ''
-ann_file_train = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_test'
-ann_file_val = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_test'
-ann_file_test = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_test'
+ann_file_train = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_raw_new_train'
+ann_file_val = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_raw_new_val'
+ann_file_test = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_raw_new_val'
 mc_cfg = dict(
     server_list_cfg='/mnt/lustre/share/memcached_client/server_list.conf',
     client_cfg='/mnt/lustre/share/memcached_client/client.conf',
@@ -101,7 +101,7 @@ test_pipeline = [
 ]
 data = dict(
     videos_per_gpu=48,
-    workers_per_gpu=5,
+    workers_per_gpu=1,
     train=dict(
         type=dataset_type,
         ann_file=ann_file_train,
@@ -142,7 +142,7 @@ log_config = dict(
 )
 dist_params = dict(backend='nccl',port = 29513)
 log_level = 'INFO'
-work_dir = './work_dirs/TEST'
+work_dir = './work_dirs/TEST2'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
