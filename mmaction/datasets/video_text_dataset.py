@@ -68,7 +68,7 @@ class VideoTextDataset(BaseDataset):
                  with_offset=False,
                  multi_class=False,
                  num_classes=None,
-                 start_index=0,
+                 start_index=1,
                  modality='RGB',
                  sample_by_class=False,
                  power=None):
