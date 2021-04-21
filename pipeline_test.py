@@ -38,7 +38,7 @@ cfg = dict(
         dict(type='FormatShape', input_format='NCHW'),
         dict(type='LoadWord2Vec'),
         dict(type='Collect', keys=['imgs', 'word2vec', 'weight'], meta_keys=[]),
-        dict(type='ToTensor', keys=['imgs', 'word2vec', 'weight')
+        dict(type='ToTensor', keys=['imgs', 'word2vec', 'weight'])
     ]
 )
 
