@@ -95,7 +95,7 @@ class VideoWord2VecMatcherE2E(nn.Module):
         # print(v_feat.shape)
         if self.neck is not None:
             v_feat, t_feat = self.neck(v_feat, t_feat)
-
+        print(v_feat.shape, t_feat.shape)
         return self.head(v_feat, t_feat)
 
     def forward_test(self, imgs, word2vec, weight):
