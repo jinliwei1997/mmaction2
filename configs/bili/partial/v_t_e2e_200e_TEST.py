@@ -1,5 +1,5 @@
 model = dict(
-    type='VideoTextMatcherE2E',
+    type='VideoWord2VecMatcherE2E',
     v_backbone=dict(
         type='ResNet',
         pretrained=None,
