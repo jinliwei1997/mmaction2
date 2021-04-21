@@ -27,6 +27,7 @@ class VideoWord2VecMatcherE2E(nn.Module):
         self.test_cfg = test_cfg
         self.v_backbone = builder.build_backbone(v_backbone)
         self.head = builder.build_head(head)
+        self.neck = neck
         self.img_feat_dim = img_feat_dim
         self.text_feat_dim = text_feat_dim
         self.feature_dim = feature_dim
