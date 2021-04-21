@@ -5,6 +5,7 @@ from .. import builder
 from mmcv.cnn import normal_init
 import torch.distributed as dist
 import torch
+from collections import OrderedDict
 
 @MATCHERS.register_module()
 class VideoWord2VecMatcherE2E(nn.Module):
