@@ -14,6 +14,7 @@ from ...utils import get_random_string, get_shm_dir, get_thread_id
 from ..registry import PIPELINES
 
 from transformers import BertTokenizer
+import pickle
 
 @PIPELINES.register_module()
 class LoadHVULabel:
@@ -1777,4 +1778,46 @@ class TextTokenize:
         """
         texts_item = self.tokenizer(results[self.prefix + 'texts'], truncation=True, padding='max_length', return_tensors="pt")
         results[self.prefix + 'texts_item'] = texts_item
+        return results
+
+@PIPELINES.register_module()
+class LoadWord2Vec:
+    """Tokenize Texts.
+
+    Required keys are 'word2vec_path', added or modified keys are 'word2vec', 'weight'.
+
+    Args:
+        tokenizer_dir
+    """
+
+    def __init__(self, truncated = True, max_word_num = 128, word2vec_dim=512):
+        self.truncated = truncated
+        self.max_word_num = max_word_num
+        self.word2vec_dim = 512
+        self.padding = np.zeros(self.word2vec_dim)
+
+    def __call__(self, results):
+        """Perform the LoadWord2Vec.
+
+        Args:
+            results (dict): The resulting dict to be modified and passed
+                to the next transform in pipeline.
+        """
+        with open(results['word2vec_path'], 'rb') as f:
+            keyword_list = pickle.load(f)
+
+
+        if self.truncated :
+            if len(keyword_list) > self.max_word_num:
+                keyword_list = keyword_list[:self.max_word_num]
+            word2vec = [keyword[1] for keyword in keyword_list]
+            weight = [keyword[2] for keyword in keyword_list]
+            if len(keyword_list) < self.max_word_num:
+                word2vec.extend([self.padding]*(self.max_word_num-len(keyword_list)))
+                weight.extend([0]*(self.max_word_num-len(keyword_list)))
+        else :
+            raise NotImplementedError
+
+        results['word2vec'] = word2vec
+        results['weight'] = weight
         return results

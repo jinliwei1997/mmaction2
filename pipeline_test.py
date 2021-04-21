@@ -16,13 +16,13 @@ mc_cfg = dict(
     sys_path='/mnt/lustre/share/pymc/py3')
 
 cfg = dict(
-    type = 'Mp4TextDataset',
-    ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_test',
+    type = 'Mp4Word2VecDataset',
+    ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_vec_train',
     data_prefix = '',
     pipeline = [
-        dict(type='OpenCVInit'),
+        dict(type='DecordInit'),
         dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-        dict(type='OpenCVDecode'),
+        dict(type='DecordDecode'),
         dict(type='Resize', scale=(-1, 256), lazy=True),
         dict(
             type='MultiScaleCrop',
@@ -36,18 +36,14 @@ cfg = dict(
         dict(type='Fuse'),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='FormatShape', input_format='NCHW'),
-        dict(type='LoadTexts', sample_mode='number', sample_number=1),
-        dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
-        dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
-        dict(type='ToTensor', keys=['imgs'])
+        dict(type='LoadWord2Vec'),
+        dict(type='Collect', keys=['imgs', 'word2vec', 'weight'], meta_keys=[]),
+        dict(type='ToTensor', keys=['imgs', 'word2vec', 'weight')
     ]
 )
 
-mp4_text_dataset = build_dataset(cfg)
+mp4_word2vec_dataset = build_dataset(cfg)
 
-for i in range(len(mp4_text_dataset)):
-    try:
-        sp = mp4_text_dataset[i]['imgs'].shape
-    except:
-        print(f'error {i} ', mp4_text_dataset.video_infos['filename'])
+for i in range(10):
+    print(mp4_word2vec_dataset[i])
 

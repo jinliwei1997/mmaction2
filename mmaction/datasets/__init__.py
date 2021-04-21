@@ -17,11 +17,12 @@ from .video_audio_text_dataset import VideoAudioTextDataset
 from .video_subtitle_text_dataset import VideoSubtitleTextDataset
 from .video_subtitle_audio_text_dataset import VideoSubtitleAudioTextDataset
 from .mp4_text_dataset import Mp4TextDataset
+from .mp4_word2vec_dataset import Mp4Word2VecDataset
 __all__ = [
     'VideoDataset', 'build_dataloader', 'build_dataset', 'RepeatDataset',
     'RawframeDataset', 'BaseDataset', 'ActivityNetDataset', 'SSNDataset',
     'HVUDataset', 'AudioDataset', 'AudioFeatureDataset', 'ImageDataset',
     'RawVideoDataset', 'AVADataset', 'AudioVisualDataset','VideoTextDataset',
     'VideoAudioTextDataset', 'VideoSubtitleTextDataset','VideoSubtitleAudioTextDataset',
-    'Mp4TextDataset'
+    'Mp4TextDataset','Mp4Word2VecDataset'
 ]
