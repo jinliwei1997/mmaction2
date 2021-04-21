@@ -37,7 +37,9 @@ class VideoWord2VecMatcherE2E(nn.Module):
 
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
 
-        self.init_weights()
+        self.v_backbone.init_weights()
+        self.head.init_weights()
+        self.init_mlp_weights()
         self.gather_flag = gather_flag
 
     def init_mlp_weights(self):
@@ -49,11 +51,6 @@ class VideoWord2VecMatcherE2E(nn.Module):
             if isinstance(layer, nn.Linear):
                 normal_init(layer, std=self.init_std)
 
-    def init_weights(self):
-        """Initialize the model network weights."""
-        self.v_backbone.init_weights()
-        self.head.init_weights()
-        self.init_mlp_weights()
 
     def encoder_v(self, imgs, N):
         x = self.v_backbone(imgs)
