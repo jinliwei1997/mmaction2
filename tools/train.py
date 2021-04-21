@@ -140,7 +140,6 @@ def main():
     model = build_model(
         cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
 
-    print(cfg.data.train)
     if cfg.omnisource:
         # If omnisource flag is set, cfg.data.train should be a list
         assert type(cfg.data.train) is list

@@ -18,7 +18,7 @@ model = dict(
 )
 train_cfg = None
 test_cfg = None
-dataset_type = 'Mp4Word2VecDataset',
+dataset_type = 'Mp4Word2VecDataset'
 data_root = ''
 data_root_val = ''
 ann_file_train = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_vec_train'
