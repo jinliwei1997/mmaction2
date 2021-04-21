@@ -50,7 +50,7 @@ class VideoWord2VecMatcherE2E(nn.Module):
                 normal_init(layer, std=self.init_std)
 
     def encoder_v(self, imgs, N):
-        x = self.backbone1(imgs)
+        x = self.v_backbone(imgs)
         if self.avg_pool is not None:
             x = self.avg_pool(x)
         x = x.reshape((N, -1) + x.shape[1:])
