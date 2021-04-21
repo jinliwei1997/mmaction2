@@ -71,8 +71,8 @@ class VideoWord2VecMatcherE2E(nn.Module):
         N = word2vec.shape[0]
         weight = torch.nn.functional.normalize(weight, p = 1, dim =1)
         x = self.text_mlp(word2vec.reshape(-1, self.text_feat_dim))
-        x = (x * weight.reshape(-1,1)).reshape(-1, self.text_feat_dim)
-        x = torch.sum(x.reshape(N,-1,self.text_feat_dim), dim=1)
+        x = x * weight.reshape(-1,1)
+        x = torch.sum(x.reshape(N,-1,self.feature_dim), dim=1)
         return x
 
     def forward(self, imgs, word2vec, weight, return_loss=True):
