@@ -24,5 +24,5 @@ __all__ = [
     'HVUDataset', 'AudioDataset', 'AudioFeatureDataset', 'ImageDataset',
     'RawVideoDataset', 'AVADataset', 'AudioVisualDataset','VideoTextDataset',
     'VideoAudioTextDataset', 'VideoSubtitleTextDataset','VideoSubtitleAudioTextDataset',
-    'Mp4TextDataset','Mp4Word2VecDataset'
+    'Mp4TextDataset', 'Mp4Word2VecDataset'
 ]
