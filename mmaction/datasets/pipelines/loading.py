@@ -1818,6 +1818,6 @@ class LoadWord2Vec:
         else :
             raise NotImplementedError
 
-        results['word2vec'] = word2vec
-        results['weight'] = weight
+        results['word2vec'] = word2vec.astype(np.float32)
+        results['weight'] = weight.astype(np.float32)
         return results
