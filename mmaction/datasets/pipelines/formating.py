@@ -47,7 +47,7 @@ class ToTensor:
                 to the next transform in pipeline.
         """
         for key in self.keys:
-            results[key] = to_tensor(results[key])
+            results[key] = to_tensor(results[key]).float()
         return results
 
     def __repr__(self):
