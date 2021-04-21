@@ -62,8 +62,14 @@ class VideoWord2VecMatcherE2E(nn.Module):
         return x
 
     def encoder_t(self, word2vec, weight):
-        print(word2vec.shape, weight.shape)
-        return word2vec
+        # word2vec [N, 128, 512]
+        # weight [N, 128]
+        N = word2vec.shape[0]
+        weight = torch.nn.functional.normalize(weight, p = 1, dim =1)
+        x = self.text_mlp(word2vec.reshape(-1, self.text_feat_dim))
+        x = (x * weight.reshape(-1,1)).reshape(-1, self.text_feat_dim)
+        x = torch.sum(x.reshape(N,-1,self.text_feat_dim), dim=1)
+        return x
 
     def forward(self, imgs, word2vec, weight, return_loss=True):
         """Define the computation performed at every call."""
