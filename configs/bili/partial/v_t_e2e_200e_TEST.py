@@ -1,34 +1,29 @@
 model = dict(
     type='VideoTextMatcherE2E',
-    backbone1=dict(
+    v_backbone=dict(
         type='ResNet',
         pretrained=None,
         depth=50,
         norm_eval=False),
-    backbone2=dict(
-        type='BERT',
-        pretrained='/mnt/lustre/jinliwei/bert_model',
-        freeze=True
-    ),
     head=dict(
         type='MILNCEHead',
         temperature=0.05,
     ),
     fp16_enabled=False,
     img_feat_dim=2048,
-    text_feat_dim=768,
+    text_feat_dim=512,
     feature_dim=256,
     init_std=0.01,
     gather_flag=False
 )
 train_cfg = None
 test_cfg = None
-dataset_type = 'Mp4TextDataset'
+dataset_type = 'Mp4Word2VecDataset',
 data_root = ''
 data_root_val = ''
-ann_file_train = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_raw_new_train'
-ann_file_val = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_raw_new_val'
-ann_file_test = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_raw_new_val'
+ann_file_train = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_vec_train'
+ann_file_val = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_vec_val'
+ann_file_test = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_vec_val'
 mc_cfg = dict(
     server_list_cfg='/mnt/lustre/share/memcached_client/server_list.conf',
     client_cfg='/mnt/lustre/share/memcached_client/client.conf',
@@ -54,10 +49,9 @@ train_pipeline = [
     dict(type='Fuse'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
-    dict(type='LoadTexts', sample_mode='number', sample_number=1),
-    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
-    dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
-    dict(type='ToTensor', keys=['imgs'])
+    dict(type='LoadWord2Vec'),
+    dict(type='Collect', keys=['imgs', 'word2vec', 'weight'], meta_keys=[]),
+    dict(type='ToTensor', keys=['imgs', 'word2vec', 'weight'])
 ]
 val_pipeline = [
     dict(type='DecordInit',
@@ -72,10 +66,9 @@ val_pipeline = [
     dict(type='Fuse'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
-    dict(type='LoadTexts', sample_mode='number', sample_number=1),
-    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
-    dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
-    dict(type='ToTensor', keys=['imgs'])
+    dict(type='LoadWord2Vec'),
+    dict(type='Collect', keys=['imgs', 'word2vec', 'weight'], meta_keys=[]),
+    dict(type='ToTensor', keys=['imgs', 'word2vec', 'weight'])
 ]
 test_pipeline = [
     dict(type='DecordInit'),
@@ -94,10 +87,9 @@ test_pipeline = [
     dict(type='Fuse'),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
-    dict(type='LoadTexts', sample_mode='number', sample_number=1),
-    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
-    dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
-    dict(type='ToTensor', keys=['imgs'])
+    dict(type='LoadWord2Vec'),
+    dict(type='Collect', keys=['imgs', 'word2vec', 'weight'], meta_keys=[]),
+    dict(type='ToTensor', keys=['imgs', 'word2vec', 'weight'])
 ]
 data = dict(
     videos_per_gpu=48,
@@ -142,7 +134,7 @@ log_config = dict(
 )
 dist_params = dict(backend='nccl',port = 29513)
 log_level = 'INFO'
-work_dir = './work_dirs/TEST2'
+work_dir = './work_dirs/TEST'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
