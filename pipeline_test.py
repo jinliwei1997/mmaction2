@@ -45,5 +45,7 @@ cfg = dict(
 mp4_word2vec_dataset = build_dataset(cfg)
 
 for i in range(10):
-    print(type(mp4_word2vec_dataset[i]))
+    d=mp4_word2vec_dataset[i]
+    for key in d:
+        print(type(d[key]))
 
