@@ -85,7 +85,7 @@ class VideoTextMatcherE2E(BaseMatcher):
             v_feat = torch.cat(GatherLayer.apply(v_feat), dim=0) # (2N) x d
             t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
 
-        print(v_feat.shape)
+        #print(v_feat.shape)
         if self.neck is not None:
             v_feat, t_feat = self.neck(v_feat, t_feat)
 

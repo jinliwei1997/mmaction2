@@ -144,7 +144,7 @@ log_config = dict(
 )
 dist_params = dict(backend='nccl',port = 29513)
 log_level = 'INFO'
-work_dir = './work_dirs/bili_v_t_e2e_200e_dm_partial_split_raw_new'
+work_dir = './work_dirs/TEST'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
