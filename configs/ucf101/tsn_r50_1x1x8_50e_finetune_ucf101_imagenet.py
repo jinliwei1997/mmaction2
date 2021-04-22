@@ -76,7 +76,7 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 data = dict(
-    videos_per_gpu=16,
+    videos_per_gpu=32,
     workers_per_gpu=4,
     train=dict(
         type=dataset_type,
@@ -95,8 +95,8 @@ data = dict(
         pipeline=test_pipeline))
 # optimizer
 optimizer = dict(
-    type='SGD', lr=0.025, momentum=0.9,
-    weight_decay=0.0005)  # this lr is used for 8 gpus
+    type='SGD', lr=0.0125, momentum=0.9,
+    weight_decay=0.0005)  # this lr is used for 2 gpus
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 # learning policy
 lr_config = dict(policy='step', step=[20, 40])
@@ -111,7 +111,7 @@ log_config = dict(
         dict(type='TensorboardLoggerHook'),
     ])
 # runtime settings
-dist_params = dict(backend='nccl')
+dist_params = dict(backend='nccl', port = 25687)
 log_level = 'INFO'
 work_dir = './work_dirs/ucf_imagenet/'
 load_from = None
