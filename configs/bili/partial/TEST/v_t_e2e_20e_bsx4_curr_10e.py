@@ -14,7 +14,7 @@ model = dict(
     text_feat_dim=512,
     feature_dim=512,
     init_std=0.01,
-    gather_flag=False
+    gather_flag=True
 )
 train_cfg = None
 test_cfg = None
