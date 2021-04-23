@@ -132,7 +132,7 @@ log_config = dict(
 dist_params = dict(backend='nccl',port = 29519)
 log_level = 'INFO'
 work_dir = './work_dirs/word2vec_50e_bsx4_curr_10e'
-load_from = None
+load_from = 'work_dirs/word2vec_50e/epoch_10.pth'
 resume_from = None
 workflow = [('train', 1)]
 find_unused_parameters=True
