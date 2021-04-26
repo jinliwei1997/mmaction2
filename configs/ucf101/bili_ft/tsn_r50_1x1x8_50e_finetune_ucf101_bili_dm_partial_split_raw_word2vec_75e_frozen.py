@@ -118,3 +118,4 @@ work_dir = './work_dirs/ucf_bili_dm_partial_split_raw_word2vec_75e/'
 load_from = '../ckpt/word2vec_75e.pth'
 resume_from = None
 workflow = [('train', 1)]
+find_unused_parameters=True
