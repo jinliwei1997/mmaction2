@@ -112,7 +112,7 @@ log_config = dict(
         dict(type='TensorboardLoggerHook'),
     ])
 # runtime settings
-dist_params = dict(backend='nccl', port = 29022)
+dist_params = dict(backend='nccl', port = 29023)
 log_level = 'INFO'
 work_dir = './work_dirs/ucf_bili_dm_partial_split_raw_word2vec_75e_frozen/'
 load_from = '../ckpt/word2vec_75e.pth'
