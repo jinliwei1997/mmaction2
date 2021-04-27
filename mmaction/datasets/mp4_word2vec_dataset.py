@@ -95,9 +95,8 @@ class Mp4Word2VecDataset(BaseDataset):
             for line in fin:
                 line = line.strip()
                 video_info = {}
-
-                video_info['filename'] = osp.join(self.data_prefix,line.split(' ##$$## ')[0].rstrip())
-                print(video_info['filename'])
+                if self.data_prefix is not None:
+                    video_info['filename'] = osp.join(self.data_prefix,line.split(' ##$$## ')[0].rstrip())
                 video_info['word2vec_path'] = line.split(' ##$$## ')[1].rstrip()
 
                 video_infos.append(video_info)
