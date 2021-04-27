@@ -17,8 +17,8 @@ mc_cfg = dict(
 
 cfg = dict(
     type = 'Mp4Word2VecDataset',
-    ann_file = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_vec_train',
-    data_prefix = '',
+    ann_file = '/mnt/lustre/jinliwei/ins/ins_train',
+    data_prefix = '/mnt/lustre/DATAshare2/duanhaodong/Ins_videos',
     pipeline = [
         dict(type='DecordInit'),
         dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
@@ -45,7 +45,6 @@ cfg = dict(
 mp4_word2vec_dataset = build_dataset(cfg)
 
 for i in range(10):
-    d=mp4_word2vec_dataset[i]
-    for key in d:
-        print(type(d[key]))
+    d = mp4_word2vec_dataset[i]
+    print(d)
 

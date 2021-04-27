@@ -1782,7 +1782,7 @@ class TextTokenize:
 
 @PIPELINES.register_module()
 class LoadWord2Vec:
-    """Tokenize Texts.
+    """Load Word2Vec feature.
 
     Required keys are 'word2vec_path', added or modified keys are 'word2vec', 'weight'.
 
