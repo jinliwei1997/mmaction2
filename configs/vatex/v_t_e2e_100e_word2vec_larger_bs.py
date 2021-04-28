@@ -134,7 +134,7 @@ log_config = dict(
 )
 dist_params = dict(backend='nccl',port = 29513)
 log_level = 'INFO'
-work_dir = './work_dirs/vatex_word2vec_100e'
+work_dir = './work_dirs/vatex_word2vec_100e_large_bs'
 load_from = '../ckpt/epoch_100.pth'
 resume_from = None
 workflow = [('train', 1)]
