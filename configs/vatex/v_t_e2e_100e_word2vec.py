@@ -12,7 +12,7 @@ model = dict(
     fp16_enabled=False,
     img_feat_dim=2048,
     text_feat_dim=512,
-    feature_dim=258,
+    feature_dim=512,
     init_std=0.01,
     gather_flag=False
 )
