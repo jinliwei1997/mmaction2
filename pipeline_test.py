@@ -16,11 +16,13 @@ mc_cfg = dict(
     sys_path='/mnt/lustre/share/pymc/py3')
 
 cfg = dict(
-    type = 'Mp4Word2VecDataset',
-    ann_file = '/mnt/lustre/jinliwei/ins/ins_train',
-    data_prefix = '/mnt/lustre/DATAshare2/duanhaodong/Ins_videos',
+    type = 'Mp4TextDataset',
+    ann_file = '/mnt/lustre/jinliwei/vatex_val_bert_ch1',
+    data_prefix ='',
     pipeline = [
-        dict(type='DecordInit'),
+        dict(type='DecordInit',
+             io_backend='memcached',
+             **mc_cfg),
         dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
         dict(type='DecordDecode'),
         dict(type='Resize', scale=(-1, 256), lazy=True),
@@ -36,15 +38,16 @@ cfg = dict(
         dict(type='Fuse'),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='FormatShape', input_format='NCHW'),
-        dict(type='LoadWord2Vec'),
-        dict(type='Collect', keys=['imgs', 'word2vec', 'weight'], meta_keys=[]),
-        dict(type='ToTensor', keys=['imgs', 'word2vec', 'weight'])
+        dict(type='LoadTexts', sample_mode='number', sample_number=1),
+        dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
+        dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
+        dict(type='ToTensor', keys=['imgs'])
     ]
 )
 
-mp4_word2vec_dataset = build_dataset(cfg)
+vatex_dataset = build_dataset(cfg)
 
 for i in range(10):
-    d = mp4_word2vec_dataset[i]
+    d = vatex_dataset[i]
     print(d)
 
