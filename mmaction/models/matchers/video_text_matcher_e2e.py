@@ -82,8 +82,10 @@ class VideoTextMatcherE2E(BaseMatcher):
         t_feat = nn.functional.normalize(self.encoder_t(texts_item), dim=1) # [N * text_num_per_video (T), C]
 
         if self.gather_flag == True:
-            v_feat = torch.cat(GatherLayer.apply(v_feat), dim=0) # (2N) x d
-            t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
+            # v_feat = torch.cat(GatherLayer.apply(v_feat), dim=0) # (2N) x d
+            # t_feat = torch.cat(GatherLayer.apply(t_feat), dim=0)
+            v_feat = AllGather.apply(v_feat) # (2N) x d
+            t_feat = AllGather.apply(v_feat)
 
         #print(v_feat.shape)
         if self.neck is not None:
@@ -157,21 +159,39 @@ class VideoTextMatcherE2E(BaseMatcher):
         pass
 
 
-class GatherLayer(torch.autograd.Function):
-    """Gather tensors from all process, supporting backward propagation.
-    """
+# class GatherLayer(torch.autograd.Function):
+#     """Gather tensors from all process, supporting backward propagation.
+#     """
+#
+#     @staticmethod
+#     def forward(ctx, input):
+#         ctx.save_for_backward(input)
+#         output = [torch.zeros_like(input) \
+#             for _ in range(dist.get_world_size())]
+#         dist.all_gather(output, input)
+#         return tuple(output)
+#
+#     @staticmethod
+#     def backward(ctx, *grads):
+#         input, = ctx.saved_tensors
+#         grad_out = torch.zeros_like(input)
+#         grad_out[:] = grads[dist.get_rank()]
+#         return grad_out
+
+class AllGather(torch.autograd.Function):
+    """An autograd function that performs allgather on a tensor."""
 
     @staticmethod
-    def forward(ctx, input):
-        ctx.save_for_backward(input)
-        output = [torch.zeros_like(input) \
-            for _ in range(dist.get_world_size())]
-        dist.all_gather(output, input)
-        return tuple(output)
+    def forward(ctx, tensor):
+        output = [torch.empty_like(tensor) for _ in range(dist.get_world_size())]
+        dist.all_gather(output, tensor)
+        ctx.rank = dist.get_rank()
+        ctx.batch_size = tensor.shape[0]
+        return torch.cat(output, 0)
 
     @staticmethod
-    def backward(ctx, *grads):
-        input, = ctx.saved_tensors
-        grad_out = torch.zeros_like(input)
-        grad_out[:] = grads[dist.get_rank()]
-        return grad_out
+    def backward(ctx, grad_output):
+        return (
+            grad_output[ctx.batch_size * ctx.rank : ctx.batch_size * (ctx.rank + 1)],
+            None,
+        )
