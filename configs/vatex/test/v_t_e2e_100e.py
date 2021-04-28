@@ -18,7 +18,8 @@ model = dict(
     img_feat_dim=2048,
     text_feat_dim=768,
     feature_dim=512,
-    init_std=0.01
+    init_std=0.01,
+    gather_flag = False
 )
 train_cfg = None
 test_cfg = None
