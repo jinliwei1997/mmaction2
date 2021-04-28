@@ -142,10 +142,10 @@ log_config = dict(
         dict(type='TensorboardLoggerHook')
     ]
 )
-dist_params = dict(backend='nccl',port = 29539)
+dist_params = dict(backend='nccl',port = 29549)
 log_level = 'INFO'
-work_dir = './work_dirs/vatex_TEST'
-load_from = None
+work_dir = './work_dirs/vatex_TEST_2'
+load_from = '../ckpt/epoch_80.pth'
 resume_from = None
 workflow = [('train', 1)]
 find_unused_parameters=True
