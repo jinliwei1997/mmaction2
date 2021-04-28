@@ -17,7 +17,7 @@ mc_cfg = dict(
 
 cfg = dict(
     type = 'Mp4TextDataset',
-    ann_file = '/mnt/lustre/jinliwei/vatex_val_bert_ch1',
+    ann_file = '/mnt/lustre/jinliwei/vatex_process/vatex_val_bert_ch1',
     data_prefix ='',
     pipeline = [
         dict(type='DecordInit',
