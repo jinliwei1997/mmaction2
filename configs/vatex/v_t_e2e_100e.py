@@ -25,9 +25,9 @@ test_cfg = None
 dataset_type = 'Mp4TextDataset'
 data_root = ''
 data_root_val = ''
-ann_file_train = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_raw_new_train'
-ann_file_val = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_raw_new_val'
-ann_file_test = '/mnt/lustre/jinliwei/annotation/bili_video_dm_partial_split_raw_new_val'
+ann_file_train = '/mnt/lustre/jinliwei/vatex_process/vatex_train_bert_ch1'
+ann_file_val = '/mnt/lustre/jinliwei/vatex_process/vatex_val_bert_ch1'
+ann_file_test = '/mnt/lustre/jinliwei/vatex_process/vatex_val_bert_ch1'
 mc_cfg = dict(
     server_list_cfg='/mnt/lustre/share/memcached_client/server_list.conf',
     client_cfg='/mnt/lustre/share/memcached_client/client.conf',
@@ -101,7 +101,7 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 data = dict(
-    videos_per_gpu=32,
+    videos_per_gpu=48,
     workers_per_gpu=5,
     train=dict(
         type=dataset_type,
