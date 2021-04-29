@@ -47,8 +47,8 @@ class NegSimHead(nn.Module):
             metric['p_t_std'] = torch.mean(torch.std(p_t, dim = 0))
 
             N = v_feat.shape[0]
-            s1 = torch.matmul(v_feat, p_t.permute(1, 0)).view(N,N,-1)
-            s2 = torch.matmul(t_feat, p_v.permute(1, 0)).view(N,N,-1)
+            s1 = torch.matmul(v_feat, p_t.permute(1, 0)).view(N,N)
+            s2 = torch.matmul(t_feat, p_v.permute(1, 0)).view(N,N)
 
             v_metric = self.retrieval_metric(s1.cpu())
             metric['v_recall1'] = v_metric['R1']
