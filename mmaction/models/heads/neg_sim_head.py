@@ -64,7 +64,7 @@ class NegSimHead(nn.Module):
 
         return losses, metric
 
-    def retrieval_metric(x):
+    def retrieval_metric(self, x):
         sx = np.sort(-x, axis=1)
         d = np.diag(-x)
         d = d[:, np.newaxis]
