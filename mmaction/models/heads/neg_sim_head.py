@@ -51,16 +51,16 @@ class NegSimHead(nn.Module):
             s2 = torch.matmul(t_feat, p_v.permute(1, 0)).view(N,N)
 
             v_metric = self.retrieval_metric(s1.cpu())
-            metric['v_recall1'] = v_metric['R1']
-            metric['v_recall5'] = v_metric['R5']
-            metric['v_recall10'] = v_metric['R10']
-            metric['v_med_rk'] = v_metric['MR']
+            metric['v_recall1'] = v_metric['R1'].cuda()
+            metric['v_recall5'] = v_metric['R5'].cuda()
+            metric['v_recall10'] = v_metric['R10'].cuda()
+            metric['v_med_rk'] = v_metric['MR'].cuda()
 
             t_metric = self.retrieval_metric(s2.cpu())
-            metric['t_recall1'] = v_metric['R1']
-            metric['t_recall5'] = v_metric['R5']
-            metric['t_recall10'] = v_metric['R10']
-            metric['t_med_rk'] = v_metric['MR']
+            metric['t_recall1'] = v_metric['R1'].cuda()
+            metric['t_recall5'] = v_metric['R5'].cuda()
+            metric['t_recall10'] = v_metric['R10'].cuda()
+            metric['t_med_rk'] = v_metric['MR'].cuda()
 
         return losses, metric
 
