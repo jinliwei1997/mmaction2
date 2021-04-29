@@ -3,7 +3,7 @@ import torch
 import torch.distributed as dist
 import torch.nn.functional as F
 from ..registry import HEADS
-
+import numpy as np
 @HEADS.register_module
 class NegSimHead(nn.Module):
     """Head for RankingLoss.
@@ -50,46 +50,31 @@ class NegSimHead(nn.Module):
             s1 = torch.matmul(v_feat, p_t.permute(1, 0)).view(N,N,-1)
             s2 = torch.matmul(t_feat, p_v.permute(1, 0)).view(N,N,-1)
 
-            recall1, recall5, recall10, mean_rk = self.retrieval_metric(s1)
-            metric['v_recall1'] = recall1
-            metric['v_recall5'] = recall5
-            metric['v_recall10'] = recall10
-            metric['v_mean_rk'] = mean_rk
+            v_metric = self.retrieval_metric(s1)
+            metric['v_recall1'] = v_metric['R1']
+            metric['v_recall5'] = v_metric['R5']
+            metric['v_recall10'] = v_metric['R10']
+            metric['v_med_rk'] = v_metric['MR']
 
-            recall1, recall5, recall10, mean_rk = self.retrieval_metric(s2)
-            metric['t_recall1'] = recall1
-            metric['t_recall5'] = recall5
-            metric['t_recall10'] = recall10
-            metric['t_mean_rk'] = mean_rk
+            t_metric = self.retrieval_metric(s2)
+            metric['t_recall1'] = v_metric['R1']
+            metric['t_recall5'] = v_metric['R5']
+            metric['t_recall10'] = v_metric['R10']
+            metric['t_med_rk'] = v_metric['MR']
 
         return losses, metric
 
-    def retrieval_metric(self, s):
-        with torch.no_grad():
-            N = s.shape[0]
-            T = s.shape[2]
-            s = s.view(N, -1)  # [N , N * T]
+    def retrieval_metric(x):
+        sx = np.sort(-x, axis=1)
+        d = np.diag(-x)
+        d = d[:, np.newaxis]
+        ind = sx - d
+        ind = np.where(ind == 0)
+        ind = ind[1]
+        metrics = {}
+        metrics['R1'] = float(np.sum(ind == 0)) / len(ind)
+        metrics['R5'] = float(np.sum(ind < 5)) / len(ind)
+        metrics['R10'] = float(np.sum(ind < 10)) / len(ind)
+        metrics['MR'] = np.median(ind) + 1
 
-            _, rank = torch.sort(s, dim=1, descending=True)
-
-            recall1 = torch.zeros(N).cuda()
-            recall5 = torch.zeros(N).cuda()
-            recall10 = torch.zeros(N).cuda()
-            mean_rk = torch.zeros(N).cuda()
-            for i in range(N):
-                for j in range(N * T):
-                    if rank[i][j].item() >= T * i and rank[i][j].item() < T * (i + 1):
-                        mean_rk[i] += j
-                    if j < 10:
-                        recall10[i] += 1
-                    if j < 5:
-                        recall5[i] += 1
-                    if j < 1:
-                        recall1[i] += 1
-
-            recall1 = torch.true_divide(recall1, T)
-            recall5 = torch.true_divide(recall5, T)
-            recall10 = torch.true_divide(recall10, T)
-            mean_rk = torch.true_divide(mean_rk, T)
-
-        return recall1, recall5, recall10, mean_rk
+        return metrics
