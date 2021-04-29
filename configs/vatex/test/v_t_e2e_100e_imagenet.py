@@ -2,7 +2,7 @@ model = dict(
     type='VideoTextMatcherE2E',
     backbone1=dict(
         type='ResNet',
-        pretrained=None,
+        pretrained='torchvision://resnet50',
         depth=50,
         norm_eval=False),
     backbone2=dict(
@@ -142,10 +142,10 @@ log_config = dict(
         dict(type='TensorboardLoggerHook')
     ]
 )
-dist_params = dict(backend='nccl',port = 29549)
+dist_params = dict(backend='nccl',port = 29559)
 log_level = 'INFO'
-work_dir = './work_dirs/vatex_TEST_2'
-load_from = '../ckpt/epoch_80.pth'
+work_dir = './work_dirs/vatex_imagenet'
+load_from = None
 resume_from = None
 workflow = [('train', 1)]
 find_unused_parameters=True

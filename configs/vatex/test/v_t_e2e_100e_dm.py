@@ -18,7 +18,8 @@ model = dict(
     img_feat_dim=2048,
     text_feat_dim=768,
     feature_dim=256,
-    init_std=0.01
+    init_std=0.01,
+    gather_flag = False
 )
 train_cfg = None
 test_cfg = None
@@ -141,10 +142,10 @@ log_config = dict(
         dict(type='TensorboardLoggerHook')
     ]
 )
-dist_params = dict(backend='nccl',port = 29519)
+dist_params = dict(backend='nccl',port = 29549)
 log_level = 'INFO'
-work_dir = './work_dirs/vatex_v_t_e2e_100e'
-load_from = None
+work_dir = './work_dirs/vatex_dm'
+load_from = '../ckpt/epoch_80.pth'
 resume_from = None
 workflow = [('train', 1)]
 find_unused_parameters=True
