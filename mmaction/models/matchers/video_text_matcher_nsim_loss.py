@@ -34,8 +34,8 @@ class VideoTextMatcherNSimLoss(BaseMatcher):
         self.img_mlp = nn.Sequential(nn.Linear(img_feat_dim, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim), nn.BatchNorm1d(self.feature_dim))
         self.text_mlp = nn.Sequential(nn.Linear(text_feat_dim, self.feature_dim * 2), nn.BatchNorm1d(self.feature_dim * 2), nn.ReLU(), nn.Linear(self.feature_dim * 2, self.feature_dim), nn.BatchNorm1d(self.feature_dim))
 
-        self.predictor_v = nn.Sequential(nn.Linear(self.feature_dim, self.feature_dim/2), nn.BatchNorm1d(self.feature_dim/2), nn.ReLU(), nn.Linear(self.feature_dim/2, self.feature_dim))
-        self.predictor_t = nn.Sequential(nn.Linear(self.feature_dim, self.feature_dim/2), nn.BatchNorm1d(self.feature_dim/2), nn.ReLU(), nn.Linear(self.feature_dim/2, self.feature_dim))
+        self.predictor_v = nn.Sequential(nn.Linear(self.feature_dim, self.feature_dim), nn.BatchNorm1d(self.feature_dim), nn.ReLU(), nn.Linear(self.feature_dim, self.feature_dim))
+        self.predictor_t = nn.Sequential(nn.Linear(self.feature_dim, self.feature_dim), nn.BatchNorm1d(self.feature_dim), nn.ReLU(), nn.Linear(self.feature_dim, self.feature_dim))
 
         self.init_mlp_weights()
         self.init_predictor_weights()
