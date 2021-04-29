@@ -141,9 +141,9 @@ log_config = dict(
         dict(type='TensorboardLoggerHook')
     ]
 )
-dist_params = dict(backend='nccl',port = 29569)
+dist_params = dict(backend='nccl',port = 29579)
 log_level = 'INFO'
-work_dir = './work_dirs/vatex_nsim'
+work_dir = './work_dirs/vatex_nsim_2'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
