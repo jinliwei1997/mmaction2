@@ -72,9 +72,9 @@ class NegSimHead(nn.Module):
         ind = np.where(ind == 0)
         ind = ind[1]
         metrics = {}
-        metrics['R1'] = float(np.sum(ind == 0)) / len(ind)
-        metrics['R5'] = float(np.sum(ind < 5)) / len(ind)
-        metrics['R10'] = float(np.sum(ind < 10)) / len(ind)
-        metrics['MR'] = np.median(ind) + 1
+        metrics['R1'] = torch.Tensor(float(np.sum(ind == 0)) / len(ind))
+        metrics['R5'] = torch.Tensor(float(np.sum(ind < 5)) / len(ind))
+        metrics['R10'] = torch.Tensor(float(np.sum(ind < 10)) / len(ind))
+        metrics['MR'] = torch.Tensor(np.median(ind) + 1)
 
         return metrics
