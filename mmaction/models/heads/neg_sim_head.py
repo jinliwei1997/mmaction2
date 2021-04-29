@@ -50,31 +50,51 @@ class NegSimHead(nn.Module):
             s1 = torch.matmul(v_feat, p_t.permute(1, 0)).view(N,N)
             s2 = torch.matmul(t_feat, p_v.permute(1, 0)).view(N,N)
 
-            v_metric = self.retrieval_metric(s1.cpu())
-            metric['v_recall1'] = v_metric['R1'].cuda()
-            metric['v_recall5'] = v_metric['R5'].cuda()
-            metric['v_recall10'] = v_metric['R10'].cuda()
-            metric['v_med_rk'] = v_metric['MR'].cuda()
+            v_metric = self.retrieval_metric(s1)
+            metric['v_recall1'] = v_metric['R1']
+            metric['v_recall5'] = v_metric['R5']
+            metric['v_recall10'] = v_metric['R10']
+            metric['v_mean_rk'] = v_metric['MR']
 
-            t_metric = self.retrieval_metric(s2.cpu())
-            metric['t_recall1'] = v_metric['R1'].cuda()
-            metric['t_recall5'] = v_metric['R5'].cuda()
-            metric['t_recall10'] = v_metric['R10'].cuda()
-            metric['t_med_rk'] = v_metric['MR'].cuda()
+            t_metric = self.retrieval_metric(s2)
+            metric['t_recall1'] = t_metric['R1']
+            metric['t_recall5'] = t_metric['R5']
+            metric['t_recall10'] = t_metric['R10']
+            metric['t_mean_rk'] = t_metric['MR']
 
         return losses, metric
 
-    def retrieval_metric(self, x):
-        sx = np.sort(-x, axis=1)
-        d = np.diag(-x)
-        d = d[:, np.newaxis]
-        ind = sx - d
-        ind = np.where(ind == 0)
-        ind = ind[1]
-        metrics = {}
-        metrics['R1'] = torch.Tensor(float(np.sum(ind == 0)) / len(ind))
-        metrics['R5'] = torch.Tensor(float(np.sum(ind < 5)) / len(ind))
-        metrics['R10'] = torch.Tensor(float(np.sum(ind < 10)) / len(ind))
-        metrics['MR'] = torch.Tensor(np.median(ind) + 1)
+    def retrieval_metric(self, s):
+        N = s.shape[0]
+        T = 1
+        s = s.view(N, -1)  # [N , N * T]
 
-        return metrics
+        _, rank = torch.sort(s, dim=1, descending=True)
+
+        recall1 = torch.zeros(N).cuda()
+        recall5 = torch.zeros(N).cuda()
+        recall10 = torch.zeros(N).cuda()
+        mean_rk = torch.zeros(N).cuda()
+        for i in range(N):
+            for j in range(N * T):
+                if rank[i][j].item() >= T * i and rank[i][j].item() < T * (i + 1):
+                    mean_rk[i] += j
+                    if j < 10:
+                        recall10[i] += 1
+                    if j < 5:
+                        recall5[i] += 1
+                    if j < 1:
+                        recall1[i] += 1
+
+        recall1 = torch.true_divide(recall1, T)
+        recall5 = torch.true_divide(recall5, T)
+        recall10 = torch.true_divide(recall10, T)
+        mean_rk = torch.true_divide(mean_rk, T)
+
+        metric = dict()
+        metric['R1'] = torch.mean(recall1)
+        metric['R5'] = torch.mean(recall5)
+        metric['R10'] = torch.mean(recall10)
+        metric['MR'] = torch.mean(mean_rk)
+
+        return metric
