@@ -50,13 +50,13 @@ class NegSimHead(nn.Module):
             s1 = torch.matmul(v_feat, p_t.permute(1, 0)).view(N,N,-1)
             s2 = torch.matmul(t_feat, p_v.permute(1, 0)).view(N,N,-1)
 
-            v_metric = self.retrieval_metric(s1)
+            v_metric = self.retrieval_metric(s1.cpu())
             metric['v_recall1'] = v_metric['R1']
             metric['v_recall5'] = v_metric['R5']
             metric['v_recall10'] = v_metric['R10']
             metric['v_med_rk'] = v_metric['MR']
 
-            t_metric = self.retrieval_metric(s2)
+            t_metric = self.retrieval_metric(s2.cpu())
             metric['t_recall1'] = v_metric['R1']
             metric['t_recall5'] = v_metric['R5']
             metric['t_recall10'] = v_metric['R10']
