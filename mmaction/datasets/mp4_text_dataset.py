@@ -144,9 +144,6 @@ class Mp4TextDataset(BaseDataset):
         t_feat = t_feat.reshape(t_feat.shape[0], -1)
         eval_results = eval_retrieval_metrics(v_feat, t_feat)
 
-        log_msg = f'\nmetrics:\t {str(eval_results)}'
-        print_log(log_msg, logger=logger)
-
         return eval_results
 
     def prepare_train_frames(self, idx):
