@@ -19,7 +19,7 @@ def cal_avg_metrics(gt_rank):
     recall10 = np.sum(gt_rank < 10) / N
     return mean_rk, median_rk, recall1, recall5, recall10
 
-def eval_retrieval_metrics(v_feat, t_feat, split_type = 'full', metrics = ['mean_rk', 'recall1', 'recall5']):
+def eval_retrieval_metrics(v_feat, t_feat, split_type = 'full', metrics = ['mean_rk', 'recall1', 'recall5', 'recall10']):
     tot = len(v_feat)
     if split_type == 'full':
         split = [[i for i in range(len(v_feat))]]
