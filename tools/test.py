@@ -156,6 +156,7 @@ def main():
         init_dist(args.launcher, **cfg.dist_params)
 
     # build the dataloader
+    print(cfg.data.test)
     dataset = build_dataset(cfg.data.test, dict(test_mode=True))
     dataloader_setting = dict(
         videos_per_gpu=cfg.data.get('videos_per_gpu', 1),
