@@ -16,9 +16,9 @@ mc_cfg = dict(
     sys_path='/mnt/lustre/share/pymc/py3')
 
 cfg = dict(
-    type = 'Mp4TextDataset',
-    ann_file = '/mnt/lustre/jinliwei/vatex_process/vatex_val_bert_ch1',
-    data_prefix ='',
+    type = 'Mp4Word2VecDataset',
+    ann_file = '/mnt/lustre/jinliwei/bili_full/bili_anno_vec_train',
+    data_prefix ='/mnt/lustre/share_data/bilibili/sensebee_datalist_32109',
     pipeline = [
         dict(type='DecordInit',
              io_backend='memcached',
@@ -33,21 +33,20 @@ cfg = dict(
             random_crop=False,
             max_wh_scale_gap=1,
             lazy=True),
-        dict(type='Resize', scale=(112, 112), keep_ratio=False, lazy=True),
+        dict(type='Resize', scale=(224, 224), keep_ratio=False, lazy=True),
         dict(type='Flip', flip_ratio=0.5, lazy=True),
         dict(type='Fuse'),
         dict(type='Normalize', **img_norm_cfg),
         dict(type='FormatShape', input_format='NCHW'),
-        dict(type='LoadTexts', sample_mode='number', sample_number=1),
-        dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
-        dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
-        dict(type='ToTensor', keys=['imgs'])
+        dict(type='LoadWord2Vec'),
+        dict(type='Collect', keys=['imgs', 'word2vec', 'weight'], meta_keys=[]),
+        dict(type='ToTensor', keys=['imgs', 'word2vec', 'weight'])
     ]
 )
 
-vatex_dataset = build_dataset(cfg)
+bili_full_dataset = build_dataset(cfg)
 
 for i in range(10):
-    d = vatex_dataset[i]
+    d = bili_full_dataset[i]
     print(d)
 
