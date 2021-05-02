@@ -34,7 +34,7 @@ train_pipeline = [
     dict(type='DecordInit',
          io_backend='memcached',
          **mc_cfg),
-    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
+    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=4),
     dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(
@@ -57,7 +57,7 @@ val_pipeline = [
     dict(type='DecordInit',
          io_backend='memcached',
          **mc_cfg),
-    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
+    dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=4),
     dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256), lazy=True),
     dict(type='CenterCrop', crop_size=224, lazy=True),
@@ -92,7 +92,7 @@ test_pipeline = [
     dict(type='ToTensor', keys=['imgs', 'word2vec', 'weight'])
 ]
 data = dict(
-    videos_per_gpu=32,
+    videos_per_gpu=64,
     workers_per_gpu=10,
     train=dict(
         type=dataset_type,
@@ -111,16 +111,16 @@ data = dict(
         pipeline=test_pipeline)
 )
 
-optimizer = dict(type='SGD', lr=0.05, momentum=0.9, weight_decay=0.0001)
+optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 lr_config = dict(
     policy='CosineAnnealing',
     min_lr=0,
     warmup='linear',
     warmup_by_epoch=True,
-    warmup_iters=1
+    warmup_iters=5
 )
-total_epochs = 400
+total_epochs = 300
 checkpoint_config = dict(interval=5)
 evaluation = dict(
     interval=1,
@@ -134,7 +134,7 @@ log_config = dict(
 )
 dist_params = dict(backend='nccl',port = 29513)
 log_level = 'INFO'
-work_dir = './work_dirs/bili_full_word2vec_400e'
+work_dir = './work_dirs/bili_full_word2vec_300e'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
