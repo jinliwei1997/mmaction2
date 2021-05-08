@@ -24,10 +24,17 @@ data_root_val = 'data/MM21-DS'
 ann_file_train = f'data/MM21-DS/train_anno'
 ann_file_val = f'data/MM21-DS/train_anno'
 ann_file_test = f'data/MM21-DS/val_anno'
+mc_cfg = dict(
+    server_list_cfg='/mnt/lustre/share/memcached_client/server_list.conf',
+    client_cfg='/mnt/lustre/share/memcached_client/client.conf',
+    sys_path='/mnt/lustre/share/pymc/py3')
 img_norm_cfg = dict(mean=[104, 117, 128], std=[1, 1, 1], to_bgr=False)
 train_pipeline = [
+    dict(type='DecordInit',
+         io_backend='memcached',
+         **mc_cfg),
     dict(type='SampleFrames', clip_len=1, frame_interval=1, num_clips=8),
-    dict(type='RawFrameDecode'),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256)),
     dict(
         type='MultiScaleCrop',
@@ -43,13 +50,16 @@ train_pipeline = [
     dict(type='ToTensor', keys=['imgs', 'label'])
 ]
 val_pipeline = [
+    dict(type='DecordInit',
+         io_backend='memcached',
+         **mc_cfg),
     dict(
         type='SampleFrames',
         clip_len=1,
         frame_interval=1,
         num_clips=8,
         test_mode=True),
-    dict(type='RawFrameDecode'),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256)),
     dict(type='CenterCrop', crop_size=224),
     dict(type='Flip', flip_ratio=0),
@@ -59,13 +69,16 @@ val_pipeline = [
     dict(type='ToTensor', keys=['imgs'])
 ]
 test_pipeline = [
+    dict(type='DecordInit',
+         io_backend='memcached',
+         **mc_cfg),
     dict(
         type='SampleFrames',
         clip_len=1,
         frame_interval=1,
         num_clips=25,
         test_mode=True),
-    dict(type='RawFrameDecode'),
+    dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256)),
     dict(type='TenCrop', crop_size=224),
     dict(type='Flip', flip_ratio=0),
