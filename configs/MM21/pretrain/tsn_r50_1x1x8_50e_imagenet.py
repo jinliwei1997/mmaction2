@@ -107,7 +107,7 @@ data = dict(
         pipeline=test_pipeline))
 # optimizer
 optimizer = dict(
-    type='SGD', lr=0.02, momentum=0.9,
+    type='SGD', lr=0.01, momentum=0.9,
     weight_decay=0.0001)  # this lr is used for 8*2 gpus
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 # learning policy
@@ -128,7 +128,7 @@ log_config = dict(
 # runtime settings
 dist_params = dict(backend='nccl', port = 25623)
 log_level = 'INFO'
-work_dir = './work_dirs/MM21/pt/tsn_r50_8f_50e_imagenet_pt'
+work_dir = './work_dirs/MM21/pt/tsn_r50_8f_50e_imagenet_pt_0.1'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
