@@ -128,9 +128,9 @@ log_config = dict(
         dict(type='TensorboardLoggerHook'),
     ])
 # runtime settings
-dist_params = dict(backend='nccl', port = 25688)
+dist_params = dict(backend='nccl', port = 25699)
 log_level = 'INFO'
-work_dir = './work_dirs/MM21/ds/tsn_r50_8f_50e_usv_v_t_pt_half_lr'
-load_from = '../ckpt/usv_v_t.pth'
+work_dir = './work_dirs/MM21/ds/tsn_r50_8f_50e_usv_topic_pt_half_lr'
+load_from = '../ckpt/tsn_r50_1x1x8_100e_ugc_rgb.pth'
 resume_from = None
 workflow = [('train', 1)]
