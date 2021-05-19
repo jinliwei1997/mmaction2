@@ -95,8 +95,8 @@ class Mp4TextDataset(BaseDataset):
             for line in fin:
                 line = line.strip()
                 video_info = {}
-
-                video_info['filename'] = line.split(' ##$$## ')[0].rstrip()
+                if self.data_prefix is not None:
+                    video_info['filename'] = osp.join(self.data_prefix,line.split(' ##$$## ')[0].rstrip())
                 video_info['text_path'] = line.split(' ##$$## ')[1].rstrip()
 
                 video_infos.append(video_info)
