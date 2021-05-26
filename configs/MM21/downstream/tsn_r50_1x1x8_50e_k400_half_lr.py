@@ -76,11 +76,11 @@ test_pipeline = [
         type='SampleFrames',
         clip_len=1,
         frame_interval=1,
-        num_clips=25,
+        num_clips=8,
         test_mode=True),
     dict(type='DecordDecode'),
     dict(type='Resize', scale=(-1, 256)),
-    dict(type='TenCrop', crop_size=224),
+    dict(type='CenterCrop', crop_size=224),
     dict(type='Flip', flip_ratio=0),
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
@@ -89,9 +89,9 @@ test_pipeline = [
 ]
 data = dict(
     videos_per_gpu=32,
-    workers_per_gpu=4,
+    workers_per_gpu=10,
     test_dataloader=dict(
-        videos_per_gpu=2),
+        videos_per_gpu=32),
     train=dict(
         type=dataset_type,
         ann_file=ann_file_train,
