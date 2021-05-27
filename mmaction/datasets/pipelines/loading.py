@@ -946,6 +946,7 @@ class DecordInit:
             file_obj = io.BytesIO(self.file_client.get(results['filename']))
             container = decord.VideoReader(file_obj, num_threads=self.num_threads)
         except:
+            print(results['filename'])
             police = '/mnt/lustre/share_data/MM21-PRETRAIN/video/PRE-TRAIN-SCLIP-VIDEO/imagenet1k_cls-p1/537/h9Yupwh62c4_000000_000009.avi'
             results['filename'] = police
             file_obj = io.BytesIO(self.file_client.get(results['filename']))
