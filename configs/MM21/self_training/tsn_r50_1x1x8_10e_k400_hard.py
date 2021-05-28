@@ -119,7 +119,7 @@ lr_config = dict(
     min_lr=0,
 )
 total_epochs = 50
-checkpoint_config = dict(interval=5)
+checkpoint_config = dict(interval=2)
 evaluation = dict(
     interval=1, metrics=['top_k_accuracy', 'mean_class_accuracy'], topk=(1, 5))
 log_config = dict(
@@ -132,6 +132,6 @@ log_config = dict(
 dist_params = dict(backend='nccl', port = 25698)
 log_level = 'INFO'
 work_dir = './work_dirs/MM21/st/hard'
-load_from = '../ckpt/tsn_r50_256p_1x1x8_100e_kinetics400_rgb_20200817-883baf16.pth'
+load_from = '../ckpt/epoch_50.pth'
 resume_from = None
 workflow = [('train', 1)]
