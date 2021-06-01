@@ -7,7 +7,7 @@ model = dict(
         norm_eval=False),
     backbone2=dict(
         type='BERT',
-        pretrained='/mnt/lustre/jinliwei/bert_model',
+        pretrained='data/bert_model',
         freeze=True
     ),
     head=dict(
@@ -54,7 +54,7 @@ train_pipeline = [
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
     dict(type='LoadTexts', sample_mode='number', sample_number=1),
-    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
+    dict(type='TextTokenize', tokenizer_dir='data/bert_model'),
     dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs'])
 ]
@@ -72,7 +72,7 @@ val_pipeline = [
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
     dict(type='LoadTexts', sample_mode='number', sample_number=1),
-    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
+    dict(type='TextTokenize', tokenizer_dir='data/bert_model'),
     dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs'])
 ]
@@ -96,7 +96,7 @@ test_pipeline = [
     dict(type='Normalize', **img_norm_cfg),
     dict(type='FormatShape', input_format='NCHW'),
     dict(type='LoadTexts', sample_mode='number', sample_number=1),
-    dict(type='TextTokenize', tokenizer_dir='/mnt/lustre/jinliwei/bert_model'),
+    dict(type='TextTokenize', tokenizer_dir='data/bert_model'),
     dict(type='Collect', keys=['imgs', 'texts_item'], meta_keys=[]),
     dict(type='ToTensor', keys=['imgs'])
 ]
@@ -120,7 +120,7 @@ data = dict(
         pipeline=test_pipeline)
 )
 
-optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)# this lr is used for 8 gpus
+optimizer = dict(type='SGD', lr=0.005, momentum=0.9, weight_decay=0.0001)# this lr is used for 4 gpus
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 lr_config = dict(
     policy='CosineAnnealing',
