@@ -1735,7 +1735,13 @@ class LoadTexts:
         else:
             lines = ['1\n','0\n','\n','1 1\n']
 
-        num_sentences = int(lines[0].rstrip())
+        try:
+            num_sentences = int(lines[0].rstrip())
+        except:
+            print(results['text_path'])
+            lines = ['1\n','0\n','\n','1 1\n']
+            num_sentences = int(lines[0].rstrip())
+
         assert num_sentences * 3 + 1 <= len(lines)
 
         if self.sample_mode == 'number':
