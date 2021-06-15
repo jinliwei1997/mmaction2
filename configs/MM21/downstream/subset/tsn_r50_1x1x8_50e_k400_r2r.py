@@ -131,7 +131,7 @@ log_config = dict(
 # runtime settings
 dist_params = dict(backend='nccl', port = 25698)
 log_level = 'INFO'
-work_dir = './work_dirs/MM21/ds/subset/tsn_r50_8f_50e_k400_n2n'
+work_dir = './work_dirs/MM21/ds/subset/tsn_r50_8f_50e_k400_r2r'
 load_from = '../ckpt/tsn_r50_256p_1x1x8_100e_kinetics400_rgb_20200817-883baf16.pth'
 resume_from = None
 workflow = [('train', 1)]
