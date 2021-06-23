@@ -13,8 +13,10 @@ from .contrastive_head import ContrastiveHead
 from .mil_nce_head import MILNCEHead
 from .ranking_head import RankingHead
 from .neg_sim_head import NegSimHead
+from .clip_head import CLIPHead
 
 __all__ = [
     'TSNHead', 'I3DHead', 'BaseHead', 'TSMHead', 'SlowFastHead', 'SSNHead',
-    'TPNHead', 'AudioTSNHead', 'X3DHead', 'BBoxHeadAVA', 'AVARoIHead', 'ContrastiveHead' ,'MILNCEHead', 'RankingHead', 'NegSimHead'
+    'TPNHead', 'AudioTSNHead', 'X3DHead', 'BBoxHeadAVA', 'AVARoIHead', 'ContrastiveHead' ,'MILNCEHead', 'RankingHead', 'NegSimHead',
+    "CLIPHead"
 ]
