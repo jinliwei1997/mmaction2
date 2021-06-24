@@ -1,4 +1,4 @@
-work_dir = "./work_dirs/MM21/ds/tsn_clipvit_1x1x8_50e_co_teaching_fix"
+work_dir = "./work_dirs/MM21/ds/co_teaching/tsn_clipvit_1x1x8_50e_co_teaching_0.3"
 
 # model settings
 model = dict(
@@ -27,8 +27,8 @@ model = dict(
         init_std=0.02,
         fp16_enabled=True,
     ),
-    tk=10,
-    tau=1 * 0.3,
+    tk=20,
+    tau=0.3,
     log_file=f"{work_dir}/pos_neg_file.txt",
 )
 # model training and testing settings
@@ -150,7 +150,7 @@ output_config = dict(
     out="/mnt/lustre/share_data/MM21-CLASSIFICATION/co_teaching_clip_result.pkl"
 )
 # runtime settings
-dist_params = dict(backend="nccl", port=25698)
+dist_params = dict(backend="nccl", port=25688)
 log_level = "INFO"
 load_from = None
 resume_from = None
