@@ -1,4 +1,4 @@
-work_dir = "./work_dirs/MM21/ds/tsn_clipvit_1x1x8_50e_co_teaching"
+work_dir = "./work_dirs/MM21/ds/tsn_clipvit_1x1x8_50e_co_teaching_fix"
 
 # model settings
 model = dict(
