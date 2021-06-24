@@ -36,8 +36,8 @@ train_cfg = None
 test_cfg = dict(average_clips=None)
 # dataset settings
 dataset_type = "VideoDataset"
-data_root = "/mnt/lustre/share_data/MM21-CLASSIFICATION"
-data_root_val = "/mnt/lustre/share_data/MM21-CLASSIFICATION"
+data_root = 'data/MM21-DS/subset'
+data_root_val = 'data/MM21-DS/subset'
 ann_file_train = f'data/MM21-DS/subset/train_anno_subset'
 ann_file_val = f'data/MM21-DS/subset/val_anno_subset'
 ann_file_test = f'data/MM21-DS/subset/val_anno_subset'
