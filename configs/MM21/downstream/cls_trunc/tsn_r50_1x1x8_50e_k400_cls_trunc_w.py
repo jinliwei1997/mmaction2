@@ -20,7 +20,7 @@ test_cfg = dict(average_clips=None)
 # dataset settings
 dataset_type = 'VideoDataset'
 data_root = 'data/MM21-DS'
-data_root_val = 'data/MM21-PT'
+data_root_val = 'data/MM21-DS'
 ann_file_train = f'data/MM21-DS/train_anno_cls_trunc_w'
 ann_file_val = f'data/MM21-DS/val_anno'
 ann_file_test = f'data/MM21-PT/full_anno'

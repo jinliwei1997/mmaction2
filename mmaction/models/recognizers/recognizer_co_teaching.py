@@ -284,8 +284,6 @@ class RecognizerCo(nn.Module):
         ind_1_sorted = torch.argsort(loss_cls1)
         ind_2_sorted = torch.argsort(loss_cls2)
 
-        # remember_rate = 1 - forget_rate
-        # 1- t*min()
         if not self.inverse:
             remember_rate = 1 - self.tau * min(np.power(epoch, self.c) / self.tk, 1)
         else:
