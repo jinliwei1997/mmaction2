@@ -34,6 +34,7 @@ class RecognizerCo(nn.Module):
             inverse=False,
             min_rate=0.8,
             log_file=None,
+            filter_cls_list=range(240)
     ):
         super().__init__()
         self.backbone1 = builder.build_backbone(backbone1)
@@ -59,7 +60,7 @@ class RecognizerCo(nn.Module):
         self.tau = tau
         self.inverse = inverse
         self.min_rate = min_rate
-
+        self.filter_cls_list = filter_cls_list
         if log_file is not None:
             self.log_file = open(log_file, "w", encoding="utf-8")
 
@@ -291,7 +292,22 @@ class RecognizerCo(nn.Module):
         num_remember = int(remember_rate * len(ind_1_sorted))
 
         ind_1_update = ind_1_sorted[:num_remember]
+        ind_1_re = []
+        for i in ind_1_sorted[num_remember:]:
+            if int(gt_labels[i]) in self.filter_class_list:
+                ind_1_re.append(i)
+        ind_1_re = torch.tensor(ind_1_re, dtype=torch.int)
+        ind_1_update = torch.cat([ind_1_update, ind_1_re])
+
         ind_2_update = ind_2_sorted[:num_remember]
+        ind_2_re = []
+        for i in ind_2_sorted[num_remember:]:
+            if int(gt_labels[i]) in self.filter_class_list:
+                ind_2_re.append(i)
+        ind_2_re = torch.tensor(ind_2_re, dtype=torch.int)
+        ind_2_update = torch.cat([ind_2_update, ind_2_re])
+
+        print(len(ind_2_re),len(ind_1_re))
 
         if self.log_file and dist.get_rank() == 0 and np.random.rand() < 0.01:
             idx = np.array([idx1["idx"] for idx1 in idx])
@@ -320,6 +336,7 @@ class RecognizerCo(nn.Module):
         losses["loss_cls1"] = loss_1_update["loss_cls"]
         losses["loss_cls2"] = loss_2_update["loss_cls"]
         losses["remember_rate"] = torch.tensor(remember_rate).cuda()
+        losses["retrieve_rate"] = (len(ind_2_re)+len(ind_1_re))/len(ind_1_sorted)/2
         return losses
 
     def _do_test(self, imgs):
