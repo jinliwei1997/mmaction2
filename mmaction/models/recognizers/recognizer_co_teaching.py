@@ -297,14 +297,14 @@ class RecognizerCo(nn.Module):
             if int(gt_labels[i]) in self.filter_class_list:
                 ind_1_re.append(i)
         ind_1_re = torch.tensor(ind_1_re, dtype=torch.int)
-        ind_1_update = torch.cat([ind_1_update, ind_1_re])
+        ind_1_update = torch.cat([ind_1_update, ind_1_re]).cuda()
 
         ind_2_update = ind_2_sorted[:num_remember]
         ind_2_re = []
         for i in ind_2_sorted[num_remember:]:
             if int(gt_labels[i]) in self.filter_class_list:
                 ind_2_re.append(i)
-        ind_2_re = torch.tensor(ind_2_re, dtype=torch.int)
+        ind_2_re = torch.tensor(ind_2_re, dtype=torch.int).cuda()
         ind_2_update = torch.cat([ind_2_update, ind_2_re])
 
         print(len(ind_2_re),len(ind_1_re))
@@ -336,7 +336,7 @@ class RecognizerCo(nn.Module):
         losses["loss_cls1"] = loss_1_update["loss_cls"]
         losses["loss_cls2"] = loss_2_update["loss_cls"]
         losses["remember_rate"] = torch.tensor(remember_rate).cuda()
-        losses["retrieve_rate"] = (len(ind_2_re)+len(ind_1_re))/len(ind_1_sorted)/2
+        losses["retrieve_rate"] = torch.tensor((len(ind_2_re)+len(ind_1_re))/len(ind_1_sorted)/2).cuda()
         return losses
 
     def _do_test(self, imgs):
