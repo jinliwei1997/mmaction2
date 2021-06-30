@@ -9,7 +9,7 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def process_checkpoint(in_file, out_file, prefix):
+def process_checkpoint(in_file, out_file):
     checkpoint = torch.load(in_file, map_location='cpu')['state_dict']
 
     backbone = {}
@@ -27,7 +27,7 @@ def process_checkpoint(in_file, out_file, prefix):
 
 def main():
     args = parse_args()
-    process_checkpoint(args.in_file, args.out_file, args.prefix)
+    process_checkpoint(args.in_file, args.out_file)
 
 if __name__ == '__main__':
     main()
