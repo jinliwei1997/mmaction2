@@ -3,7 +3,7 @@ from .base import BaseRecognizer
 
 
 @RECOGNIZERS.register_module()
-class RecognizerSelfTraining(BaseRecognizer):
+class RecognizerSelfTraining(nn.Module):
     """2D recognizer model framework for self-training."""
 
     def __init__(
