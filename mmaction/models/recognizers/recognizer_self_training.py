@@ -5,6 +5,7 @@ from .base import BaseRecognizer
 import torch.nn as nn
 import torch
 import torch.distributed as dist
+import torch.nn.functional as F
 
 from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
@@ -109,6 +110,44 @@ class RecognizerSelfTraining(nn.Module):
             return self.forward_train(imgs, label, **kwargs)
 
         return self.forward_test(imgs, **kwargs)
+
+    def average_clip(self, cls_score, num_segs=1):
+        """Averaging class score over multiple clips.
+
+        Using different averaging types ('score' or 'prob' or None,
+        which defined in test_cfg) to computed the final averaged
+        class score. Only called in test mode.
+
+        Args:
+            cls_score (torch.Tensor): Class score to be averaged.
+            num_segs (int): Number of clips for each input sample.
+
+        Returns:
+            torch.Tensor: Averaged class score.
+        """
+        if "average_clips" not in self.test_cfg.keys():
+            raise KeyError('"average_clips" must defined in test_cfg\'s keys')
+
+        average_clips = self.test_cfg["average_clips"]
+        if average_clips not in ["score", "prob", None]:
+            raise ValueError(
+                f"{average_clips} is not supported. "
+                f"Currently supported ones are "
+                f'["score", "prob", None]'
+            )
+
+        if average_clips is None:
+            return cls_score
+
+        batch_size = cls_score.shape[0]
+        cls_score = cls_score.view(batch_size // num_segs, num_segs, -1)
+
+        if average_clips == "prob":
+            cls_score = F.softmax(cls_score, dim=2).mean(dim=1)
+        elif average_clips == "score":
+            cls_score = cls_score.mean(dim=1)
+
+        return cls_score
 
     def forward_dummy(self, imgs):
         """Used for computing network FLOPs.
