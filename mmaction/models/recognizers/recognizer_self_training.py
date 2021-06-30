@@ -23,6 +23,7 @@ class RecognizerSelfTraining(nn.Module):
             neck=None,
             train_cfg=None,
             test_cfg=None,
+            fp16_enabled=False
     ):
         super().__init__()
         self.teacher_backbone = builder.build_backbone(teacher_backbone)
@@ -42,7 +43,7 @@ class RecognizerSelfTraining(nn.Module):
 
         self.init_weights()
 
-        self.fp16_enabled = False  # might be changed
+        self.fp16_enabled = fp16_enabled  # might be changed
 
     def init_weights(self):
         """Initialize the model network weights."""
