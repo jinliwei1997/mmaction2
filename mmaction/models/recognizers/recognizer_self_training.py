@@ -40,6 +40,14 @@ class RecognizerSelfTraining(nn.Module):
 
         self.fp16_enabled = False  # might be changed
 
+    def init_weights(self):
+        """Initialize the model network weights."""
+        self.teacher_backbone.init_weights()
+        self.student_backbone.init_weights()
+        self.teacher_cls_head.init_weights()
+        self.student_cls_head.init_weights()
+        if hasattr(self, "neck"):
+            self.neck.init_weights()
 
     def forward_train(self, imgs, labels, **kwargs):
         """Defines the computation performed at every call when training."""
