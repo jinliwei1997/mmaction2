@@ -15,7 +15,7 @@ class DistillHead(nn.Module):
     def __init__(
             self,
             alpha = 0.5,
-            temperature = 10,
+            temperature = 1,
             **kwargs
     ):
 
