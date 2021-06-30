@@ -101,7 +101,7 @@ test_pipeline = [
     dict(type="ToTensor", keys=["imgs"]),
 ]
 data = dict(
-    videos_per_gpu=32,
+    videos_per_gpu=64,
     workers_per_gpu=10,
     train_dataloader=dict(shuffle=False),
     test_dataloader=dict(videos_per_gpu=2),
@@ -137,7 +137,7 @@ data = dict(
 # optimizer
 optimizer = dict(
     type="SGD",
-    lr=0.00125,  # for 128
+    lr=0.0025,  # for 128
     momentum=0.9,
     weight_decay=1e-4,
     nesterov=True,
@@ -160,14 +160,12 @@ log_config = dict(
     interval=20, hooks=[dict(type="TextLoggerHook"), dict(type="TensorboardLoggerHook")]
 )
 eval_config = dict(metrics=["top_k_accuracy", "mean_class_accuracy"])
-output_config = dict(
-    out="/mnt/lustre/share_data/MM21-CLASSIFICATION/clip_vit_hybrid.pkl"
-)
+
 # runtime settings
-dist_params = dict(backend="nccl", port=25699)
+dist_params = dict(backend="nccl", port=25698)
 log_level = "INFO"
 work_dir = "./work_dirs/MM21/st/tsn_clip_vit_1x1x8_50e_self_training"
-load_from = None
+load_from = '../ckpt/clip_teacher.pth'
 resume_from = None
 workflow = [("train", 1)]
 find_unused_parameters = True
