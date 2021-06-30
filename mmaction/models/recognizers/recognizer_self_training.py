@@ -72,7 +72,7 @@ class RecognizerSelfTraining(nn.Module):
 
         gt_labels = labels.squeeze()
 
-        loss_cls = self.distill_head(student_cls_score, teacher_cls_score, gt_labels, **kwargs)
+        loss_cls = self.distill_head(teacher_cls_score, student_cls_score, gt_labels, **kwargs)
         losses.update(loss_cls)
 
         return losses
