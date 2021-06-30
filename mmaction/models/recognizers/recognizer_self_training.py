@@ -4,6 +4,10 @@ from .. import builder
 from .base import BaseRecognizer
 import torch.nn as nn
 import torch
+import torch.distributed as dist
+
+from abc import ABCMeta, abstractmethod
+from collections import OrderedDict
 
 @RECOGNIZERS.register_module()
 class RecognizerSelfTraining(nn.Module):
@@ -93,6 +97,18 @@ class RecognizerSelfTraining(nn.Module):
         testing."""
         return self._do_test(imgs).cpu().numpy()
 
+    def forward(self, imgs, label=None, return_loss=True, **kwargs):
+        """Define the computation performed at every call."""
+        if kwargs.get('gradcam', False):
+            del kwargs['gradcam']
+            return self.forward_gradcam(imgs, **kwargs)
+        if return_loss:
+            if label is None:
+                raise ValueError('Label should not be None.')
+            return self.forward_train(imgs, label, **kwargs)
+
+        return self.forward_test(imgs, **kwargs)
+
     def forward_dummy(self, imgs):
         """Used for computing network FLOPs.
 
@@ -122,7 +138,91 @@ class RecognizerSelfTraining(nn.Module):
         outs = (self.cls_head(x, num_segs), )
         return outs
 
+    def train_step(self, data_batch, optimizer, epoch=1, **kwargs):
+
+        imgs = data_batch["imgs"]
+        label = data_batch["label"]
+        idx = data_batch["idx"]
+
+        aux_info = {}
+        for item in self.aux_info:
+            assert item in data_batch
+            aux_info[item] = data_batch[item]
+
+        losses = self(imgs, label, return_loss=True, **aux_info)
+        loss, log_vars = self._parse_losses(losses)
+
+        outputs = dict(
+            loss=loss,
+            log_vars=log_vars,
+            num_samples=len(next(iter(data_batch.values()))),
+        )
+
+        return outputs
+
+    def val_step(self, data_batch, optimizer, **kwargs):
+        """The iteration step during validation.
+
+        This method shares the same signature as :func:`train_step`, but used
+        during val epochs. Note that the evaluation after training epochs is
+        not implemented with this method, but an evaluation hook.
+        """
+        imgs = data_batch["imgs"]
+        label = data_batch["label"]
+
+        aux_info = {}
+        for item in self.aux_info:
+            aux_info[item] = data_batch[item]
+
+        losses = self(imgs, label, return_loss=False, **aux_info)  # return_loss=False?
+
+        loss, log_vars = self._parse_losses(losses)
+
+        outputs = dict(
+            loss=loss,
+            log_vars=log_vars,
+            num_samples=len(next(iter(data_batch.values()))),
+        )
+
+        return outputs
+
     def forward_gradcam(self, imgs):
         """Defines the computation performed at every call when using gradcam
         utils."""
         return self._do_test(imgs)
+
+    @staticmethod
+    def _parse_losses(losses):
+        """Parse the raw outputs (losses) of the network.
+
+        Args:
+            losses (dict): Raw output of the network, which usually contain
+                losses and other necessary information.
+
+        Returns:
+            tuple[Tensor, dict]: (loss, log_vars), loss is the loss tensor
+                which may be a weighted sum of all losses, log_vars contains
+                all the variables to be sent to the logger.
+        """
+        log_vars = OrderedDict()
+        for loss_name, loss_value in losses.items():
+            if isinstance(loss_value, torch.Tensor):
+                log_vars[loss_name] = loss_value.mean()
+            elif isinstance(loss_value, list):
+                log_vars[loss_name] = sum(_loss.mean() for _loss in loss_value)
+            else:
+                raise TypeError(
+                    f'{loss_name} is not a tensor or list of tensors')
+
+        loss = sum(_value for _key, _value in log_vars.items()
+                   if 'loss' in _key)
+
+        log_vars['loss'] = loss
+        for loss_name, loss_value in log_vars.items():
+            # reduce loss when distributed training
+            if dist.is_available() and dist.is_initialized():
+                loss_value = loss_value.data.clone()
+                dist.all_reduce(loss_value.div_(dist.get_world_size()))
+            log_vars[loss_name] = loss_value.item()
+
+        return loss, log_vars
