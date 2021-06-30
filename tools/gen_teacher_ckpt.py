@@ -6,7 +6,6 @@ def parse_args():
         description='Process a checkpoint to be published')
     parser.add_argument('--in_file', help='input checkpoint filename')
     parser.add_argument('--out_file', help='output checkpoint filename')
-    parser.add_argument('--prefix', help='prefix to find')
     args = parser.parse_args()
     return args
 
@@ -16,10 +15,12 @@ def process_checkpoint(in_file, out_file, prefix):
     backbone = {}
 
     for key in checkpoint:
+        if 'backbone' in key:
+            backbone[key.replace('backbone', 'teacher_backbone')] = checkpoint[key]
+        if 'cls_head' in key:
+            backbone[key.replace('cls_head', 'teacher_cls_head')] = checkpoint[key]
+    for key in backbone:
         print(key)
-        if prefix in key:
-            backbone[key.replace(prefix, 'backbone')] = checkpoint[key]
-
     torch.save(backbone, out_file)
 
 
