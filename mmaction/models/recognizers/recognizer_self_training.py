@@ -1,6 +1,9 @@
 from ..registry import RECOGNIZERS
-from .base import BaseRecognizer
+from .. import builder
 
+from .base import BaseRecognizer
+import torch.nn as nn
+import torch
 
 @RECOGNIZERS.register_module()
 class RecognizerSelfTraining(nn.Module):
