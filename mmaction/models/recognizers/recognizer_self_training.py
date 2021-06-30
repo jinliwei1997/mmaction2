@@ -142,7 +142,6 @@ class RecognizerSelfTraining(nn.Module):
 
         imgs = data_batch["imgs"]
         label = data_batch["label"]
-        idx = data_batch["idx"]
 
         aux_info = {}
         for item in self.aux_info:
