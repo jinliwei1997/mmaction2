@@ -25,6 +25,11 @@ model = dict(
         dropout_ratio=0.8,
         init_std=0.02,
     ),
+    distill_head=dict(
+        type="DistillHead",
+        alpha = 0.5,
+        temperature = 10,
+    ),
 )
 # model training and testing settings
 train_cfg = None
