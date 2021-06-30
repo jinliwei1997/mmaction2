@@ -29,8 +29,8 @@ model = dict(
     ),
     distill_head=dict(
         type="DistillHead",
-        alpha = 0.5,
-        temperature = 10,
+        alpha = 0.99,
+        temperature = 5,
     ),
     fp16_enabled=True
 )
